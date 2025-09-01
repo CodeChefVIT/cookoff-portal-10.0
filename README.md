@@ -1,3 +1,25 @@
+# Framework:
+
+NEXTJS 
+
+## Packages added:
+1. ShadCN
+
+2. React toast
+
+3. Axios
+
+4. React- icons
+
+Optional packages to be added later: 
+
+1. React Hook Form
+2. Zod
+
+
+Put components in components
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
