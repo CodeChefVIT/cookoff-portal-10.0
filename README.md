@@ -17,7 +17,9 @@ Optional packages to be added later:
 2. Zod
 
 
-Put components in components
+Put components in /components
+API calls in /services
+
 
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
