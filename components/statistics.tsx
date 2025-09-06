@@ -1,6 +1,6 @@
 import React from 'react';
 
-const StatisticsPage = () => {
+const Statistics = () => {
   return (
     <div>
       {/* Markdown content */}
@@ -8,4 +8,4 @@ const StatisticsPage = () => {
   );
 };
 
-export default StatisticsPage;
+export default Statistics;
