@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@font-face {
+  font-family: "Nulshock";
+  src: url("/fonts/Nulshock Bd.otf") format("opentype");
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -104,6 +109,32 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.font-inter {
+  font-family: "Inter", sans-serif;
+}
+.font-roboto {
+  font-family: "Roboto", Inter, sans-serif;
+}
+
+.font-nulshock {
+  font-family: "Nulshock", Roboto, Inter, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+code {
+  font-family: "Inter", monospace;
 }
 
 button {
