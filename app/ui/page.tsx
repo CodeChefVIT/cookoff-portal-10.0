@@ -3,8 +3,10 @@ import Link from "next/link";
 function Section({ id, children }: { id: string; children?: React.ReactNode }) {
   return (
     <section id={id} className="mb-8">
-      <Link href={`#${id}`} className="text-blue-500 hover:underline">
-        <h2 className="text-lg font-semibold mb-4">{id}</h2>
+      <Link href={`#${id}`}>
+        <h2 className="text-lg font-semibold mb-4 text-gray-400 hover:text-gray-300">
+          {id}
+        </h2>
       </Link>
       {children}
     </section>
@@ -14,6 +16,21 @@ function Section({ id, children }: { id: string; children?: React.ReactNode }) {
 export default function UIPage() {
   return (
     <div className="p-4">
+      <Section id="Typography">
+        <div className="space-y-4">
+          <div>Inter is the default font</div>
+          <div className="font-inter">
+            Inter can also be applied with <code>font-inter</code> class
+          </div>
+          <div className="font-roboto">
+            Roboto can be applied with <code>font-roboto</code> class
+          </div>
+          <div className="font-nulshock">
+            Nulshock can be applied with <code>font-nulshock</code> class
+          </div>
+        </div>
+      </Section>
+
       <Section id="Global Colors">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {[
