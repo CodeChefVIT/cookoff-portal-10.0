@@ -6,6 +6,11 @@
   src: url("/fonts/Nulshock Bd.otf") format("opentype");
 }
 
+@font-face {
+  font-family: "Bruno Ace";
+  src: url("/fonts/BrunoAce-Regular.ttf") format("truetype");
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -122,6 +127,10 @@
   font-family: "Nulshock", Roboto, Inter, sans-serif;
 }
 
+.font-bruno-ace {
+  font-family: "Bruno Ace", Roboto, Inter, sans-serif;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -145,7 +154,7 @@ button {
   border: none;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
   color: #f5f5f5;
-  transition: background-position 0.3s ease, transform 0.1s ease;
+  transition: background-position 0.3s ease, transform 0.2s ease;
   font-weight: 600;
   font-size: 16px;
   line-height: 25px;
@@ -157,7 +166,7 @@ button:hover {
 }
 
 button:active {
-  transform: scale(0.98);
+  transform: scale(1);
 }
 
 .btn-green {
