@@ -14,9 +14,9 @@ export default function Header() {
       <Image
         src={icon}
         alt="CodechefVIT Logo"
-        width={32}
-        height={32}
-        className="h-6 w-6 md:h-8 md:w-8"
+        width={40}
+        height={40}
+        className="h-8 w-8 md:h-12 md:w-12"
       />
 
       <h1 className="font-nulshock font-bold text-2xl md:text-4xl lg:text-6xl capitalize text-center text-[#B7AB98]">
