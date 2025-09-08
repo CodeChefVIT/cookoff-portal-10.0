@@ -18,6 +18,11 @@ import { scheme } from "@codemirror/legacy-modes/mode/scheme";
 import LanguageSelector from "./LanguageSelector/LanguageSelector";
 import RoundTimer from "./RoundTimer/RoundTimer";
 
+import { LanguageSupport } from "@codemirror/language";
+import type { EditorView } from "@codemirror/view";
+
+import type { ViewUpdate } from "@codemirror/view";
+
 type EditorProps = {
   languages: string[];
   selectedLanguage: string;
@@ -33,16 +38,16 @@ export default function Editor({
   round,
   timer,
 }: EditorProps) {
-  const languageExtensions: Record<string, any> = {
+  const languageExtensions: Record<string, LanguageSupport> = {
     cpp: cpp(),
-    c: StreamLanguage.define(c),
-    "c#": StreamLanguage.define(csharp),
+    c: new LanguageSupport(StreamLanguage.define(c)),
+    "c#": new LanguageSupport(StreamLanguage.define(csharp)),
     java: java(),
     python3: python(),
     php: php(),
     rust: rust(),
-    racket: StreamLanguage.define(scheme),
-    ruby: StreamLanguage.define(ruby),
+    racket: new LanguageSupport(StreamLanguage.define(scheme)),
+    ruby: new LanguageSupport(StreamLanguage.define(ruby)),
   };
 
   const commentSyntax: Record<string, string> = {
@@ -63,10 +68,11 @@ export default function Editor({
   const [code, setCode] = useState("");
   const [cursor, setCursor] = useState({ line: 1, ch: 1 });
   const [customInput, setCustomInput] = useState(false);
-  const editorRef = useRef<any>(null);
+  const editorRef = useRef<EditorView | null>(null);
 
-  const handleChange = (value: string, view: any) => {
+  const handleChange = (value: string, viewUpdate: ViewUpdate) => {
     setCode(value);
+    const view = viewUpdate.view;
     const pos = view.state.selection.main.head;
     const line = view.state.doc.lineAt(pos).number;
     const ch = pos - view.state.doc.line(line - 1).from + 1;
