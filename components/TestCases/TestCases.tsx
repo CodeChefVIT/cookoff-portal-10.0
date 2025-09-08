@@ -15,8 +15,8 @@ function getScoreColor(count: number) {
 
 const TestCases = () => {
   const [noTestCases, setNoTestCases] = useState(10);
-  const [noFailedCases, setNoFailedCases] = useState(2);
-  const [activeCaseIndex, setActiveCaseIndex] = useState(2);
+  const [noFailedCases, setNoFailedCases] = useState(1);
+  const [activeCaseIndex, setActiveCaseIndex] = useState(1);
   const [hiddenPassed, setHiddenPassed] = useState(0);
   const [expectedOutputVisible, setexpectedOutputVisible] = useState(false);
   const [isCompileSuccess, setIsCompileSuccess] = useState(true);
@@ -29,7 +29,7 @@ const TestCases = () => {
     <>
       <div className="flex flex-col w-[50vw] bg-testcasesBG font-roboto p-2 gap-4">
         <div
-          className={`text-3xl bg-secondary font-bold py-4 px-4 rounded-2xl ${getScoreColor(
+          className={`text-3xl bg-secondary font-bold py-4 px-4 rounded-xl ${getScoreColor(
             passedCount
           )}`}
         >
@@ -44,11 +44,7 @@ const TestCases = () => {
               className={`rounded-xl px-4 py-2 text-sm font-semibold`}
               onClick={() => setActiveCaseIndex(idx)}
             >
-              <span
-                className={`mr-2 size-2 rounded-full ${
-                  activeCaseIndex === idx ? "bg-green-400" : "bg-accent"
-                }`}
-              ></span>
+              <span className={`mr-2 size-2 rounded-full bg-accent`}></span>
               {`Case ${idx + 1}`}
             </Button>
           ))}
