@@ -145,7 +145,7 @@ export default function UIPage() {
       <Section id="Modal">
         {(["default", "green", "destructive", "secondary"] as const).map(
           (variant) => {
-            let modalVariant: "default" | "green" | "red" | "yellow" =
+            const modalVariant: "default" | "green" | "red" | "yellow" =
               variant === "destructive"
                 ? "red"
                 : variant === "secondary"
