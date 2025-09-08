@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import Editor from "@/components/Editor/Editor";
+import React, { useState } from "react";
 
 function Section({ id, children }: { id: string; children?: React.ReactNode }) {
   return (
@@ -12,8 +16,20 @@ function Section({ id, children }: { id: string; children?: React.ReactNode }) {
     </section>
   );
 }
-
 export default function UIPage() {
+  const [selectedLanguage, setSelectedLanguage] = useState("C++");
+  const languages = [
+    "C++",
+    "C",
+    "C#",
+    "Java",
+    "Python3",
+    "PHP",
+    "Rust",
+    "Racket",
+    "Ruby",
+  ];
+
   return (
     <div className="p-4">
       <Section id="Typography">
@@ -27,6 +43,9 @@ export default function UIPage() {
           </div>
           <div className="font-nulshock">
             Nulshock can be applied with <code>font-nulshock</code> class
+          </div>
+          <div className="font-bruno-ace">
+            Bruno Ace can be applied with <code>font-bruno-ace</code> class
           </div>
         </div>
       </Section>
@@ -100,6 +119,16 @@ export default function UIPage() {
       <Section id="Buttons">
         <button className="button">Click Me</button>
         <button className="btn-green">Green Button</button>
+      </Section>
+
+      <Section id="Editor">
+        <Editor
+          languages={languages}
+          selectedLanguage={selectedLanguage}
+          onLanguageChange={setSelectedLanguage}
+          round="round 1"
+          timer="69:69:69"
+        />
       </Section>
     </div>
   );
