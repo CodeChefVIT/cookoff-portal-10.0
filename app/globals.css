@@ -120,3 +120,44 @@
     @apply bg-background text-foreground;
   }
 }
+
+@font-face{
+  font-family: "Nulshock";
+  src: url("/fonts/Nulshock Bd.otf") format("opentype");
+  font-weight: 700;
+  font-style: bold;
+}
+.font-nulshock{
+  font-family: "Nulshock",monospace;
+}
+
+
+@font-face{
+  font-family: "BrunoAce";
+  src: url("/fonts/BrunoAce-Regular.ttf") format("truetype");
+  font-weight: 700;
+  font-style: bold;
+}
+.font-brunoace{
+  font-family: "BrunoAce",monospace;
+}
+
+@font-face{
+  font-family: "Inter";
+  src: url("/fonts/Inter.ttf") format("truetype");
+  font-weight: 400;
+  font-style: "regular";
+}
+.font-inter{
+  font-family: "Inter",monospace;
+}
+
+@font-face{
+  font-family: "Nunito";
+  src: url("/fonts/Nunito.ttf") format("truetype");
+  font-weight: 400;
+  font-style: "regular";
+}
+.font-Nunito{
+  font-family: "Nunito";
+}
