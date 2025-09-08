@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Editor from "@/components/Editor/Editor";
 import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 function Section({ id, children }: { id: string; children?: React.ReactNode }) {
   return (
@@ -117,8 +118,13 @@ export default function UIPage() {
       </Section>
 
       <Section id="Buttons">
-        <button className="button">Click Me</button>
-        <button className="btn-green">Green Button</button>
+        <Button>Default</Button>
+        <Button variant="destructive">Destructive</Button>
+        <Button variant="outline">Outline</Button>
+        <Button variant="secondary">Secondary</Button>
+        <Button variant="ghost">Ghost</Button>
+        <Button variant="link">Link</Button>
+        <Button variant="green">Green Button</Button>
       </Section>
 
       <Section id="Editor">
