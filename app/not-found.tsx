@@ -24,7 +24,7 @@ export default function NotFound() {
                 />
         </div>
 
-        {/* Home Button using your shared Button component */}
+        {/* Home Button*/}
         <Button
           className="mt-12  text-xl px-8 py-6 font-[Ballega] font-extralight"
           onClick={() => router.push("/")}
