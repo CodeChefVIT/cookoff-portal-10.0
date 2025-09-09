@@ -5,13 +5,13 @@ import { Quicksand } from "next/font/google";
 
 const quicksand = Quicksand({ subsets: ["latin"] });
 
-interface CustomButtonProps {
+interface TabButtonProps {
   id: number;
   active: boolean;
   onClick: () => void;
 }
 
-const CustomButton: React.FC<CustomButtonProps> = ({ id, active, onClick }) => {
+const TabButton: React.FC<TabButtonProps> = ({ id, active, onClick }) => {
   return (
     <button
       onClick={onClick}
@@ -24,7 +24,6 @@ const CustomButton: React.FC<CustomButtonProps> = ({ id, active, onClick }) => {
       `}
       style={{ background: "none" }}
     >
-      {/* Trapezium shape */}
       <div
         className={`
           absolute inset-0 w-full h-full
@@ -48,4 +47,4 @@ const CustomButton: React.FC<CustomButtonProps> = ({ id, active, onClick }) => {
   );
 };
 
-export default CustomButton;
+export default TabButton;

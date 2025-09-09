@@ -14,14 +14,12 @@ import { c } from "@codemirror/legacy-modes/mode/clike";
 import { csharp } from "@codemirror/legacy-modes/mode/clike";
 import { ruby } from "@codemirror/legacy-modes/mode/ruby";
 import { scheme } from "@codemirror/legacy-modes/mode/scheme";
-
-import LanguageSelector from "./LanguageSelector/LanguageSelector";
-import RoundTimer from "./RoundTimer/RoundTimer";
-
 import { LanguageSupport } from "@codemirror/language";
 import type { EditorView } from "@codemirror/view";
-
 import type { ViewUpdate } from "@codemirror/view";
+import LanguageSelector from "./LanguageSelector/LanguageSelector";
+import RoundTimer from "./RoundTimer/RoundTimer";
+import Button from "../ui/Button";
 
 type EditorProps = {
   languages: string[];
@@ -127,12 +125,12 @@ export default function Editor({
           </button>
         </div>
         <div className="flex gap-4">
-          <button className="text-white px-4 py-2 rounded transition">
+          <Button variant="run" size="default">
             Run Code
-          </button>
-          <button className="btn-green text-white px-4 py-2 rounded transition">
+          </Button>
+          <Button variant="green" size="default">
             Submit Code
-          </button>
+          </Button>
         </div>
       </div>
     </div>
