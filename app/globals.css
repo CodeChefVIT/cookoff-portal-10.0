@@ -11,6 +11,11 @@
   src: url("/fonts/BrunoAce-Regular.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "Ballega";
+  src: url("/fonts/Ballega.otf") format("opentype");
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
