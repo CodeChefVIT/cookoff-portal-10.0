@@ -3,9 +3,10 @@
 import Link from "next/link";
 import Editor from "@/components/Editor/Editor";
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-
+import Button from "@/components/ui/Button";
+import TabButton from "@/components/ui/TabButton";
 import Modal from "@/components/Modal/Modal";
+import QuestionWindow from "@/components/ui/QuestionWindow";
 
 function Section({ id, children }: { id: string; children?: React.ReactNode }) {
   return (
@@ -34,6 +35,28 @@ export default function UIPage() {
     "Rust",
     "Racket",
     "Ruby",
+  ];
+  const questions = [
+    {
+      id: 1,
+      title: "PROBLEM 1: HELLO WORLD",
+      points: 10,
+      content: [
+        "A queue is an abstract data type that maintains order...",
+        "A basic queue has the following operations:",
+        "Enqueue: add to the end.",
+        "Dequeue: remove from the front.",
+      ],
+    },
+    {
+      id: 2,
+      title: "PROBLEM 2: STACK IMPLEMENTATION",
+      points: 15,
+      content: [
+        "A stack is a Last-In-First-Out (LIFO) data structure...",
+        "Operations: Push, Pop, Peek.",
+      ],
+    },
   ];
 
   return (
@@ -132,6 +155,24 @@ export default function UIPage() {
         <Button variant="green">Green Button</Button>
       </Section>
 
+      <Section id="Tab Buttons">
+        <TabButton
+          id={1}
+          active={selectedLanguage === "C++"}
+          onClick={() => setSelectedLanguage("C++")}
+        />
+        <TabButton
+          id={2}
+          active={selectedLanguage === "Python3"}
+          onClick={() => setSelectedLanguage("Python3")}
+        />
+        <TabButton
+          id={3}
+          active={selectedLanguage === "Java"}
+          onClick={() => setSelectedLanguage("Java")}
+        />
+      </Section>
+
       <Section id="Editor">
         <Editor
           languages={languages}
@@ -140,6 +181,10 @@ export default function UIPage() {
           round="round 1"
           timer="69:69:69"
         />
+      </Section>
+
+      <Section id="Question Window">
+        <QuestionWindow questions={questions} />
       </Section>
 
       <Section id="Modal">

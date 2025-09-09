@@ -19,7 +19,7 @@ import type { EditorView } from "@codemirror/view";
 import type { ViewUpdate } from "@codemirror/view";
 import LanguageSelector from "./LanguageSelector/LanguageSelector";
 import RoundTimer from "./RoundTimer/RoundTimer";
-import { Button } from "../ui/button";
+import Button from "../ui/Button";
 
 type EditorProps = {
   languages: string[];
