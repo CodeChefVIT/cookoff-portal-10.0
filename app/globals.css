@@ -73,7 +73,7 @@
   --popover: #111a14;
   --popover-foreground: #f5f5f5;
 
-  --primary: #1ba94c;
+  --primary: #242424;
   --primary-foreground: #ffffff;
 
   --secondary: #1f2a24;
@@ -149,26 +149,4 @@ body {
 
 code {
   font-family: "Inter", monospace;
-}
-
-
-button:hover {
-  transform: scale(1.02);
-  cursor: pointer;
-}
-
-button:active {
-  transform: scale(1);
-}
-
-.btn-green {
-  background: linear-gradient(90deg, #32ca67, #26ad55);
-  background-size: 200% 100%;
-  background-position: left;
-  color: #ffffff;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.35);
-}
-
-.btn-green:hover {
-  background-position: right;
 }

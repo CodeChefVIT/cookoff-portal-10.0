@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import Button from "@/components/ui/Button";
 
 export default function NotFound() {
   const router = useRouter();
@@ -26,9 +26,9 @@ export default function NotFound() {
 
         {/* Home Button using your shared Button component */}
         <Button
-          className="mt-12 w-32 bg-gradient-to-r from-green-500 to-green-600 text-xl px-8 py-6 font-[Ballega]"
+          className="mt-12  text-xl px-8 py-6 font-[Ballega] font-extralight"
           onClick={() => router.push("/")}
-          variant="default"
+          variant="green"
           size="lg"
         >
           Home
