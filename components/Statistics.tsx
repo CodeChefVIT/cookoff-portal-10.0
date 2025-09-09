@@ -85,7 +85,7 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
         <div className="text-[15.75px] font-inter font-normal text-white">
           <p className="mb-1 flex items-center gap-2">
             <Image
-              src="/statistics/tick.png"
+              src="/statistics/tick.svg"
               alt="Completed"
               width={21}
               height={21}
@@ -94,7 +94,7 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
           </p>
           <p className="flex items-center gap-2">
             <Image
-              src="/statistics/cross.png"
+              src="/statistics/cross.svg"
               alt="Incomplete"
               width={21}
               height={21}
@@ -113,7 +113,7 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
       {locked && (
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex flex-col items-center justify-center rounded-xl">
           <Image
-            src="/statistics/lock.png"
+            src="/statistics/lock.svg"
             alt="Locked"
             width={36}
             height={36}
