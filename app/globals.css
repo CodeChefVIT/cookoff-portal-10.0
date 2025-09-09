@@ -11,6 +11,11 @@
   src: url("/fonts/BrunoAce-Regular.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "Ballega";
+  src: url("/fonts/Ballega.otf") format("opentype");
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -146,19 +151,6 @@ code {
   font-family: "Inter", monospace;
 }
 
-button {
-  margin: 2px 8px;
-  padding: 10px 20px;
-  border-radius: 10px;
-  background: #242424;
-  border: none;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
-  color: #f5f5f5;
-  transition: background-position 0.3s ease, transform 0.2s ease;
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 25px;
-}
 
 button:hover {
   transform: scale(1.02);
