@@ -105,7 +105,7 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
       </div>
 
       {/* Score aligned under */}
-      <p className="text-[18.89px] mt-[45.62px] font-[BrunoAce,monospace] text-white">
+      <p className="text-[18.89px] mt-[45.62px] font-brunoace text-white">
         Score: {locked ? 0 : score}
       </p>
 
