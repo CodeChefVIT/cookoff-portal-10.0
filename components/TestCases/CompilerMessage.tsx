@@ -1,10 +1,11 @@
 import React from "react";
 
-type props = {
+interface CompilerMessageProps {
   isCompileSuccess: boolean;
-};
+  message?: string;
+}
 
-function CompilerMessage({ isCompileSuccess }: props) {
+function CompilerMessage({ isCompileSuccess, message }: CompilerMessageProps) {
   return (
     <div className="flex flex-col">
       <h1 className="mb-2">Compiler Message</h1>
@@ -13,9 +14,10 @@ function CompilerMessage({ isCompileSuccess }: props) {
           isCompileSuccess ? "text-green-500" : "text-accent"
         }`}
       >
-        {isCompileSuccess
-          ? "Compilation Successful !!"
-          : "Compilation Failed !!"}
+        {message ??
+          (isCompileSuccess
+            ? "Compilation Successful !!"
+            : "Compilation Failed !!")}
       </div>
     </div>
   );
