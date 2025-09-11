@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import InputOutputCard from "./InputOutputCard";
-import { Button } from "../ui/button";
+import Button from "../ui/Button";
 import { BsEyeSlash, BsCheckCircleFill, BsXCircleFill } from "react-icons/bs";
 import CompilerMessage from "./CompilerMessage";
 

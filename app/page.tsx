@@ -1,5 +1,5 @@
 import TestCases from "@/components/TestCases/TestCases";
-
+import Link from "next/link";
 export default function Home() {
   type TestCase = {
     id: number;
@@ -51,11 +51,12 @@ export default function Home() {
   };
 
   return (
-    <>
+    <div className="min-h-screen">
+      Check out the UI page <Link href="/ui">here</Link>.
       <TestCases
         results={defaultResults}
         compilerDetails={defaultCompilerDetails}
       />
-    </>
+    </div>
   );
 }

@@ -3,6 +3,10 @@
 import Link from "next/link";
 import Editor from "@/components/Editor/Editor";
 import React, { useState } from "react";
+import Button from "@/components/ui/Button";
+import TabButton from "@/components/ui/TabButton";
+import Modal from "@/components/Modal/Modal";
+import QuestionWindow from "@/components/ui/QuestionWindow";
 
 function Section({ id, children }: { id: string; children?: React.ReactNode }) {
   return (
@@ -18,6 +22,9 @@ function Section({ id, children }: { id: string; children?: React.ReactNode }) {
 }
 export default function UIPage() {
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
+  const [showModal, setShowModal] = useState<
+    "default" | "green" | "red" | "yellow" | null
+  >(null);
   const languages = [
     "C++",
     "C",
@@ -28,6 +35,28 @@ export default function UIPage() {
     "Rust",
     "Racket",
     "Ruby",
+  ];
+  const questions = [
+    {
+      id: 1,
+      title: "PROBLEM 1: HELLO WORLD",
+      points: 10,
+      content: [
+        "A queue is an abstract data type that maintains order...",
+        "A basic queue has the following operations:",
+        "Enqueue: add to the end.",
+        "Dequeue: remove from the front.",
+      ],
+    },
+    {
+      id: 2,
+      title: "PROBLEM 2: STACK IMPLEMENTATION",
+      points: 15,
+      content: [
+        "A stack is a Last-In-First-Out (LIFO) data structure...",
+        "Operations: Push, Pop, Peek.",
+      ],
+    },
   ];
 
   return (
@@ -117,8 +146,31 @@ export default function UIPage() {
       </Section>
 
       <Section id="Buttons">
-        <button className="button">Click Me</button>
-        <button className="btn-green">Green Button</button>
+        <Button>Default</Button>
+        <Button variant="destructive">Destructive</Button>
+        <Button variant="outline">Outline</Button>
+        <Button variant="secondary">Secondary</Button>
+        <Button variant="ghost">Ghost</Button>
+        <Button variant="link">Link</Button>
+        <Button variant="green">Green Button</Button>
+      </Section>
+
+      <Section id="Tab Buttons">
+        <TabButton
+          id={1}
+          active={selectedLanguage === "C++"}
+          onClick={() => setSelectedLanguage("C++")}
+        />
+        <TabButton
+          id={2}
+          active={selectedLanguage === "Python3"}
+          onClick={() => setSelectedLanguage("Python3")}
+        />
+        <TabButton
+          id={3}
+          active={selectedLanguage === "Java"}
+          onClick={() => setSelectedLanguage("Java")}
+        />
       </Section>
 
       <Section id="Editor">
@@ -129,6 +181,55 @@ export default function UIPage() {
           round="round 1"
           timer="69:69:69"
         />
+      </Section>
+
+      <Section id="Question Window">
+        <QuestionWindow questions={questions} />
+      </Section>
+
+      <Section id="Modal">
+        {(["default", "green", "destructive", "secondary"] as const).map(
+          (variant) => {
+            const modalVariant: "default" | "green" | "red" | "yellow" =
+              variant === "destructive"
+                ? "red"
+                : variant === "secondary"
+                ? "yellow"
+                : variant;
+            const buttonVariant:
+              | "green"
+              | "secondary"
+              | "destructive"
+              | "link"
+              | "outline"
+              | "ghost"
+              | "run" = variant === "default" ? "outline" : variant;
+            const displayName =
+              modalVariant.charAt(0).toUpperCase() + modalVariant.slice(1);
+            return (
+              <div key={variant} className="mb-6">
+                <div className="flex gap-2 mb-2">
+                  <Button
+                    variant={buttonVariant}
+                    onClick={() => setShowModal(modalVariant)}
+                  >
+                    Show {displayName} Modal
+                  </Button>
+                </div>
+                {showModal === modalVariant && (
+                  <Modal
+                    title={`Sample ${displayName} Modal`}
+                    message={`This is a demonstration of the ${modalVariant} Modal variant. You can customize the title, message, and variant.`}
+                    variant={modalVariant}
+                    onClose={() => setShowModal(null)}
+                  >
+                    <Button variant={buttonVariant}>Nested Button</Button>
+                  </Modal>
+                )}
+              </div>
+            );
+          }
+        )}
       </Section>
     </div>
   );
