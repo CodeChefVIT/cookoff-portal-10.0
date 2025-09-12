@@ -26,7 +26,7 @@ interface TestCasesProps {
 
 function getScoreColor(count: number, total: number) {
   const percentage = (count / total) * 100;
-  if (percentage >= 90) return "text-primary";
+  if (percentage >= 90) return "text-ring";
   if (percentage >= 50) return "text-chart-4";
   return "text-accent";
 }
@@ -45,7 +45,7 @@ const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
   const totalCases = results.length;
 
   return (
-    <div className="flex w-[50vw] flex-col gap-4 bg-testcasesBG p-1 font-roboto">
+    <div className="flex w-[50vw] flex-col flex-wrap gap-4 bg-testcasesBG p-2 font-roboto">
       <div
         className={`rounded-xl bg-secondary px-4 py-4 text-3xl font-bold ${getScoreColor(
           passedCount,
@@ -59,12 +59,12 @@ const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
         {visibleCases.map((testCase, idx) => (
           <Button
             key={testCase.id}
-            variant={activeCaseIndex === idx ? "secondary" : "ghost"}
-            className={`rounded-xl px-4 py-2 text-sm font-semibold`}
+            variant={"secondary"}
+            className={`rounded-xl px-4 py-2 text-sm font-semibold bg-secondary hover:bg-border`}
             onClick={() => setActiveCaseIndex(idx)}
           >
             {testCase.status === "Passed" ? (
-              <BsCheckCircleFill className={`mr-2 size-4 text-primary`} />
+              <BsCheckCircleFill className={`mr-2 size-4 text-ring`} />
             ) : (
               <BsXCircleFill className={`mr-2 size-4 text-accent`} />
             )}
@@ -72,7 +72,7 @@ const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
           </Button>
         ))}
         {hiddenCases.length > 0 && (
-          <div className="ml-auto flex cursor-pointer items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-sm hover:scale-105">
+          <div className="ml-auto flex cursor-pointer items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-sm hover:scale-105 hover:bg-border">
             <BsEyeSlash
               className={`opacity-80 ${getScoreColor(
                 hiddenPassedCount,

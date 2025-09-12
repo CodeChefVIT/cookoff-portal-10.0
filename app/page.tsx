@@ -46,7 +46,7 @@ export default function Home() {
   ];
 
   const defaultCompilerDetails = {
-    isCompileSuccess: true,
+    isCompileSuccess: false,
     message: "Compilation Successful !!",
   };
 
