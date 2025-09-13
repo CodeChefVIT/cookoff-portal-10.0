@@ -7,6 +7,7 @@ import Button from "@/components/ui/Button";
 import TabButton from "@/components/ui/TabButton";
 import Modal from "@/components/Modal/Modal";
 import QuestionWindow from "@/components/ui/QuestionWindow";
+import TestCases from "@/components/TestCases/TestCases";
 
 function Section({ id, children }: { id: string; children?: React.ReactNode }) {
   return (
@@ -59,6 +60,54 @@ export default function UIPage() {
     },
   ];
 
+  type TestCase = {
+    id: number;
+    status: "Passed" | "Failed" | "Error";
+    input: string;
+    output: string;
+    expectedOutput: string;
+    isHidden: boolean;
+  };
+
+  const defaultResults: TestCase[] = [
+    {
+      id: 1,
+      status: "Passed",
+      input: "2 3",
+      output: "5",
+      expectedOutput: "5",
+      isHidden: false,
+    },
+    {
+      id: 2,
+      status: "Failed",
+      input: "10 4",
+      output: "15",
+      expectedOutput: "14",
+      isHidden: false,
+    },
+    {
+      id: 4,
+      status: "Passed",
+      input: "10 5",
+      output: "20",
+      expectedOutput: "20",
+      isHidden: false,
+    },
+    {
+      id: 3,
+      status: "Passed",
+      input: "7 8",
+      output: "15",
+      expectedOutput: "15",
+      isHidden: true,
+    },
+  ];
+
+  const defaultCompilerDetails = {
+    isCompileSuccess: false,
+    message: "Compilation Successful !!",
+  };
   return (
     <div className="p-4">
       <Section id="Typography">
@@ -230,6 +279,12 @@ export default function UIPage() {
             );
           }
         )}
+      </Section>
+      <Section id="TestCases">
+        <TestCases
+          results={defaultResults}
+          compilerDetails={defaultCompilerDetails}
+        />
       </Section>
     </div>
   );
