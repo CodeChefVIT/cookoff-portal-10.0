@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Inter } from "next/font/google";
-import Button from "@/components/ui/button"; 
+import TabButton from "./TabButton";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,10 +25,9 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({ questions }) => {
       className={`bg-[#070E0A] text-gray-300 min-h-screen p-4 sm:p-8 flex items-center justify-center ${inter.className}`}
     >
       <div className="w-full max-w-4xl">
-
         <div className="flex items-center space-x-1 sm:space-x-2 mb-[-1px] pl-4">
           {questions.map((q) => (
-            <Button
+            <TabButton
               key={q.id}
               id={q.id}
               active={activeTab === q.id}

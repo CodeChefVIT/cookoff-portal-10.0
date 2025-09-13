@@ -11,6 +11,11 @@
   src: url("/fonts/BrunoAce-Regular.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "Ballega";
+  src: url("/fonts/Ballega.otf") format("opentype");
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -68,7 +73,7 @@
   --popover: #111a14;
   --popover-foreground: #f5f5f5;
 
-  --primary: #1ba94c;
+  --primary: #242424;
   --primary-foreground: #ffffff;
 
   --secondary: #1f2a24;
