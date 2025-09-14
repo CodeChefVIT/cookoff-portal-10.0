@@ -9,34 +9,13 @@ import Modal from "@/components/Modal/Modal";
 import QuestionWindow from "@/components/ui/QuestionWindow";
 import TestCases from "@/components/TestCases/TestCases";
 
-function Section({ id, children }: { id: string; children?: React.ReactNode }) {
-  return (
-    <section id={id} className="mb-8">
-      <Link href={`#${id}`}>
-        <h2 className="text-lg font-semibold mb-4 text-gray-400 hover:text-gray-300">
-          {id}
-        </h2>
-      </Link>
-      {children}
-    </section>
-  );
-}
 export default function UIPage() {
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
-  const [showModal, setShowModal] = useState<
-    "default" | "green" | "red" | "yellow" | null
-  >(null);
-  const languages = [
-    "C++",
-    "C",
-    "C#",
-    "Java",
-    "Python3",
-    "PHP",
-    "Rust",
-    "Racket",
-    "Ruby",
-  ];
+  const [showModal, setShowModal] = useState<"default" | "green" | "red" | "yellow" | null>(null);
+  const [questionID, setQuestionID] = useState<number>(1);
+
+  const languages = ["C++", "C", "C#", "Java", "Python3", "PHP", "Rust", "Racket", "Ruby"];
+
   const questions = [
     {
       id: 1,
@@ -70,222 +49,88 @@ export default function UIPage() {
   };
 
   const defaultResults: TestCase[] = [
-    {
-      id: 1,
-      status: "Passed",
-      input: "2 3",
-      output: "5",
-      expectedOutput: "5",
-      isHidden: false,
-    },
-    {
-      id: 2,
-      status: "Failed",
-      input: "10 4",
-      output: "15",
-      expectedOutput: "14",
-      isHidden: false,
-    },
-    {
-      id: 4,
-      status: "Passed",
-      input: "10 5",
-      output: "20",
-      expectedOutput: "20",
-      isHidden: false,
-    },
-    {
-      id: 3,
-      status: "Passed",
-      input: "7 8",
-      output: "15",
-      expectedOutput: "15",
-      isHidden: true,
-    },
+    { id: 1, status: "Passed", input: "2 3", output: "5", expectedOutput: "5", isHidden: false },
+    { id: 2, status: "Failed", input: "10 4", output: "15", expectedOutput: "14", isHidden: false },
+    { id: 4, status: "Passed", input: "10 5", output: "20", expectedOutput: "20", isHidden: false },
+    { id: 3, status: "Passed", input: "7 8", output: "15", expectedOutput: "15", isHidden: true },
   ];
 
   const defaultCompilerDetails = {
     isCompileSuccess: false,
     message: "Compilation Successful !!",
   };
+
   return (
-    <div className="p-4">
-      <Section id="Typography">
-        <div className="space-y-4">
-          <div>Inter is the default font</div>
-          <div className="font-inter">
-            Inter can also be applied with <code>font-inter</code> class
+    <div className="bg-[#070E0A] min-h-screen p-4 sm:p-6 text-gray-200">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
+        {/* Left- Question window */}
+        <div className="bg-[#131414] p-4 sm:p-0 -mt-5">
+          <QuestionWindow
+            questions={questions}
+            questionID={questionID}
+            setQuestionID={setQuestionID}
+          />
+        </div>
+
+        {/*Right: Editor and Test case */}
+        <div className="flex flex-col space-y-6 mt-0 transform -translate-x-6 translate-y-12">
+
+
+          <div className="bg-[#131414]">
+            <Editor
+              languages={languages}
+              selectedLanguage={selectedLanguage}
+              onLanguageChange={setSelectedLanguage}
+              round="Round 1"
+              timer="00:11:52"
+            />
           </div>
-          <div className="font-roboto">
-            Roboto can be applied with <code>font-roboto</code> class
-          </div>
-          <div className="font-nulshock">
-            Nulshock can be applied with <code>font-nulshock</code> class
-          </div>
-          <div className="font-bruno-ace">
-            Bruno Ace can be applied with <code>font-bruno-ace</code> class
+
+          <div className="bg-[#131414] p-4 sm:p-6 transform scale-90 -translate-x-8">
+            <TestCases
+              results={defaultResults}
+              compilerDetails={defaultCompilerDetails}
+            />
           </div>
         </div>
-      </Section>
+      </div>
 
-      <Section id="Global Colors">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {[
-            { name: "background", var: "--background" },
-            { name: "foreground", var: "--foreground" },
-            { name: "card", var: "--card" },
-            { name: "card-foreground", var: "--card-foreground" },
-            { name: "popover", var: "--popover" },
-            { name: "popover-foreground", var: "--popover-foreground" },
-            { name: "primary", var: "--primary" },
-            { name: "primary-foreground", var: "--primary-foreground" },
-            { name: "secondary", var: "--secondary" },
-            { name: "secondary-foreground", var: "--secondary-foreground" },
-            { name: "muted", var: "--muted" },
-            { name: "muted-foreground", var: "--muted-foreground" },
-            { name: "accent", var: "--accent" },
-            { name: "accent-foreground", var: "--accent-foreground" },
-            { name: "destructive", var: "--destructive" },
-            { name: "border", var: "--border" },
-            { name: "input", var: "--input" },
-            { name: "ring", var: "--ring" },
-            { name: "sidebar", var: "--sidebar" },
-            { name: "sidebar-foreground", var: "--sidebar-foreground" },
-            { name: "sidebar-primary", var: "--sidebar-primary" },
-            {
-              name: "sidebar-primary-foreground",
-              var: "--sidebar-primary-foreground",
-            },
-            { name: "sidebar-accent", var: "--sidebar-accent" },
-            {
-              name: "sidebar-accent-foreground",
-              var: "--sidebar-accent-foreground",
-            },
-            { name: "sidebar-border", var: "--sidebar-border" },
-            { name: "sidebar-ring", var: "--sidebar-ring" },
-            { name: "chart-1", var: "--chart-1" },
-            { name: "chart-2", var: "--chart-2" },
-            { name: "chart-3", var: "--chart-3" },
-            { name: "chart-4", var: "--chart-4" },
-            { name: "chart-5", var: "--chart-5" },
-            { name: "green", var: "--green" },
-            { name: "green-gradient", var: "--green-gradient" },
-            { name: "green-light", var: "--green-light" },
-            { name: "neutral-light", var: "--neutral-light" },
-            { name: "neutral-dark", var: "--neutral-dark" },
-          ].map(({ name, var: cssVar }) => (
-            <div
-              key={name}
-              className="flex items-center gap-4 p-2 rounded border border-border bg-card"
-            >
-              <div
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 8,
-                  background: `var(${cssVar})`,
-                  border: "1px solid #2d3a33",
-                }}
-              />
-              <span className="font-mono text-sm">{name}</span>
-              <span className="text-xs text-muted-foreground">{cssVar}</span>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      <Section id="Buttons">
-        <Button>Default</Button>
-        <Button variant="destructive">Destructive</Button>
-        <Button variant="outline">Outline</Button>
-        <Button variant="secondary">Secondary</Button>
-        <Button variant="ghost">Ghost</Button>
-        <Button variant="link">Link</Button>
-        <Button variant="green">Green Button</Button>
-      </Section>
-
-      <Section id="Tab Buttons">
-        <TabButton
-          id={1}
-          active={selectedLanguage === "C++"}
-          onClick={() => setSelectedLanguage("C++")}
-        />
-        <TabButton
-          id={2}
-          active={selectedLanguage === "Python3"}
-          onClick={() => setSelectedLanguage("Python3")}
-        />
-        <TabButton
-          id={3}
-          active={selectedLanguage === "Java"}
-          onClick={() => setSelectedLanguage("Java")}
-        />
-      </Section>
-
-      <Section id="Editor">
-        <Editor
-          languages={languages}
-          selectedLanguage={selectedLanguage}
-          onLanguageChange={setSelectedLanguage}
-          round="round 1"
-          timer="69:69:69"
-        />
-      </Section>
-
-      <Section id="Question Window">
-        <QuestionWindow questions={questions} />
-      </Section>
-
-      <Section id="Modal">
-        {(["default", "green", "destructive", "secondary"] as const).map(
-          (variant) => {
-            const modalVariant: "default" | "green" | "red" | "yellow" =
-              variant === "destructive"
-                ? "red"
-                : variant === "secondary"
-                ? "yellow"
-                : variant;
-            const buttonVariant:
-              | "green"
-              | "secondary"
-              | "destructive"
-              | "link"
-              | "outline"
-              | "ghost"
-              | "run" = variant === "default" ? "outline" : variant;
-            const displayName =
-              modalVariant.charAt(0).toUpperCase() + modalVariant.slice(1);
-            return (
-              <div key={variant} className="mb-6">
-                <div className="flex gap-2 mb-2">
-                  <Button
-                    variant={buttonVariant}
-                    onClick={() => setShowModal(modalVariant)}
-                  >
-                    Show {displayName} Modal
-                  </Button>
-                </div>
-                {showModal === modalVariant && (
-                  <Modal
-                    title={`Sample ${displayName} Modal`}
-                    message={`This is a demonstration of the ${modalVariant} Modal variant. You can customize the title, message, and variant.`}
-                    variant={modalVariant}
-                    onClose={() => setShowModal(null)}
-                  >
-                    <Button variant={buttonVariant}>Nested Button</Button>
-                  </Modal>
-                )}
+      {/* Modal showcase */}
+      <div className="mt-12">
+        {(["default", "green", "destructive", "secondary"] as const).map((variant) => {
+          const modalVariant: "default" | "green" | "red" | "yellow" =
+            variant === "destructive" ? "red" :
+            variant === "secondary" ? "yellow" :
+            variant;
+          const buttonVariant:
+            | "green" | "secondary" | "destructive" | "link"
+            | "outline" | "ghost" | "run" =
+            variant === "default" ? "outline" : variant;
+          const displayName = modalVariant.charAt(0).toUpperCase() + modalVariant.slice(1);
+          return (
+            <div key={variant} className="mb-6">
+              <div className="flex gap-2 mb-2">
+                <Button
+                  variant={buttonVariant}
+                  onClick={() => setShowModal(modalVariant)}
+                >
+                  Show {displayName} Modal
+                </Button>
               </div>
-            );
-          }
-        )}
-      </Section>
-      <Section id="TestCases">
-        <TestCases
-          results={defaultResults}
-          compilerDetails={defaultCompilerDetails}
-        />
-      </Section>
+              {showModal === modalVariant && (
+                <Modal
+                  title={`Sample ${displayName} Modal`}
+                  message={`This is a demonstration of the ${modalVariant} Modal variant.`}
+                  variant={modalVariant}
+                  onClose={() => setShowModal(null)}
+                >
+                  <Button variant={buttonVariant}>Nested Button</Button>
+                </Modal>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

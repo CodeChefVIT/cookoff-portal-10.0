@@ -15,10 +15,16 @@ type Question = {
 
 interface QuestionWindowProps {
   questions: Question[];
+  questionID: number;
+  setQuestionID: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const QuestionWindow: React.FC<QuestionWindowProps> = ({ questions }) => {
-  const [activeTab, setActiveTab] = useState(questions[0]?.id || 1);
+const QuestionWindow: React.FC<QuestionWindowProps> = ({
+  questions,
+  questionID,
+  setQuestionID,
+}) => {
+  const [activeTab, setActiveTab] = useState(questionID || questions[0]?.id || 1);
 
   return (
     <div
@@ -31,12 +37,15 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({ questions }) => {
               key={q.id}
               id={q.id}
               active={activeTab === q.id}
-              onClick={() => setActiveTab(q.id)}
+              onClick={() => {
+                setActiveTab(q.id);
+                setQuestionID(q.id);
+              }}
             />
           ))}
         </div>
 
-        <div className="bg-[#131414] p-6 sm:p-8 max-w-4xl mx-auto relative w-full">
+        <div className="bg-[#131414] p-6 sm:p-8 max-w-4xl mx-auto relative w-full min-h-[170vh]">
           <main>
             {questions
               .filter((q) => q.id === activeTab)
