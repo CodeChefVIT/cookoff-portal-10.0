@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Inter } from "next/font/google";
 import TabButton from "./TabButton";
+import Markdown from "react-markdown";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,8 +16,8 @@ type Question = {
 
 interface QuestionWindowProps {
   questions: Question[];
-  questionID: number;
   setQuestionID: React.Dispatch<React.SetStateAction<number>>;
+  questionID: number;
 }
 
 const QuestionWindow: React.FC<QuestionWindowProps> = ({
@@ -59,7 +60,7 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
                   </span>
                   <div className="prose prose-invert prose-sm sm:prose-base max-w-none text-gray-400 space-y-4">
                     {q.content.map((para, i) => (
-                      <p key={i}>{para}</p>
+                      <markdown key={i}>{para}</markdown>
                     ))}
                   </div>
                 </div>
