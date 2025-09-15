@@ -60,7 +60,7 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
                   </span>
                   <div className="prose prose-invert prose-sm sm:prose-base max-w-none text-gray-400 space-y-4">
                     {q.content.map((para, i) => (
-                      <markdown key={i}>{para}</markdown>
+                      <Markdown key={i}>{para}</Markdown>
                     ))}
                   </div>
                 </div>
