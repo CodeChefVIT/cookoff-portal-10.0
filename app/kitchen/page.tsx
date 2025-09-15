@@ -14,7 +14,7 @@ export default function UIPage() {
   const [showModal, setShowModal] = useState<"default" | "green" | "red" | "yellow" | null>(null);
   const [questionID, setQuestionID] = useState<number>(1);
 
-  const languages = ["C++", "C", "C#", "Java", "Python3", "PHP", "Rust", "Racket", "Ruby"];
+  const languages = ["C++", "C", "C#", "Java", "Python3", "PHP", "Rust", "Racket", "Ruby","Go"];
 
   const questions = [
     {
