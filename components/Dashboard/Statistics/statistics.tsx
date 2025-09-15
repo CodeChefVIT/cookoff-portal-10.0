@@ -139,8 +139,8 @@ const Statistics: React.FC = () => {
   ];
 
 return (
-  <div className="fixed inset-0 w-screen min-h-screen bg-[#041009] text-[#ccc] font-[Nulshock,monospace] overflow-auto">
-    <div className="relative w-[673px] h-[612px] left-[419px] top-[318px]">
+  <div className="w-full h-full text-[#ccc] font-[Nulshock,monospace]">
+    <div className="relative w-[673px] h-[612px] mx-auto">
       {/* Rectangle behind */}
       <div className="absolute top-0 left-0 w-[673px] h-[56px] bg-[#1F2622] rounded-t-[10px]" />
       
