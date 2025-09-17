@@ -82,7 +82,6 @@ export default function UIPage() {
               selectedLanguage={selectedLanguage}
               onLanguageChange={setSelectedLanguage}
               round="Round 1"
-              timer="00:11:52"
             />
           </div>
 
