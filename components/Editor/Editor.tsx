@@ -26,7 +26,6 @@ type EditorProps = {
   selectedLanguage: string;
   onLanguageChange: (lang: string) => void;
   round?: string;
-  timer?: string;
 };
 
 export default function Editor({
@@ -34,7 +33,6 @@ export default function Editor({
   selectedLanguage,
   onLanguageChange,
   round,
-  timer,
 }: EditorProps) {
   const languageExtensions: Record<string, LanguageSupport> = {
     cpp: cpp(),
@@ -80,7 +78,7 @@ export default function Editor({
   return (
     <div className="w-full mx-auto flex flex-col bg-[#131414] rounded-xl shadow-lg overflow-hidden">
       <div className="flex items-center justify-between px-6 py-3 bg-[#1e1f1f] border-b border-gray-700">
-        <RoundTimer round={round} timer={timer} />
+        <RoundTimer round={round} />
         <LanguageSelector
           languages={languages}
           selectedLanguage={selectedLanguage}

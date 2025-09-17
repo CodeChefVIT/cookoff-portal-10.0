@@ -11,10 +11,22 @@ import TestCases from "@/components/TestCases/TestCases";
 
 export default function UIPage() {
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
-  const [showModal, setShowModal] = useState<"default" | "green" | "red" | "yellow" | null>(null);
+  const [showModal, setShowModal] = useState<
+    "default" | "green" | "red" | "yellow" | null
+  >(null);
   const [questionID, setQuestionID] = useState<number>(1);
 
-  const languages = ["C++", "C", "C#", "Java", "Python3", "PHP", "Rust", "Racket", "Ruby"];
+  const languages = [
+    "C++",
+    "C",
+    "C#",
+    "Java",
+    "Python3",
+    "PHP",
+    "Rust",
+    "Racket",
+    "Ruby",
+  ];
 
   const questions = [
     {
@@ -49,10 +61,38 @@ export default function UIPage() {
   };
 
   const defaultResults: TestCase[] = [
-    { id: 1, status: "Passed", input: "2 3", output: "5", expectedOutput: "5", isHidden: false },
-    { id: 2, status: "Failed", input: "10 4", output: "15", expectedOutput: "14", isHidden: false },
-    { id: 4, status: "Passed", input: "10 5", output: "20", expectedOutput: "20", isHidden: false },
-    { id: 3, status: "Passed", input: "7 8", output: "15", expectedOutput: "15", isHidden: true },
+    {
+      id: 1,
+      status: "Passed",
+      input: "2 3",
+      output: "5",
+      expectedOutput: "5",
+      isHidden: false,
+    },
+    {
+      id: 2,
+      status: "Failed",
+      input: "10 4",
+      output: "15",
+      expectedOutput: "14",
+      isHidden: false,
+    },
+    {
+      id: 4,
+      status: "Passed",
+      input: "10 5",
+      output: "20",
+      expectedOutput: "20",
+      isHidden: false,
+    },
+    {
+      id: 3,
+      status: "Passed",
+      input: "7 8",
+      output: "15",
+      expectedOutput: "15",
+      isHidden: true,
+    },
   ];
 
   const defaultCompilerDetails = {
@@ -74,15 +114,12 @@ export default function UIPage() {
 
         {/*Right: Editor and Test case */}
         <div className="flex flex-col space-y-6 mt-0 transform -translate-x-6 translate-y-12">
-
-
           <div className="bg-[#131414]">
             <Editor
               languages={languages}
               selectedLanguage={selectedLanguage}
               onLanguageChange={setSelectedLanguage}
               round="Round 1"
-              timer="00:11:52"
             />
           </div>
 
@@ -97,39 +134,48 @@ export default function UIPage() {
 
       {/* Modal showcase */}
       <div className="mt-12">
-        {(["default", "green", "destructive", "secondary"] as const).map((variant) => {
-          const modalVariant: "default" | "green" | "red" | "yellow" =
-            variant === "destructive" ? "red" :
-            variant === "secondary" ? "yellow" :
-            variant;
-          const buttonVariant:
-            | "green" | "secondary" | "destructive" | "link"
-            | "outline" | "ghost" | "run" =
-            variant === "default" ? "outline" : variant;
-          const displayName = modalVariant.charAt(0).toUpperCase() + modalVariant.slice(1);
-          return (
-            <div key={variant} className="mb-6">
-              <div className="flex gap-2 mb-2">
-                <Button
-                  variant={buttonVariant}
-                  onClick={() => setShowModal(modalVariant)}
-                >
-                  Show {displayName} Modal
-                </Button>
+        {(["default", "green", "destructive", "secondary"] as const).map(
+          (variant) => {
+            const modalVariant: "default" | "green" | "red" | "yellow" =
+              variant === "destructive"
+                ? "red"
+                : variant === "secondary"
+                ? "yellow"
+                : variant;
+            const buttonVariant:
+              | "green"
+              | "secondary"
+              | "destructive"
+              | "link"
+              | "outline"
+              | "ghost"
+              | "run" = variant === "default" ? "outline" : variant;
+            const displayName =
+              modalVariant.charAt(0).toUpperCase() + modalVariant.slice(1);
+            return (
+              <div key={variant} className="mb-6">
+                <div className="flex gap-2 mb-2">
+                  <Button
+                    variant={buttonVariant}
+                    onClick={() => setShowModal(modalVariant)}
+                  >
+                    Show {displayName} Modal
+                  </Button>
+                </div>
+                {showModal === modalVariant && (
+                  <Modal
+                    title={`Sample ${displayName} Modal`}
+                    message={`This is a demonstration of the ${modalVariant} Modal variant.`}
+                    variant={modalVariant}
+                    onClose={() => setShowModal(null)}
+                  >
+                    <Button variant={buttonVariant}>Nested Button</Button>
+                  </Modal>
+                )}
               </div>
-              {showModal === modalVariant && (
-                <Modal
-                  title={`Sample ${displayName} Modal`}
-                  message={`This is a demonstration of the ${modalVariant} Modal variant.`}
-                  variant={modalVariant}
-                  onClose={() => setShowModal(null)}
-                >
-                  <Button variant={buttonVariant}>Nested Button</Button>
-                </Modal>
-              )}
-            </div>
-          );
-        })}
+            );
+          }
+        )}
       </div>
     </div>
   );
