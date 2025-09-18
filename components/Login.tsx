@@ -55,10 +55,20 @@ export default function Login() {
       }
     }
     catch(error:any){
-      console.log("Request failed with status code: ",error.response.status);
-      toast.error("An error occurred. Login failed.")
-      console.error("Login failed:", error);
-      
+      // console.log("Request failed with status code: ",error.response.status);
+      // toast.error("An error occurred. Login failed.")
+      // console.error("Login failed:", error);
+      const status = error.response?.status;
+
+    if (status === 404) {
+      // Email not found
+      form.setError("email", { type: "manual", message: "*Please enter valid email address" });
+    } else if (status === 409) {
+      // Wrong password
+      form.setError("password", { type: "manual", message: "*Please enter correct password" });
+    } else {
+      // Other errors
+      toast.error(error.response?.data?.message || "An error occurred");}
     }
   }
 
