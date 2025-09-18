@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-
+import toast,{Toaster} from "react-hot-toast";
 import Button from "@/components/ui/Button";
 import {
   Form,
@@ -18,7 +18,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { routerServerGlobal } from "next/dist/server/lib/router-utils/router-server-context";
 
 // validation schema
 const formSchema = z.object({
@@ -26,11 +25,6 @@ const formSchema = z.object({
   password: z.string(),
 });
 
-// login credentials
-const FAKE_USER = {
-  email: "test@example.com",
-  password: "password123",
-};
 
 export default function Login() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -51,16 +45,19 @@ export default function Login() {
       );
       if(res.status===200){
         const { status, message, data } = res.data;
-        alert("login successful");
+        toast.success("Login successful. Welcome, Chef!");
         router.push("/dashboard");
       }
       else{
         const { status, error }=res.data;
+        toast.error("An error occurred. Login failed.")
+        console.error("Login failed:", error);
       }
     }
     catch(error:any){
       console.log("Request failed with status code: ",error.response.status);
-      alert("an error occurred");
+      toast.error("An error occurred. Login failed.")
+      console.error("Login failed:", error);
       
     }
   }
@@ -142,6 +139,7 @@ export default function Login() {
       </div>  */}
       </div>
 
+      <Toaster position="top-right" reverseOrder={false} />
 
       {/* Right Section - Login Form */}
         <div className="w-1/2 flex items-center justify-center z-10">
