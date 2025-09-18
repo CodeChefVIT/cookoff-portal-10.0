@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 import Button from "@/components/ui/Button";
 import {
@@ -16,6 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { routerServerGlobal } from "next/dist/server/lib/router-utils/router-server-context";
 
 // validation schema
 const formSchema = z.object({
@@ -37,25 +40,29 @@ export default function Login() {
       password: "",
     },
   });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    if (values.email !== FAKE_USER.email) {
-      form.setError("email", {
-        type: "manual",
-        message: "*Please enter valid email address",
-      });
-      return;
+  const router = useRouter();
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try{
+      const res = await axios.post("https://kabutar.codechefvit.com/login",
+        {
+          "email": values.email,
+          "password": values.password
+        }
+      );
+      if(res.status===200){
+        const { status, message, data } = res.data;
+        alert("login successful");
+        router.push("/dashboard");
+      }
+      else{
+        const { status, error }=res.data;
+      }
     }
-
-    if (values.password !== FAKE_USER.password) {
-      form.setError("password", {
-        type: "manual",
-        message: "*Please enter correct password",
-      });
-      return;
+    catch(error:any){
+      console.log("Request failed with status code: ",error.response.status);
+      alert("an error occurred");
+      
     }
-
-    alert("Login successful!");
   }
 
   return (
