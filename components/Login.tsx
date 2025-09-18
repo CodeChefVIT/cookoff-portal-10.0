@@ -109,8 +109,8 @@ export default function Login() {
                 COOK OFF
             </h1>
 
-            <div className="absolute top-[45] left-[0] w-[332.7px] h-[69.11px] opacity-30 z-[20] pointer-events-none bg-gradient-to-r from-[#D9D9D9] to-[#737373] blur-[54.2px]" />
-            <div className="absolute top-[45] left-[350] w-[332.7px] h-[69.11px] opacity-30 z-[20] pointer-events-none bg-gradient-to-r from-[#D9D9D9] to-[#737373] blur-[54.2px]" />
+            <div className="absolute top-[45] left-[0] w-[332.7px] h-[69.11px] opacity-32 z-[20] pointer-events-none bg-gradient-to-r from-[#D9D9D9] to-[#737373] blur-[54.2px]" />
+            <div className="absolute top-[45] left-[350] w-[332.7px] h-[69.11px] opacity-32 z-[20] pointer-events-none bg-gradient-to-r from-[#D9D9D9] to-[#737373] blur-[54.2px]" />
             <h1 className="relative text-[96.75px] font-[Nulshock] text-[#b6ab98] z-10 stroke">
                 COOK OFF
             </h1>
@@ -118,7 +118,7 @@ export default function Login() {
 
         <div className="flex items-center">
             <div className="relative inline-block">
-                <div className="absolute top-[45] left-[0] w-[267.54px] h-[77px] opacity-30 z-[20] pointer-events-none bg-[#137735] blur-[54.2px]" />
+                <div className="absolute top-[45] left-[0] w-[267.54px] h-[77px] opacity-32 z-[20] pointer-events-none bg-[#137735] blur-[54.2px]" />
                 <h1 className="absolute inset-0 text-[96.75px] font-[Nulshock] text-[#125128] z-0 translate-x-[-6px] translate-y-[6px] stroke">
                 10.0
                 </h1>
