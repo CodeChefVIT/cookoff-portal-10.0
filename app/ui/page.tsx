@@ -1,10 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import Editor from "@/components/Editor/Editor";
 import React, { useState } from "react";
 import Button from "@/components/ui/Button";
-import TabButton from "@/components/ui/TabButton";
 import Modal from "@/components/Modal/Modal";
 import QuestionWindow from "@/components/ui/QuestionWindow";
 import TestCases from "@/components/TestCases/TestCases";

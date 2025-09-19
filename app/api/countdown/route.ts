@@ -106,5 +106,3 @@ export async function DELETE(request: NextRequest) {
     { status: result.status }
   );
 }
-
-export const runtime = 'edge';

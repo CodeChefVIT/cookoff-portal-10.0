@@ -17,6 +17,3 @@ export async function login(body: z.infer<typeof loginFormSchema>) {
     throw handleAPIError(e);
   }
 }
-
-
-
