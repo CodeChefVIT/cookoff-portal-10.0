@@ -4,8 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import axios from "axios";
+import * as z from "zod";import { login } from "@/app/services/login";
 import { useRouter } from "next/navigation";
 import toast,{Toaster} from "react-hot-toast";
 import Button from "@/components/ui/Button";
@@ -18,6 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { ApiError } from "next/dist/server/api-utils";
 
 // validation schema
 const formSchema = z.object({
@@ -37,40 +37,53 @@ export default function Login() {
   const router = useRouter();
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try{
-      const res = await axios.post("https://kabutar.codechefvit.com/login",
-        {
-          "email": values.email,
-          "password": values.password
-        }
-      );
-      if(res.status===200){
-        const { status, message, data } = res.data;
+      const res = await login(values);
+      if(res.status==="success"){
+        const { status, message, data } = res;
         toast.success("Login successful. Welcome, Chef!");
         router.push("/dashboard");
       }
       else{
-        const { status, error }=res.data;
+        const { status, error }=res;
         toast.error("An error occurred. Login failed.")
         console.error("Login failed:", error);
       }
     }
-    catch(error:any){
-      // console.log("Request failed with status code: ",error.response.status);
-      // toast.error("An error occurred. Login failed.")
-      // console.error("Login failed:", error);
-      const status = error.response?.status;
+  //   catch(error:unknown){
+  //     // console.log("Request failed with status code: ",error.response.status);
+  //     // toast.error("An error occurred. Login failed.")
+  //     // console.error("Login failed:", error);
+  //   if (error instanceof ApiError) {
+  //     const statusCode = error.status;
 
-    if (status === 404) {
-      // Email not found
+  //   if (error.status === 404) {
+  //     // Email not found
+  //     form.setError("email", { type: "manual", message: "*Please enter valid email address" });
+  //   } else if (statusCode === 409) {
+  //     // Wrong password
+  //     form.setError("password", { type: "manual", message: "*Please enter correct password" });
+  //   } else {
+  //     // Other errors
+  //     toast.error(error.response?.data?.message || "An error occurred");}
+  //     }
+  //    else {
+  //       // Not an axios error
+  //       toast.error("Unexpected error occurred");
+  //       console.error(error);
+  //     }
+  // }
+  catch (error: unknown) {
+    const err = error as { status?: number; message: string };
+
+    if (err.message === "User not found") {
       form.setError("email", { type: "manual", message: "*Please enter valid email address" });
-    } else if (status === 409) {
-      // Wrong password
+    } else if (err.message === "Invalid password") {
       form.setError("password", { type: "manual", message: "*Please enter correct password" });
     } else {
-      // Other errors
-      toast.error(error.response?.data?.message || "An error occurred");}
+      toast.error(err.message || "An error occurred");
     }
   }
+}
 
   return (
     <div className="relative flex h-screen w-full items-center justify-center text-white overflow-hidden">
