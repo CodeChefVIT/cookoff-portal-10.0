@@ -12,7 +12,6 @@ import TestCases from "@/components/TestCases/TestCases";
 
 
 export default function UIPage() {
-  const[]
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
   const [showModal, setShowModal] = useState<
     "default" | "green" | "red" | "yellow" | null

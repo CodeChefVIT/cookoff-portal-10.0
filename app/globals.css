@@ -213,3 +213,7 @@ button:active {
 .font-Nunito{
   font-family: "Nunito";
 }
+
+.stroke {
+  -webkit-text-stroke: 3.95px black;
+}
