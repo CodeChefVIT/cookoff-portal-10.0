@@ -1,5 +1,6 @@
 "use client";
 
+
 import Link from "next/link";
 import Editor from "@/components/Editor/Editor";
 import React, { useState } from "react";
@@ -9,7 +10,9 @@ import Modal from "@/components/Modal/Modal";
 import QuestionWindow from "@/components/ui/QuestionWindow";
 import TestCases from "@/components/TestCases/TestCases";
 
+
 export default function UIPage() {
+  const[]
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
   const [showModal, setShowModal] = useState<
     "default" | "green" | "red" | "yellow" | null
@@ -105,11 +108,7 @@ export default function UIPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
         {/* Left- Question window */}
         <div className="bg-[#131414] p-4 sm:p-0 -mt-5">
-          <QuestionWindow
-            questions={questions}
-            questionID={questionID}
-            setQuestionID={setQuestionID}
-          />
+     
         </div>
 
         {/*Right: Editor and Test case */}
