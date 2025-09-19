@@ -4,8 +4,9 @@ import React from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";import { login } from "@/app/services/login";
-import { useRouter } from "next/navigation";
+import * as z from "zod";
+
+import * as navigation from "next/navigation";
 import toast,{Toaster} from "react-hot-toast";
 import Button from "@/components/ui/Button";
 import {
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ApiError } from "next/dist/server/api-utils";
-
+import login from "@/services/login";
 // validation schema
 const formSchema = z.object({
   email: z.string().email("*Please enter valid email address"),
@@ -34,7 +35,7 @@ export default function Login() {
       password: "",
     },
   });
-  const router = useRouter();
+  const router = navigation.useRouter();
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try{
       const res = await login(values);

@@ -14,9 +14,8 @@ export default function UIPage() {
   const [showModal, setShowModal] = useState<"default" | "green" | "red" | "yellow" | null>(null);
   const [questionID, setQuestionID] = useState<number>(1);
 
-  const languages = ["C++", "C", "C#", "Java", "Python3", "PHP", "Rust", "Racket", "Ruby","Go"];
 
-  const questions = [
+  const [questions, setQuestions] = useState([
     {
       id: 1,
       title: "PROBLEM 1: HELLO WORLD",
@@ -37,7 +36,7 @@ export default function UIPage() {
         "Operations: Push, Pop, Peek.",
       ],
     },
-  ];
+  ]);
 
   type TestCase = {
     id: number;
@@ -60,22 +59,23 @@ export default function UIPage() {
     message: "Compilation Successful !!",
   };
 
+  const languages = ["C++", "C", "C#", "Java", "Python3", "PHP", "Rust", "Racket", "Ruby", "Go"];
+
   return (
     <div className="bg-[#070E0A] min-h-screen p-4 sm:p-6 text-gray-200">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
-        {/* Left- Question window */}
+        {/* Left - Question window */}
         <div className="bg-[#131414] p-4 sm:p-0 -mt-5">
           <QuestionWindow
             questions={questions}
+            setQuestions={setQuestions}   
             questionID={questionID}
             setQuestionID={setQuestionID}
           />
         </div>
 
-        {/*Right: Editor and Test case */}
+        {/* Right - Editor and Test cases */}
         <div className="flex flex-col space-y-6 mt-0 transform -translate-x-6 translate-y-12">
-
-
           <div className="bg-[#131414]">
             <Editor
               languages={languages}
