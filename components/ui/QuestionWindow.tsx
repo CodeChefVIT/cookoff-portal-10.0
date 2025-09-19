@@ -58,12 +58,15 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
     const fetchQuestions = async () => {
       try {
         const response = await byRound();
-        const fetched: Question[] = response.map((item: any, index: number) => ({
-          id: index + 1,
-          title: item.question.Title,
-          points: item.question.Points,
-          content: [item.question.Description, ...(item.question.Constraints ?? [])],
-        }));
+        const fetched: Question[] = response.map((item: unknown, index: number) => {
+          const question = item as { question: { Title: string; Points: number; Description: string; Constraints?: string[] } };
+          return {
+            id: index + 1,
+            title: question.question.Title,
+            points: question.question.Points,
+            content: [question.question.Description, ...(question.question.Constraints ?? [])],
+          };
+        });
 
         setQuestions(fetched);
 

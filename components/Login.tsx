@@ -19,8 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ApiError } from "next/dist/server/api-utils";
-import { login } from "@/services/login";
-
+import login from "@/services/login";
 // validation schema
 const formSchema = z.object({
   email: z.string().email("*Please enter valid email address"),

@@ -25,7 +25,7 @@
       "@/lib/*": ["lib/*"],
       "@/components/*": ["components/*"],
       "@/schemas/*": ["app/schemas/*"],
-      "@/services/*": ["services/*"],
+      "@/services/*": ["app/services/*"],
       "@/api/*": ["app/api/*"]
       
     }
