@@ -1,7 +1,6 @@
 "use client";
 
 import { byRound } from "@/api/question";
-import axios from "axios";
 import { ApiError } from "next/dist/server/api-utils";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
@@ -37,9 +36,9 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
   const [activeTab, setActiveTab] = useState<number>(
     questionID || questions[0]?.id || 1
   );
-  const [selectedQuestion, setSelectedQuestion] = useState<Question | undefined>(
-    questions[0]
-  );
+  const [selectedQuestion, setSelectedQuestion] = useState<
+    Question | undefined
+  >(questions[0]);
   const router = useRouter();
 
   const handleQuestionChange = (id: number) => {
@@ -58,15 +57,27 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
     const fetchQuestions = async () => {
       try {
         const response = await byRound();
-        const fetched: Question[] = response.map((item: unknown, index: number) => {
-          const question = item as { question: { Title: string; Points: number; Description: string; Constraints?: string[] } };
-          return {
-            id: index + 1,
-            title: question.question.Title,
-            points: question.question.Points,
-            content: [question.question.Description, ...(question.question.Constraints ?? [])],
-          };
-        });
+        const fetched: Question[] = response.map(
+          (item: unknown, index: number) => {
+            const question = item as {
+              question: {
+                Title: string;
+                Points: number;
+                Description: string;
+                Constraints?: string[];
+              };
+            };
+            return {
+              id: index + 1,
+              title: question.question.Title,
+              points: question.question.Points,
+              content: [
+                question.question.Description,
+                ...(question.question.Constraints ?? []),
+              ],
+            };
+          }
+        );
 
         setQuestions(fetched);
 
