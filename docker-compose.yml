@@ -1,0 +1,30 @@
+services:
+  app:
+    build: .
+    container_name: app
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    restart: on-failure
+    depends_on:
+      mongo:
+        condition: service_healthy
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongo_data:
