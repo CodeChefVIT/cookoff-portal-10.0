@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import Editor from "@/components/Editor/Editor";
 import React, { useState } from "react";
@@ -18,13 +17,14 @@ import LanguageSelector from "@/components/Editor/LanguageSelector/LanguageSelec
 import RoundTimer from "@/components/Editor/RoundTimer/RoundTimer";
 import InputOutputCard from "@/components/TestCases/InputOutputCard";
 import CompilerMessage from "@/components/TestCases/CompilerMessage";
+import { Question } from "@/schemas/api/index";
 
 export default function UIPage() {
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
   const [showModal, setShowModal] = useState<
     "default" | "green" | "red" | "yellow" | null
   >(null);
-  const [questionID, setQuestionID] = useState<number>(1);
+  const [questionID, setQuestionID] = useState<string>("1");
 
   const languages = [
     "C++",
@@ -38,28 +38,50 @@ export default function UIPage() {
     "Ruby",
   ];
 
-  const questions = [
+  const [questions, setQuestions] = useState<Question[]>([
     {
-      id: 1,
-      title: "PROBLEM 1: HELLO WORLD",
+      id: "1",
+      title: "PROBLEM 1: TWO SUM",
       points: 10,
-      content: [
-        "A queue is an abstract data type that maintains order...",
-        "A basic queue has the following operations:",
-        "Enqueue: add to the end.",
-        "Dequeue: remove from the front.",
+      description:
+        "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+      qType: "EASY",
+      isBountyActive: false,
+      inputFormat: [
+        "Line 1: An array of integers nums.",
+        "Line 2: An integer target.",
       ],
+      round: 1,
+      constraints: [
+        "2 <= nums.length <= 10^4",
+        "-10^9 <= nums[i] <= 10^9",
+        "-10^9 <= target <= 10^9",
+        "Only one valid answer exists.",
+      ],
+      outputFormat: ["An array containing the indices of the two numbers."],
+      sampleTestInput: ["[2, 7, 11, 15]", "9"],
+      sampleTestOutput: ["[0, 1]"],
+      explanation: ["Because nums[0] + nums[1] == 9, we return [0, 1]."],
     },
     {
-      id: 2,
-      title: "PROBLEM 2: STACK IMPLEMENTATION",
+      id: "2",
+      title: "PROBLEM 2: PALINDROME NUMBER",
       points: 15,
-      content: [
-        "A stack is a Last-In-First-Out (LIFO) data structure...",
-        "Operations: Push, Pop, Peek.",
+      description:
+        "Given an integer x, return true if x is a palindrome, and false otherwise.",
+      qType: "EASY",
+      isBountyActive: true,
+      inputFormat: ["Line 1: An integer x."],
+      round: 1,
+      constraints: ["-2^31 <= x <= 2^31 - 1"],
+      outputFormat: ["A boolean value."],
+      sampleTestInput: ["121"],
+      sampleTestOutput: ["true"],
+      explanation: [
+        "121 reads as 121 from left to right and from right to left.",
       ],
     },
-  ];
+  ]);
 
   type TestCase = {
     id: number;
@@ -167,9 +189,9 @@ export default function UIPage() {
             Tab Buttons
           </h3>
           <div className="flex gap-4 p-6 bg-[#131414] rounded-lg">
-            <TabButton id={1} active={true} onClick={() => {}} />
-            <TabButton id={2} active={false} onClick={() => {}} />
-            <TabButton id={3} active={false} onClick={() => {}} />
+            <TabButton id={"1"} active={true} onClick={() => {}} />
+            <TabButton id={"2"} active={false} onClick={() => {}} />
+            <TabButton id={"3"} active={false} onClick={() => {}} />
           </div>
         </div>
       </section>
@@ -278,7 +300,7 @@ export default function UIPage() {
         <div className="bg-[#131414] rounded-lg">
           <QuestionWindow
             questions={questions}
-            setQuestions={() => {}}
+            setQuestions={setQuestions}
             questionID={questionID}
             setQuestionID={setQuestionID}
           />
@@ -427,7 +449,7 @@ export default function UIPage() {
           <div className="bg-[#131414] p-4 sm:p-6 rounded-lg">
             <QuestionWindow
               questions={questions}
-              setQuestions={() => {}}
+              setQuestions={setQuestions}
               questionID={questionID}
               setQuestionID={setQuestionID}
             />

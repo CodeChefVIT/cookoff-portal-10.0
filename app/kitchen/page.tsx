@@ -1,38 +1,60 @@
 "use client";
-
 import Editor from "@/components/Editor/Editor";
 import React, { useState } from "react";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/Modal/Modal";
 import QuestionWindow from "@/components/ui/QuestionWindow";
 import TestCases from "@/components/TestCases/TestCases";
+import { Question } from "@/schemas/api/index";
 
 export default function UIPage() {
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
   const [showModal, setShowModal] = useState<
     "default" | "green" | "red" | "yellow" | null
   >(null);
-  const [questionID, setQuestionID] = useState<number>(1);
+  const [questionID, setQuestionID] = useState<string>("1");
 
-  const [questions, setQuestions] = useState([
+  const [questions, setQuestions] = useState<Question[]>([
     {
-      id: 1,
-      title: "PROBLEM 1: HELLO WORLD",
+      id: "1",
+      title: "PROBLEM 1: TWO SUM",
       points: 10,
-      content: [
-        "A queue is an abstract data type that maintains order...",
-        "A basic queue has the following operations:",
-        "Enqueue: add to the end.",
-        "Dequeue: remove from the front.",
+      description:
+        "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+      qType: "EASY",
+      isBountyActive: false,
+      inputFormat: [
+        "Line 1: An array of integers nums.",
+        "Line 2: An integer target.",
       ],
+      round: 1,
+      constraints: [
+        "2 <= nums.length <= 10^4",
+        "-10^9 <= nums[i] <= 10^9",
+        "-10^9 <= target <= 10^9",
+        "Only one valid answer exists.",
+      ],
+      outputFormat: ["An array containing the indices of the two numbers."],
+      sampleTestInput: ["[2, 7, 11, 15]", "9"],
+      sampleTestOutput: ["[0, 1]"],
+      explanation: ["Because nums[0] + nums[1] == 9, we return [0, 1]."],
     },
     {
-      id: 2,
-      title: "PROBLEM 2: STACK IMPLEMENTATION",
+      id: "2",
+      title: "PROBLEM 2: PALINDROME NUMBER",
       points: 15,
-      content: [
-        "A stack is a Last-In-First-Out (LIFO) data structure...",
-        "Operations: Push, Pop, Peek.",
+      description:
+        "Given an integer x, return true if x is a palindrome, and false otherwise.",
+      qType: "EASY",
+      isBountyActive: true,
+      inputFormat: ["Line 1: An integer x."],
+      round: 1,
+      constraints: ["-2^31 <= x <= 2^31 - 1"],
+      outputFormat: ["A boolean value."],
+      sampleTestInput: ["121"],
+      sampleTestOutput: ["true"],
+      explanation: [
+        "121 reads as 121 from left to right and from right to left.",
       ],
     },
   ]);
