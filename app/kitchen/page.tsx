@@ -184,52 +184,6 @@ export default function UIPage() {
           </div>
         </div>
       </div>
-
-      {/* Modal showcase */}
-      <div className="mt-12">
-        {(["default", "green", "destructive", "secondary"] as const).map(
-          (variant) => {
-            const modalVariant: "default" | "green" | "red" | "yellow" =
-              variant === "destructive"
-                ? "red"
-                : variant === "secondary"
-                ? "yellow"
-                : variant;
-            const buttonVariant:
-              | "green"
-              | "secondary"
-              | "destructive"
-              | "link"
-              | "outline"
-              | "ghost"
-              | "run" = variant === "default" ? "outline" : variant;
-            const displayName =
-              modalVariant.charAt(0).toUpperCase() + modalVariant.slice(1);
-            return (
-              <div key={variant} className="mb-6">
-                <div className="flex gap-2 mb-2">
-                  <Button
-                    variant={buttonVariant}
-                    onClick={() => setShowModal(modalVariant)}
-                  >
-                    Show {displayName} Modal
-                  </Button>
-                </div>
-                {showModal === modalVariant && (
-                  <Modal
-                    title={`Sample ${displayName} Modal`}
-                    message={`This is a demonstration of the ${modalVariant} Modal variant.`}
-                    variant={modalVariant}
-                    onClose={() => setShowModal(null)}
-                  >
-                    <Button variant={buttonVariant}>Nested Button</Button>
-                  </Modal>
-                )}
-              </div>
-            );
-          }
-        )}
-      </div>
     </div>
   );
 }

@@ -117,7 +117,7 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
                   style={vscDarkPlus}
                   className="rounded-md"
                 >
-                  {"Sample code or input/output can go here"}
+                  {selectedQuestion.inputFormat}
                 </SyntaxHighlighter>
               </div>
             </main>
