@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { FaToggleOn, FaToggleOff } from "react-icons/fa";
 import { oneDark } from "@codemirror/theme-one-dark";
@@ -66,6 +66,9 @@ export default function Editor({
   const [customInput, setCustomInput] = useState(false);
   const editorRef = useRef<EditorView | null>(null);
 
+  const [userId] = useState(35);
+  const [questionId] = useState(45);
+
   const handleChange = (value: string, viewUpdate: ViewUpdate) => {
     setCode(value);
     const view = viewUpdate.view;
@@ -74,6 +77,49 @@ export default function Editor({
     const ch = pos - view.state.doc.line(line - 1).from + 1;
     setCursor({ line, ch });
   };
+
+  useEffect(() => {
+    const fetchSavedCode = async () => {
+      try {
+        const res = await fetch(
+          `/api/save-code?userId=${userId}&questionId=${questionId}`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.code) setCode(data.code);
+        }
+      } catch (err) {
+        console.error("Error fetching saved code:", err);
+      }
+    };
+    fetchSavedCode();
+  }, [userId, questionId]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (code.trim() === "") return;
+      const payload = {
+        userId,
+        questionId,
+        code,
+        language: selectedLanguage,
+        round,
+      };
+
+      try {
+        await fetch("/api/save-code", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        console.log("Auto-saved code:", payload);
+      } catch (err) {
+        console.error("Error auto-saving code:", err);
+      }
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [code, selectedLanguage, round, userId, questionId]);
 
   return (
     <div className="w-full mx-auto flex flex-col bg-[#131414] rounded-xl shadow-lg overflow-hidden">
@@ -111,7 +157,6 @@ export default function Editor({
             onClick={() => setCustomInput((prev) => !prev)}
             className="focus:outline-none !bg-transparent !shadow-none border-0 p-0 m-0"
           >
-            {" "}
             <span className="text-gray-300 text-xl flex items-center gap-3">
               {customInput ? (
                 <FaToggleOn size={39} color="#22c55e" />
@@ -123,10 +168,32 @@ export default function Editor({
           </button>
         </div>
         <div className="flex gap-4">
-          <Button variant="run" size="default">
+          <Button
+            variant="run"
+            size="default"
+            onClick={() => console.log("Run code:", code)}
+          >
             Run Code
           </Button>
-          <Button variant="green" size="default">
+          <Button
+            variant="green"
+            size="default"
+            onClick={async () => {
+              const payload = {
+                userId,
+                questionId,
+                code,
+                language: selectedLanguage,
+                round,
+              };
+              await fetch("/api/save-code", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+              });
+              console.log("Manually submitted code:", payload);
+            }}
+          >
             Submit Code
           </Button>
         </div>
