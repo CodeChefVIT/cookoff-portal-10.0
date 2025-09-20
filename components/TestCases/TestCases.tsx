@@ -4,7 +4,7 @@ import InputOutputCard from "./InputOutputCard";
 import Button from "../ui/Button";
 import { BsEyeSlash, BsCheckCircleFill, BsXCircleFill } from "react-icons/bs";
 import CompilerMessage from "./CompilerMessage";
-
+import { TestcaseFromAPI } from "@/api/question";
 interface TestCase {
   id: number;
   status: "Passed" | "Failed" | "Error";
@@ -20,7 +20,7 @@ interface CompilerResult {
 }
 
 interface TestCasesProps {
-  results: TestCase[];
+  results: TestcaseFromAPI[];
   compilerDetails: CompilerResult;
 }
 
@@ -34,11 +34,13 @@ function getScoreColor(count: number, total: number) {
 const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
   const [activeCaseIndex, setActiveCaseIndex] = useState(0);
 
-  const visibleCases = results.filter((r) => !r.isHidden);
-  const hiddenCases = results.filter((r) => r.isHidden);
-  const passedCount = results.filter((r) => r.status === "Passed").length;
+  const visibleCases = results.filter((r) => !r.hidden);
+  const hiddenCases = results.filter((r) => r.hidden);
+  const passedCount = results.filter(
+    (r) => r.expected_output === r.output
+  ).length;
   const hiddenPassedCount = hiddenCases.filter(
-    (r) => r.status === "Passed"
+    (r) => r.expected_output === r.output
   ).length;
 
   const activeCaseData = visibleCases[activeCaseIndex];
@@ -63,7 +65,7 @@ const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
             className={`rounded-xl px-4 py-2 text-sm font-semibold bg-secondary hover:bg-border`}
             onClick={() => setActiveCaseIndex(idx)}
           >
-            {testCase.status === "Passed" ? (
+            {testCase.expected_output === testCase.expected_output ? (
               <BsCheckCircleFill className={`mr-2 size-4 text-ring`} />
             ) : (
               <BsXCircleFill className={`mr-2 size-4 text-accent`} />
@@ -89,7 +91,7 @@ const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
 
       {activeCaseData && (
         <>
-          {activeCaseData.expectedOutput ? (
+          {activeCaseData.expected_output ? (
             <div className="flex justify-between font-inter">
               <InputOutputCard
                 title={"Input"}
@@ -98,12 +100,16 @@ const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
               />
               <InputOutputCard
                 title={"Expected Output"}
-                data={activeCaseData.expectedOutput}
+                data={activeCaseData.expected_output}
                 className={"w-[31%]"}
               />
               <InputOutputCard
                 title={"Your Output"}
-                data={activeCaseData.output}
+                data={
+                  activeCaseData.output
+                    ? activeCaseData.output
+                    : "no output given"
+                }
                 className={"w-[31%]"}
               />
             </div>
@@ -116,7 +122,11 @@ const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
               />
               <InputOutputCard
                 title={"Your Output"}
-                data={activeCaseData.output}
+                data={
+                  activeCaseData.output
+                    ? activeCaseData.output
+                    : "no output given"
+                }
                 className={"w-[48%]"}
               />
             </div>

@@ -6,15 +6,17 @@ export interface ApiResponse<T = unknown> {
 }
 
 export interface Question {
-  ID: string;
-  Description: string;
-  Title: string;
-  InputFormat: string[];
-  Points: number;
-  Round: number;
-  Constraints: string[];
-  OutputFormat: string[];
-  SampleTestInput: string[];
-  SampleTestOutput: string[];
-  Explanation: string[];
+  id: string;
+  description: string;
+  title: string;
+  qType: string;
+  isBountyActive: boolean;
+  inputFormat: string[];
+  points: number;
+  round: number;
+  constraints: string[];
+  outputFormat: string[];
+  sampleTestInput: string[];
+  sampleTestOutput: string[];
+  explanation: string[];
 }
