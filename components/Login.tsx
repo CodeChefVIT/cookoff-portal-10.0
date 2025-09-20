@@ -5,9 +5,15 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+<<<<<<< HEAD
 import { login } from "@/app/services/login";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
+=======
+
+import * as navigation from "next/navigation";
+import toast,{Toaster} from "react-hot-toast";
+>>>>>>> upstream/main
 import Button from "@/components/ui/Button";
 import {
   Form,
@@ -17,7 +23,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+<<<<<<< HEAD
 
+=======
+import { ApiError } from "next/dist/server/api-utils";
+import login from "@/services/login";
+>>>>>>> upstream/main
 // validation schema
 const formSchema = z.object({
   email: z.string().email("*Please enter valid email address"),
@@ -32,7 +43,7 @@ export default function Login() {
       password: "",
     },
   });
-  const router = useRouter();
+  const router = navigation.useRouter();
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const res = await login(values);

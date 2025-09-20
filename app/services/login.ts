@@ -9,7 +9,7 @@ interface LoginData {
   score: number;
 }
 
-export async function login(body: z.infer<typeof loginFormSchema>) {
+export default async function  login(body: z.infer<typeof loginFormSchema>) {
   try {
     const { data } = await api.post<ApiResponse<LoginData>>(`login`, body);
     return data;
