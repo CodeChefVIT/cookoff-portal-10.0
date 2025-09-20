@@ -9,7 +9,7 @@ export default function Dashboard() {
       {/* Page container */}
       <div className="flex flex-col gap-[34px] w-[1440px] mx-auto">
 
-        <header className="flex items-center justify-between h-[150px] w-full">
+        {/* <header className="flex items-center justify-between h-[150px] w-full">
 
           <Image src="/ccLogo.svg" alt="Logo" width={75} height={75} className="opacity-100" priority />
 
@@ -25,7 +25,7 @@ export default function Dashboard() {
 
           </div>
           <div className="absolute left-0 right-0 top-[145px] border-t-2 border-[#B7AB98]"></div>
-        </header>
+        </header> */}
 
         <section className="h-[120px] w-full rounded-2xl flex items-center justify-center text-white border border-gray-500 text-lg">
           Timeline
