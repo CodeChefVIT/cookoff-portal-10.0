@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import login from "@/services/login";
-import { log } from "console";
 
 // validation schema
 const formSchema = z.object({

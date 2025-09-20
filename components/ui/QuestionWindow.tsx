@@ -9,7 +9,6 @@ import Markdown from "react-markdown";
 import toast from "react-hot-toast";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import vscDarkPlus from "react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus";
-import { log } from "console";
 import { Question } from "@/schemas/api/index";
 
 const inter = Inter({ subsets: ["latin"] });

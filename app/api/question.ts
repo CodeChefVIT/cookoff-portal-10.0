@@ -2,7 +2,7 @@ import { handleAPIError } from "@/lib/error";
 import { Question } from "@/schemas/api";
 import api from "@/services";
 
-interface TestcaseFromAPI {
+export interface TestcaseFromAPI {
   id: string;
   expected_output: string;
   memory: number;
@@ -10,6 +10,7 @@ interface TestcaseFromAPI {
   hidden: boolean;
   runtime: number;
   question_id: string;
+  output?: string;
 }
 
 export interface QuestionWithTestcases {

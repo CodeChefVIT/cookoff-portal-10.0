@@ -355,12 +355,7 @@ export default function UIPage() {
           <h3 className="text-2xl font-semibold text-white mb-4">
             Complete Test Cases
           </h3>
-          <div className="bg-[#131414] p-4 sm:p-6 rounded-lg">
-            <TestCases
-              results={defaultResults}
-              compilerDetails={defaultCompilerDetails}
-            />
-          </div>
+          <div className="bg-[#131414] p-4 sm:p-6 rounded-lg"></div>
         </div>
       </section>
 
@@ -466,12 +461,7 @@ export default function UIPage() {
               />
             </div>
 
-            <div className="bg-[#131414] p-4 sm:p-6 rounded-lg">
-              <TestCases
-                results={defaultResults}
-                compilerDetails={defaultCompilerDetails}
-              />
-            </div>
+            <div className="bg-[#131414] p-4 sm:p-6 rounded-lg"></div>
           </div>
         </div>
       </section>
