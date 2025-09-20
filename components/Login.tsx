@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import login from "@/services/login";
+import { log } from "console";
 
 // validation schema
 const formSchema = z.object({
@@ -82,7 +83,9 @@ export default function Login() {
         });
       } else {
         toast.error(err.message || "An error occurred");
+        console.log("error is login");
       }
+      console.log(err);
     }
   }
 

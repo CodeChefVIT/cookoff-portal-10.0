@@ -10,6 +10,7 @@ import Markdown from "react-markdown";
 import toast from "react-hot-toast";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import vscDarkPlus from "react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus";
+import { log } from "console";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -88,11 +89,12 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
         }
       } catch (err) {
         if (err instanceof ApiError && err.statusCode === 401) {
-          router.push("/");
+          // router.push("/");
+          console.log("error 401");
           return;
         }
         toast.error("Failed to fetch questions");
-        setTimeout(() => router.push("/kitchen"), 2000);
+        // setTimeout(() => router.push("/kitchen"), 2000);
       }
     };
 
