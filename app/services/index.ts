@@ -7,7 +7,7 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
 }
 
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: `${process.env.NEXT_PUBLIC_CLIENTVAR}`,
 });
 
 // Add a request interceptor
