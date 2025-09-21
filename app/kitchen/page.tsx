@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Editor from "@/components/Editor/Editor";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 import TabButton from "@/components/ui/TabButton";
 import Modal from "@/components/Modal/Modal";
@@ -13,79 +13,119 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { byRound } from "@/api/question";
+
+export interface Question {
+  id: string;
+  title: string;
+  points: number;
+  description: string;
+  constraints: string[];
+  explanation: string[];
+  inputFormat: string[];
+  outputFormat: string[];
+  sampleTestInput: string[];
+  sampleTestOutput: string[];
+  qType: string;
+  round: number;
+  isBountyActive: boolean;
+}
+
+type TestCase = {
+  id: string;
+  input: string;
+  output: string;
+  expected_output: string;
+  hidden: boolean;
+  runtime: number;
+  memory: number;
+  question_id: string;
+};
 
 export default function UIPage() {
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
   const [showModal, setShowModal] = useState<
     "default" | "green" | "red" | "yellow" | null
   >(null);
-  const [questionID, setQuestionID] = useState<number>(1);
 
-  const [questions, setQuestions] = useState([
+  const [questionID, setQuestionID] = useState<string>("1");
+
+  const [questions, setQuestions] = useState<Question[]>([
     {
-      id: 1,
+      id: "1",
       title: "PROBLEM 1: HELLO WORLD",
       points: 10,
-      content: [
-        "A queue is an abstract data type that maintains order...",
-        "A basic queue has the following operations:",
+      description: "A queue is an abstract data type that maintains order...",
+      constraints: [],
+      explanation: [],
+      inputFormat: [
         "Enqueue: add to the end.",
         "Dequeue: remove from the front.",
       ],
+      outputFormat: [],
+      sampleTestInput: ["2 3"],
+      sampleTestOutput: ["5"],
+      qType: "DS",
+      round: 1,
+      isBountyActive: false,
     },
     {
-      id: 2,
+      id: "2",
       title: "PROBLEM 2: STACK IMPLEMENTATION",
       points: 15,
-      content: [
-        "A stack is a Last-In-First-Out (LIFO) data structure...",
-        "Operations: Push, Pop, Peek.",
-      ],
+      description: "A stack is a Last-In-First-Out (LIFO) data structure...",
+      constraints: [],
+      explanation: [],
+      inputFormat: ["Operations: Push, Pop, Peek."],
+      outputFormat: [],
+      sampleTestInput: ["1 2 3"],
+      sampleTestOutput: ["3"],
+      qType: "DS",
+      round: 1,
+      isBountyActive: false,
     },
   ]);
 
-  // local test case type
-  type TestCase = {
-    id: number;
-    status: "Passed" | "Failed" | "Error";
-    input: string;
-    output: string;
-    expectedOutput: string;
-    isHidden: boolean;
-  };
-
   const defaultResults: TestCase[] = [
     {
-      id: 1,
-      status: "Passed",
+      id: "1",
       input: "2 3",
       output: "5",
-      expectedOutput: "5",
-      isHidden: false,
+      expected_output: "5",
+      hidden: false,
+      runtime: 0,
+      memory: 0,
+      question_id: "1",
     },
     {
-      id: 2,
-      status: "Failed",
+      id: "2",
       input: "10 4",
       output: "15",
-      expectedOutput: "14",
-      isHidden: false,
+      expected_output: "14",
+      hidden: false,
+      runtime: 0,
+      memory: 0,
+      question_id: "1",
     },
     {
-      id: 4,
-      status: "Passed",
+      id: "3",
       input: "10 5",
       output: "20",
-      expectedOutput: "20",
-      isHidden: false,
+      expected_output: "20",
+      hidden: false,
+      runtime: 0,
+      memory: 0,
+      question_id: "1",
     },
     {
-      id: 3,
-      status: "Passed",
+      id: "4",
       input: "7 8",
       output: "15",
-      expectedOutput: "15",
-      isHidden: true,
+      expected_output: "15",
+      hidden: true,
+      runtime: 0,
+      memory: 0,
+      question_id: "2",
     },
   ];
 
@@ -145,16 +185,7 @@ export default function UIPage() {
             <ResizablePanel defaultSize={75} className="pt-4 pl-4">
               <div className="bg-[#131414] h-full rounded-lg overflow-auto p-2">
                 <TestCases
-                  results={defaultResults.map((tc) => ({
-                    id: String(tc.id),
-                    input: tc.input,
-                    output: tc.output,
-                    expected_output: tc.expectedOutput,
-                    hidden: tc.isHidden,
-                    runtime: 0,
-                    memory: 0,
-                    question_id: String(questionID),
-                  }))}
+                  results={defaultResults}
                   compilerDetails={defaultCompilerDetails}
                 />
               </div>

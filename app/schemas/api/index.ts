@@ -1,21 +1,22 @@
-import { Question } from "../api";
-
 export interface ApiResponse {
   message: string;
   data: unknown;
 }
 
-
-export interface QuestionTestcasePair {
-  question: Question;
-  testcases: Testcase[];
-}
-
-interface QuestionWindowProps {
-  questions: Question[];
-  setQuestions: React.Dispatch<React.SetStateAction<Question[]>>;
-  setQuestionID: React.Dispatch<React.SetStateAction<string>>; // <- string not number
-  questionID: string;
+export interface Question {
+  id: string; 
+  title: string;
+  points: number; 
+  description: string;
+  inputFormat: string[];
+  constraints: string[];
+  outputFormat: string[];
+  sampleTestInput: string[];
+  sampleTestOutput: string[];
+  explanation: string[];
+  qType: string;
+  round: number; 
+  isBountyActive: boolean;
 }
 
 
@@ -27,6 +28,44 @@ export interface Testcase {
   hidden: boolean;
   runtime: number; // double
   question_id: string; // uuid
+}
+export interface Testcase {
+  id: string; // uuid
+  expected_output: string;
+  memory: number; // double
+  input: string;
+  hidden: boolean;
+  runtime: number; // double
+  question_id: string; // uuid
+  output?: string;
+}
+
+export interface Question {
+  id: string; // uuid
+  title: string;
+  points: number; // integer
+  description: string;
+  inputFormat: string[];
+  constraints: string[];
+  outputFormat: string[];
+  sampleTestInput: string[];
+  sampleTestOutput: string[];
+  explanation: string[];
+  qType: string;
+  round: number; // integer
+  isBountyActive: boolean;
+}
+
+export interface QuestionTestcasePair {
+  question: Question;
+  testcases: Testcase[];
+}
+
+export interface QuestionWindowProps {
+  questions: Question[];
+  setQuestions: React.Dispatch<React.SetStateAction<Question[]>>;
+  setQuestionID: React.Dispatch<React.SetStateAction<string>>; // string, matches API
+  questionID: string;
 }
 
 export interface DashboardResponse {
@@ -49,3 +88,4 @@ export interface DashboardResponse {
     round3Score: number;
   };
 }
+
