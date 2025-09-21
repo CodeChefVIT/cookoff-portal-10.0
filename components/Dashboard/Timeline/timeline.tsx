@@ -5,7 +5,7 @@ import Image from "next/image";
 
 interface TimelineStep {
   label: string;
-  progress: number; // 0 to 100
+  progress: number;
 }
 
 const steps: TimelineStep[] = [
