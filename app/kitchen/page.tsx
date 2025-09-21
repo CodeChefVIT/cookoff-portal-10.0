@@ -158,7 +158,7 @@ export default function UIPage() {
 
   return (
     <div
-      className={`relative bg-[#070E0A] max-h-screen text-gray-200 overflow-hidden ${
+      className={`relative  bg-[#070E0A] max-h-screen text-gray-200 overflow-hidden  ${
         fullScreenEditor || fullScreenTestCases || fullScreenQuestion
           ? `absolute`
           : ` `
@@ -166,7 +166,7 @@ export default function UIPage() {
     >
       <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 align-baseline `}>
         {/* Left - Question window */}
-        <div className="bg-[#131414] p-4 sm:p-0 -mt-5 h-[90vh]  overflow-x-hidden [&::-webkit-scrollbar]:w-0">
+        <div className=" -mt-2 py-4 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
           {!fullScreenRight && (
             <QuestionWindow
               questions={questions}
@@ -183,7 +183,7 @@ export default function UIPage() {
         <div
           className={`${
             fullScreenRight ? `absolute` : ` `
-          } flex flex-col gap-4 mt-0 transform translate-y-12`}
+          } flex flex-col gap-2 mt-0 transform translate-y-12`}
         >
           <div className="bg-[#131414]">
             <Editor

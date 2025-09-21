@@ -86,7 +86,7 @@ export default function Editor({
         fullScreen
           ? "max-h-[95vh] w-screen -top-10 left-0 fixed z-50 overflow-y-scroll "
           : "h-[50vh]"
-      }w-full mx-auto flex flex-col bg-[#131414] rounded-xl shadow-lg overflow-hidden`}
+      }w-full mx-auto flex flex-col bg-[#131414]  shadow-lg overflow-hidden`}
     >
       <div className="flex items-center justify-between px-6 py-3 z-20 bg-[#1e1f1f] border-b border-gray-700">
         <RoundTimer round={round} />

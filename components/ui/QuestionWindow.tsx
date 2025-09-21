@@ -85,7 +85,7 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
 
   return (
     <div
-      className={`bg-[#070E0A] text-gray-300 min-h-screen p-4 sm:p-8 flex items-center justify-center ${inter.className}`}
+      className={`bg-[#070E0A] text-gray-300 min-h-screen flex items-center justify-center ${inter.className}`}
     >
       <div className="w-full max-w-4xl ">
         {/* Tabs */}
@@ -101,7 +101,7 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
         </div>
 
         {/* Question content */}
-        <div className="bg-[#131414] p-6 sm:p-8 max-w-4xl mx-auto relative w-full min-h-[60vh] h-[90vh] overflow-y-scroll [&::-webkit-scrollbar]:w-0">
+        <div className="bg-[#131414] p-6 sm:p-8 max-w-4xl mx-auto relative w-full min-h-[50vh] h-[90vh] overflow-y-scroll [&::-webkit-scrollbar]:w-0">
           {selectedQuestion && (
             <main>
               <h1 className="text-2xl sm:text-3xl font-bold text-green-400 mb-2 font-nulshock">
