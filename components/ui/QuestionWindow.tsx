@@ -1,23 +1,40 @@
 "use client";
-import { byRound, QuestionWithTestcases } from "@/api/question";
+
+import { byRound } from "@/api/question";
+import axios from "axios";
 import { ApiError } from "next/dist/server/api-utils";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
+
 import { Inter } from "next/font/google";
 import TabButton from "./TabButton";
 import Markdown from "react-markdown";
 import toast from "react-hot-toast";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import vscDarkPlus from "react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus";
-import { Question } from "@/schemas/api/index";
+
 
 const inter = Inter({ subsets: ["latin"] });
+
+
+
+interface Question {
+  id: number;
+  title: string;
+  points: number;
+  content: string[];
+  description?: string;
+  inputFormat?: string[];
+  constraints?: string[];
+  outputFormat?: string[];
+  sampleTestInput?: string[];
+  sampleTestOutput?: string[];
+  explanation?: string[];
+}
 
 interface QuestionWindowProps {
   questions: Question[];
   setQuestions: React.Dispatch<React.SetStateAction<Question[]>>;
-  setQuestionID: React.Dispatch<React.SetStateAction<string>>;
-  questionID: string;
+  setQuestionID: React.Dispatch<React.SetStateAction<number>>;
+  questionID: number;
 }
 
 const QuestionWindow: React.FC<QuestionWindowProps> = ({
@@ -26,15 +43,15 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
   questionID,
   setQuestionID,
 }) => {
-  const [activeTab, setActiveTab] = useState<string>(
-    questionID || questions[0]?.id || "1"
+  const [activeTab, setActiveTab] = useState<number>(
+    questionID || questions[0]?.id || 1
   );
-  const [selectedQuestion, setSelectedQuestion] = useState<
-    Question | undefined
-  >(questions[0]);
+  const [selectedQuestion, setSelectedQuestion] = useState<Question | undefined>(
+    questions[0]
+  );
   const router = useRouter();
 
-  const handleQuestionChange = (id: string) => {
+  const handleQuestionChange = (id: number) => {
     setActiveTab(id);
     setQuestionID(id);
     setSelectedQuestion(questions.find((q) => q.id === id));
@@ -45,15 +62,30 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
     setSelectedQuestion(found);
   }, [questions, activeTab]);
 
-  // fetch questions from API
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
         const response = await byRound();
         const fetched: Question[] = response.map(
-          (item: QuestionWithTestcases) => {
+          (item: unknown, index: number) => {
+            const question = item as {
+              question: {
+                Title: string;
+                Points: number;
+                Description: string;
+                Constraints?: string[];
+              };
+            };
             return {
-              ...item.question,
+              id: index + 1,
+              title: question.question.Title,
+              points: question.question.Points,
+              content: [
+                question.question.Description,
+                ...(question.question.Constraints ?? []),
+              ],
+              description: question.question.Description,
+              constraints: question.question.Constraints ?? [],
             };
           }
         );
@@ -67,12 +99,11 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
         }
       } catch (err) {
         if (err instanceof ApiError && err.statusCode === 401) {
-          // router.push("/");
-          console.log("error 401");
+          router.push("/");
           return;
         }
         toast.error("Failed to fetch questions");
-        // setTimeout(() => router.push("/kitchen"), 2000);
+        setTimeout(() => router.push("/kitchen"), 2000);
       }
     };
 
@@ -81,7 +112,7 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
 
   return (
     <div
-      className={`bg-[#070E0A] text-gray-300 min-h-screen p-4 sm:p-8 flex items-center justify-center ${inter.className}`}
+      className={`bg-[#E0A070] text-gray-300 min-h-screen p-4 sm:p-8 flex items-center justify-center ${inter.className}`}
     >
       <div className="w-full max-w-4xl">
         {/* Tabs */}
@@ -89,7 +120,7 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
           {questions.map((q) => (
             <TabButton
               key={q.id}
-              id={q.id}
+              id={String(q.id)}
               active={activeTab === q.id}
               onClick={() => handleQuestionChange(q.id)}
             />
@@ -107,18 +138,93 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
                 {selectedQuestion.points} Points
               </span>
               <div className="prose prose-invert prose-sm sm:prose-base max-w-none text-gray-400 space-y-4">
-                <Markdown>{selectedQuestion.description}</Markdown>
+                {selectedQuestion.content.map((para, i) => (
+                  <Markdown key={i}>{para}</Markdown>
+                ))}
               </div>
 
-              {/* Example syntax highlighting block */}
-              <div className="mt-6">
-                <SyntaxHighlighter
-                  language="plaintext"
-                  style={vscDarkPlus}
-                  className="rounded-md"
-                >
-                  {selectedQuestion.inputFormat}
-                </SyntaxHighlighter>
+              <div className="prose prose-invert prose-sm sm:prose-base max-w-none text-gray-400 space-y-6">
+                {/* Problem */}
+                <section>
+                  <h2 className="text-green-400 font-semibold mb-2">Problem</h2>
+                  <Markdown>{selectedQuestion.description ?? ""}</Markdown>
+                </section>
+
+                {/* Input Format */}
+                {selectedQuestion.inputFormat?.length ? (
+                  <section>
+                    <h2 className="text-green-400 font-semibold mb-2">Input Format</h2>
+                    <Markdown>
+                      {selectedQuestion.inputFormat
+                        .map((item) => `- ${item}`)
+                        .join("\n")}
+                    </Markdown>
+                  </section>
+                ) : null}
+
+                {/* Constraints */}
+                {selectedQuestion.constraints?.length ? (
+                  <section>
+                    <h2 className="text-green-400 font-semibold mb-2">Constraints</h2>
+                    <Markdown>
+                      {selectedQuestion.constraints
+                        .map((item) => `- ${item}`)
+                        .join("\n")}
+                    </Markdown>
+                  </section>
+                ) : null}
+
+                {/* Output Format */}
+                {selectedQuestion.outputFormat?.length ? (
+                  <section>
+                    <h2 className="text-green-400 font-semibold mb-2">Output Format</h2>
+                    <Markdown>
+                      {selectedQuestion.outputFormat
+                        .map((item) => `- ${item}`)
+                        .join("\n")}
+                    </Markdown>
+                  </section>
+                ) : null}
+
+                {/* Sample Test Cases */}
+                {(() => {
+                  const sampleCount = Math.max(
+                    selectedQuestion.sampleTestInput?.length || 0,
+                    selectedQuestion.sampleTestOutput?.length || 0,
+                    selectedQuestion.explanation?.length || 0
+                  );
+
+                  return Array.from({ length: sampleCount }).map((_, i) => (
+                    <section key={i}>
+                      {selectedQuestion.sampleTestInput?.[i] && (
+                        <div className="mb-4">
+                          <h3 className="text-green-400 font-semibold">
+                            Sample Input {i + 1}
+                          </h3>
+                          <Markdown>{`\`\`\`\n${selectedQuestion.sampleTestInput[i]}\n\`\`\``}</Markdown>
+                        </div>
+                      )}
+
+                      {selectedQuestion.sampleTestOutput?.[i] && (
+                        <div className="mb-4">
+                          <h3 className="text-green-400 font-semibold">
+                            Sample Output {i + 1}
+                          </h3>
+                          <Markdown>{`\`\`\`\n${selectedQuestion.sampleTestOutput[i]}\n\`\`\``}</Markdown>
+                        </div>
+                      )}
+
+                      {selectedQuestion.explanation?.[i] && (
+                        <div className="mb-4">
+                          <h3 className="text-green-400 font-semibold">
+                            Explanation {i + 1}
+                          </h3>
+                          <Markdown>{selectedQuestion.explanation[i]}</Markdown>
+                        </div>
+                      )}
+                    </section>
+                  ));
+                })()}
               </div>
             </main>
           )}
