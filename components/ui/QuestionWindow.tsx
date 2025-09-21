@@ -149,81 +149,87 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
                   <Markdown>{selectedQuestion.description ?? ""}</Markdown>
                 </section>
 
-                {/* Input Format */}
-                {selectedQuestion.inputFormat?.length ? (
-                  <section>
-                    <h2 className="text-green-400 font-semibold mb-2">Input Format</h2>
-                    <Markdown>
-                      {selectedQuestion.inputFormat
-                        .map((item) => `- ${item}`)
-                        .join("\n")}
-                    </Markdown>
-                  </section>
-                ) : null}
+                <section>
+  <h2 className="text-green-400 font-semibold mb-2">Input Format</h2>
+  {selectedQuestion.inputFormat?.length ? (
+    <Markdown>
+      {selectedQuestion.inputFormat.map((item) => `- ${item}`).join("\n")}
+    </Markdown>
+  ): null }
+</section>
 
-                {/* Constraints */}
-                {selectedQuestion.constraints?.length ? (
-                  <section>
-                    <h2 className="text-green-400 font-semibold mb-2">Constraints</h2>
-                    <Markdown>
-                      {selectedQuestion.constraints
-                        .map((item) => `- ${item}`)
-                        .join("\n")}
-                    </Markdown>
-                  </section>
-                ) : null}
 
-                {/* Output Format */}
-                {selectedQuestion.outputFormat?.length ? (
-                  <section>
-                    <h2 className="text-green-400 font-semibold mb-2">Output Format</h2>
-                    <Markdown>
-                      {selectedQuestion.outputFormat
-                        .map((item) => `- ${item}`)
-                        .join("\n")}
-                    </Markdown>
-                  </section>
-                ) : null}
+               {/* Constraints */}
+<section>
+  <h2 className="text-green-400 font-semibold mb-2">Constraints</h2>
+  {selectedQuestion.constraints?.length ? (
+    <Markdown>
+      {selectedQuestion.constraints.map((item) => `- ${item}`).join("\n")}
+    </Markdown>
+  ) : (
+    <p className="text-gray-500">No constraints provided.</p>
+  )}
+</section>
 
-                {/* Sample Test Cases */}
-                {(() => {
-                  const sampleCount = Math.max(
-                    selectedQuestion.sampleTestInput?.length || 0,
-                    selectedQuestion.sampleTestOutput?.length || 0,
-                    selectedQuestion.explanation?.length || 0
-                  );
+{/* Output Format */}
+<section>
+  <h2 className="text-green-400 font-semibold mb-2">Output Format</h2>
+  {selectedQuestion.outputFormat?.length ? (
+    <Markdown>
+      {selectedQuestion.outputFormat.map((item) => `- ${item}`).join("\n")}
+    </Markdown>
+  ) : (
+    <p className="text-gray-500">No output format provided.</p>
+  )}
+</section>
 
-                  return Array.from({ length: sampleCount }).map((_, i) => (
-                    <section key={i}>
-                      {selectedQuestion.sampleTestInput?.[i] && (
-                        <div className="mb-4">
-                          <h3 className="text-green-400 font-semibold">
-                            Sample Input {i + 1}
-                          </h3>
-                          <Markdown>{`\`\`\`\n${selectedQuestion.sampleTestInput[i]}\n\`\`\``}</Markdown>
-                        </div>
-                      )}
+{/* Sample Test Cases */}
+<section>
+  <h2 className="text-green-400 font-semibold mb-2">Sample Test Cases</h2>
+  {(() => {
+    const sampleCount = Math.max(
+      selectedQuestion.sampleTestInput?.length || 0,
+      selectedQuestion.sampleTestOutput?.length || 0,
+      selectedQuestion.explanation?.length || 0
+    );
 
-                      {selectedQuestion.sampleTestOutput?.[i] && (
-                        <div className="mb-4">
-                          <h3 className="text-green-400 font-semibold">
-                            Sample Output {i + 1}
-                          </h3>
-                          <Markdown>{`\`\`\`\n${selectedQuestion.sampleTestOutput[i]}\n\`\`\``}</Markdown>
-                        </div>
-                      )}
+    return sampleCount > 0 ? (
+      Array.from({ length: sampleCount }).map((_, i) => (
+        <div key={i} className="mb-6">
+          {selectedQuestion.sampleTestInput?.[i] && (
+            <div className="mb-4">
+              <h3 className="text-green-400 font-semibold">
+                Sample Input {i + 1}
+              </h3>
+              <Markdown>{`\`\`\`\n${selectedQuestion.sampleTestInput[i]}\n\`\`\``}</Markdown>
+            </div>
+          )}
 
-                      {selectedQuestion.explanation?.[i] && (
-                        <div className="mb-4">
-                          <h3 className="text-green-400 font-semibold">
-                            Explanation {i + 1}
-                          </h3>
-                          <Markdown>{selectedQuestion.explanation[i]}</Markdown>
-                        </div>
-                      )}
-                    </section>
-                  ));
-                })()}
+          {selectedQuestion.sampleTestOutput?.[i] && (
+            <div className="mb-4">
+              <h3 className="text-green-400 font-semibold">
+                Sample Output {i + 1}
+              </h3>
+              <Markdown>{`\`\`\`\n${selectedQuestion.sampleTestOutput[i]}\n\`\`\``}</Markdown>
+            </div>
+          )}
+
+          {selectedQuestion.explanation?.[i] && (
+            <div className="mb-4">
+              <h3 className="text-green-400 font-semibold">
+                Explanation {i + 1}
+              </h3>
+              <Markdown>{selectedQuestion.explanation[i]}</Markdown>
+            </div>
+          )}
+        </div>
+      ))
+    ) : (
+      <p className="text-gray-500">No sample test cases available.</p>
+    );
+  })()}
+</section>
+
               </div>
             </main>
           )}
