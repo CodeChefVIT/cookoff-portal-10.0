@@ -64,4 +64,3 @@ interface ByRoundApiResponse {
   questions_testcases: QuestionWithTestcases[];
 }
 
-

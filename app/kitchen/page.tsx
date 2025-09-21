@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import Editor from "@/components/Editor/Editor";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 import TabButton from "@/components/ui/TabButton";
 import Modal from "@/components/Modal/Modal";
 import QuestionWindow from "@/components/ui/QuestionWindow";
 import TestCases from "@/components/TestCases/TestCases";
+import { byRound } from "@/api/question";
 
-// ✅ Define the Question type (same structure as API schema / QuestionWindow props)
+
 export interface Question {
   id: string;
   title: string;
@@ -26,7 +27,7 @@ export interface Question {
   isBountyActive: boolean;
 }
 
-// ✅ TestCase type
+
 type TestCase = {
   id: string;
   input: string;
@@ -44,10 +45,10 @@ export default function UIPage() {
     "default" | "green" | "red" | "yellow" | null
   >(null);
 
-  // ✅ use string UUIDs for question IDs
+
   const [questionID, setQuestionID] = useState<string>("1");
 
-  // ✅ Explicitly typed as Question[]
+ 
   const [questions, setQuestions] = useState<Question[]>([
     {
       id: "1",
@@ -81,7 +82,7 @@ export default function UIPage() {
     },
   ]);
 
-  // ✅ Mock test cases
+
   const defaultResults: TestCase[] = [
     {
       id: "1",

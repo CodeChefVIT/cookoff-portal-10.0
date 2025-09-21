@@ -23,7 +23,7 @@ interface TestcaseFromAPI {
   question_id: string;
 }
 
-interface QuestionWithTestcases {
+export interface QuestionWithTestcases {
   id: string; // uuid
   title: string;
   points: number;
@@ -44,7 +44,7 @@ interface QuestionWithTestcases {
 type Question = Omit<QuestionWithTestcases, "testcases">;
 
 interface QuestionWindowProps {
-  questions: Question[];
+  questions: Question[]; // ✅ always array
   setQuestions: React.Dispatch<React.SetStateAction<Question[]>>;
   setQuestionID: React.Dispatch<React.SetStateAction<string>>;
   questionID: string;
