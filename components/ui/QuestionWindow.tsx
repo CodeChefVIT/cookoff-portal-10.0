@@ -28,7 +28,7 @@ interface Question {
 }
 
 interface QuestionWindowProps {
-  questions: Question[];
+  questions: Question[] | undefined;
   setQuestions: React.Dispatch<React.SetStateAction<Question[]>>;
   setQuestionID: React.Dispatch<React.SetStateAction<number>>;
   questionID: number;
@@ -41,91 +41,28 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
   setQuestionID,
 }) => {
   const [activeTab, setActiveTab] = useState<number>(questionID || 1);
-  const [selectedQuestion, setSelectedQuestion] = useState<Question | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState<boolean>(questions.length === 0);
+  const [selectedQuestion, setSelectedQuestion] = useState<
+    Question | undefined
+  >(undefined);
+  const [isLoading, setIsLoading] = useState<boolean>((questions?.length ?? 0) === 0);
   const router = useRouter();
 
   const handleQuestionChange = (id: number) => {
     setActiveTab(id);
     setQuestionID(id);
-    const found = questions.find((q) => q.id === id);
+    const found = questions?.find((q) => q.id === id);
     setSelectedQuestion(found);
   };
 
   // Update selected question when questions or activeTab changes
   useEffect(() => {
-    if (questions.length > 0) {
-      const found = questions.find((q) => q.id === activeTab);
+    if ((questions?.length ?? 0) > 0) {
+      const found = questions?.find((q) => q.id === activeTab);
       setSelectedQuestion(found);
     }
   }, [questions, activeTab]);
 
   // Fetch questions only if not already provided
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      if (questions.length > 0) {
-        // Questions already provided, just set initial state
-        setIsLoading(false);
-        const initialQuestion = questions.find((q) => q.id === questionID) || questions[0];
-        if (initialQuestion) {
-          setActiveTab(initialQuestion.id);
-          setQuestionID(initialQuestion.id);
-          setSelectedQuestion(initialQuestion);
-        }
-        return;
-      }
-
-      // No questions provided, fetch them
-      try {
-        setIsLoading(true);
-        const response = await byRound();
-        const fetched: Question[] = response.map(
-          (item: unknown, index: number) => {
-            const question = item as {
-              question: {
-                Title: string;
-                Points: number;
-                Description: string;
-                Constraints?: string[];
-              };
-            };
-            return {
-              id: index + 1,
-              title: question.question.Title,
-              points: question.question.Points,
-              content: [
-                question.question.Description,
-                ...(question.question.Constraints ?? []),
-              ],
-              description: question.question.Description,
-              constraints: question.question.Constraints ?? [],
-            };
-          }
-        );
-
-        setQuestions(fetched);
-
-        // Set initial question
-        if (fetched.length > 0) {
-          const initialQuestion = fetched.find((q) => q.id === questionID) || fetched[0];
-          setActiveTab(initialQuestion.id);
-          setQuestionID(initialQuestion.id);
-          setSelectedQuestion(initialQuestion);
-        }
-      } catch (err) {
-        if (err instanceof ApiError && err.statusCode === 401) {
-          router.push("/");
-          return;
-        }
-        toast.error("Failed to fetch questions");
-        setTimeout(() => router.push("/kitchen"), 2000);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchQuestions();
-  }, []); // Remove dependencies to prevent refetching
 
   if (isLoading) {
     return (
@@ -135,7 +72,7 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
     );
   }
 
-  if (questions.length === 0) {
+  if (questions?.length === 0) {
     return (
       <div className="bg-[#131414] p-6 sm:p-8 max-w-4xl mx-auto relative w-full min-h-[120vh] flex items-center justify-center">
         <div className="text-gray-400 text-xl">No questions available</div>
@@ -147,7 +84,7 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
     <div className="bg-[#131414] max-w-4xl mx-auto relative w-full min-h-[120vh]">
       {/* Tabs */}
       <div className="flex items-center space-x-1 sm:space-x-2 mb-[-1px] pl-4 pt-6 sm:pt-8">
-        {questions.map((q) => (
+        {questions?.map((q) => (
           <TabButton
             key={q.id}
             id={String(q.id)}
@@ -182,25 +119,27 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
               </section>
 
               {/* Input Format */}
-              {selectedQuestion.inputFormat && selectedQuestion.inputFormat.length > 0 && (
-                <section>
-                  <h2 className="text-green-400 font-semibold mb-2">
-                    Input Format
-                  </h2>
-                  <Markdown>
-                    {selectedQuestion.inputFormat
-                      .map((item) => `- ${item}`)
-                      .join("\n")}
-                  </Markdown>
-                </section>
-              )}
+              {selectedQuestion.inputFormat &&
+                selectedQuestion.inputFormat.length > 0 && (
+                  <section>
+                    <h2 className="text-green-400 font-semibold mb-2">
+                      Input Format
+                    </h2>
+                    <Markdown>
+                      {selectedQuestion.inputFormat
+                        .map((item) => `- ${item}`)
+                        .join("\n")}
+                    </Markdown>
+                  </section>
+                )}
 
               {/* Constraints */}
               <section>
                 <h2 className="text-green-400 font-semibold mb-2">
                   Constraints
                 </h2>
-                {selectedQuestion.constraints && selectedQuestion.constraints.length > 0 ? (
+                {selectedQuestion.constraints &&
+                selectedQuestion.constraints.length > 0 ? (
                   <Markdown>
                     {selectedQuestion.constraints
                       .map((item) => `- ${item}`)
@@ -212,18 +151,19 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
               </section>
 
               {/* Output Format */}
-              {selectedQuestion.outputFormat && selectedQuestion.outputFormat.length > 0 && (
-                <section>
-                  <h2 className="text-green-400 font-semibold mb-2">
-                    Output Format
-                  </h2>
-                  <Markdown>
-                    {selectedQuestion.outputFormat
-                      .map((item) => `- ${item}`)
-                      .join("\n")}
-                  </Markdown>
-                </section>
-              )}
+              {selectedQuestion.outputFormat &&
+                selectedQuestion.outputFormat.length > 0 && (
+                  <section>
+                    <h2 className="text-green-400 font-semibold mb-2">
+                      Output Format
+                    </h2>
+                    <Markdown>
+                      {selectedQuestion.outputFormat
+                        .map((item) => `- ${item}`)
+                        .join("\n")}
+                    </Markdown>
+                  </section>
+                )}
 
               {/* Sample Test Cases */}
               <section>

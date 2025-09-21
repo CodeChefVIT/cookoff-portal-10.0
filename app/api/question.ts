@@ -1,5 +1,5 @@
 import { handleAPIError } from "@/lib/error";
-import { Question } from "@/schemas/api";
+import { ApiResponse, Question } from "@/schemas/api";
 import api from "@/services";
 
 export interface TestcaseFromAPI {
@@ -26,8 +26,8 @@ interface ByRoundApiResponse {
 
 export async function byRound(): Promise<QuestionWithTestcases[]> {
   try {
-    const { data } = await api.get<ByRoundApiResponse>(`/question/round`);
-    return data.questions_testcases;
+    const { data } = await api.get<ApiResponse<ByRoundApiResponse>>(`/question/round`);
+    return data.data?.questions_testcases || [];
   } catch (e) {
     throw handleAPIError(e);
   }

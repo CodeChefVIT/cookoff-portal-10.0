@@ -2,41 +2,30 @@
 
 import Link from "next/link";
 import Editor from "@/components/Editor/Editor";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 import TabButton from "@/components/ui/TabButton";
 import Modal from "@/components/Modal/Modal";
 import QuestionWindow from "@/components/ui/QuestionWindow";
 import TestCases from "@/components/TestCases/TestCases";
+import { Question } from "@/schemas/api";
+import { byRound } from "@/api/question";
 
 export default function UIPage() {
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
   const [showModal, setShowModal] = useState<"default" | "green" | "red" | "yellow" | null>(null);
   const [questionID, setQuestionID] = useState<number>(1);
 
-  const [questions, setQuestions] = useState([
-    {
-      id: 1,
-      title: "PROBLEM 1: HELLO WORLD",
-      points: 10,
-      content: [
-        "A queue is an abstract data type that maintains order...",
-        "A basic queue has the following operations:",
-        "Enqueue: add to the end.",
-        "Dequeue: remove from the front.",
-      ],
-    },
-    {
-      id: 2,
-      title: "PROBLEM 2: STACK IMPLEMENTATION",
-      points: 15,
-      content: [
-        "A stack is a Last-In-First-Out (LIFO) data structure...",
-        "Operations: Push, Pop, Peek.",
-      ],
-    },
-  ]);
+  const [questions, setQuestions] = useState<Question []>();
+  useEffect(() => {
+    // Fetch questions from API or use static data
+    const fetchQuestions = async () => {
+      const response = await byRound();
+      setQuestions(response.map((item, index) => (item.question)));
+    };
 
+    fetchQuestions();
+  }, []);
   // local test case type
   type TestCase = {
     id: number;
