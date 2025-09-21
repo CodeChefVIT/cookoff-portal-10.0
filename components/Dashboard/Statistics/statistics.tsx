@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { getRounds } from "@/services/dashboard"; // import your service
+import { getRounds } from "@/services/dashboard"; 
 export interface RoundStats {
   round: number;
   status: "Closed" | "In Progress" | "Completed";
