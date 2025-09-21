@@ -40,7 +40,7 @@ export async function saveCodeController(
 }> {
   try {
     const { questionId, language, code, round } = request;
-    let { userId = 50 } = request;
+    let userId = "50";
 
     if (!userId || !questionId) {
       return {
@@ -60,13 +60,10 @@ export async function saveCodeController(
 
     if (token) {
       try {
-        const payload = jwt.verify(
-          token,
-          process.env.SECRET_KEY || "secret"
-        ) as any;
-        userId = payload.user_id || payload.userId || userId;
+        const payload = jwt.decode(token) as any;
+        userId = payload?.user_id || payload?.userId || userId;
       } catch (err) {
-        console.error("Invalid JWT:", err);
+        console.error("Error decoding JWT:", err);
         return { success: false, error: "Invalid token", status: 401 };
       }
     }
@@ -125,17 +122,14 @@ export async function getCodeController(
   try {
     const { id, questionId } = request;
 
-    let userId = 50;
+    let userId = "50";
 
     if (token) {
       try {
-        const payload = jwt.verify(
-          token,
-          process.env.SECRET_KEY || "secret"
-        ) as any;
-        userId = payload.user_id || payload.userId || userId;
+        const payload = jwt.decode(token) as any;
+        userId = payload?.user_id || payload?.userId || userId;
       } catch (err) {
-        console.error("Invalid JWT:", err);
+        console.error("Error decoding JWT:", err);
         return { success: false, error: "Invalid token", status: 401 };
       }
     }
@@ -145,12 +139,10 @@ export async function getCodeController(
 
     console.log("Querying with:", { id, userId, questionId });
 
-    if (id) {
-      code = await col.findOne({ _id: id });
-    } else if (userId && questionId) {
+    if (userId && questionId) {
       code = await col.findOne({
-        userId: Number(userId),
-        questionId: Number(questionId),
+        userId,
+        questionId,
       });
     }
 

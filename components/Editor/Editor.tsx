@@ -20,7 +20,7 @@ import type { ViewUpdate } from "@codemirror/view";
 import LanguageSelector from "./LanguageSelector/LanguageSelector";
 import RoundTimer from "./RoundTimer/RoundTimer";
 import Button from "../ui/Button";
-import axios from "axios";
+import api from "@/services";
 
 type EditorProps = {
   languages: string[];
@@ -80,16 +80,27 @@ export default function Editor({
 
   useEffect(() => {
     const fetchSavedCode = async () => {
+      if (!questionId) return;
+
       try {
-        const res = await fetch(`/api/save-code?questionId=${questionId}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.code) setCode(data.code);
+        const res = await api.get(`/save-code?questionId=${questionId}`);
+
+        if (res.status === 200) {
+          const data = await res.data;
+          if (data?.code) {
+            setCode(data.code);
+          } else {
+            setCode("");
+          }
+        } else {
+          setCode("");
         }
       } catch (err) {
         console.error("Error fetching saved code:", err);
+        setCode("");
       }
     };
+
     fetchSavedCode();
   }, [questionId]);
 
@@ -104,12 +115,7 @@ export default function Editor({
       };
 
       try {
-        await axios.post("/api/save-code", payload, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        });
+        await api.post("/save-code", payload);
       } catch (err) {
         console.error("Error auto-saving code:", err);
       }
@@ -182,18 +188,9 @@ export default function Editor({
                 language: selectedLanguage,
                 round,
               };
-              await axios.post(
-                "/api/save-code",
-                {
-                  ...payload,
-                },
-                {
-                  withCredentials: true,
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
+              await api.post("/api/save-code", {
+                ...payload,
+              });
               console.log("Manually submitted code:", payload);
             }}
           >

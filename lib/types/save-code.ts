@@ -1,7 +1,7 @@
 export interface SaveCodeRequest {
   secretKey: string;
-  userId: number;
-  questionId: number;
+  userId: string;
+  questionId: string;
   language: string;
   code: string;
   round?: string;
@@ -20,8 +20,8 @@ export interface DeleteCodeRequest {
 
 export interface CodeState {
   _id: string;
-  userId: number;
-  questionId: number;
+  userId: string;
+  questionId: string;
   language: string;
   code: string;
   round?: string;
@@ -32,8 +32,8 @@ export interface CodeState {
 export interface CodeResponse {
   message: string;
   codeId: string;
-  userId: number;
-  questionId: number;
+  userId: string;
+  questionId: string;
   language: string;
   code: string;
   round?: string;
