@@ -1,3 +1,4 @@
+import { Question } from "../api";
 
 export interface ApiResponse {
   message: string;
@@ -10,21 +11,13 @@ export interface QuestionTestcasePair {
   testcases: Testcase[];
 }
 
-export interface Question {
-  id: string; // uuid
-  description: string;
-  title: string;
-  qType: string;
-  isBountyActive: boolean;
-  inputFormat: string[];
-  points: number;
-  round: number;
-  constraints: string[];
-  outputFormat: string[];
-  sampleTestInput: string[];
-  sampleTestOutput: string[];
-  explanation: string[];
+interface QuestionWindowProps {
+  questions: Question[];
+  setQuestions: React.Dispatch<React.SetStateAction<Question[]>>;
+  setQuestionID: React.Dispatch<React.SetStateAction<string>>; // <- string not number
+  questionID: string;
 }
+
 
 export interface Testcase {
   id: string; // uuid
