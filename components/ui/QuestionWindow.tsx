@@ -1,6 +1,5 @@
 "use client";
-
-import { byRound } from "@/api/question";
+import { byRound, QuestionWithTestcases } from "@/api/question";
 import { ApiError } from "next/dist/server/api-utils";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
@@ -10,21 +9,15 @@ import Markdown from "react-markdown";
 import toast from "react-hot-toast";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import vscDarkPlus from "react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus";
+import { Question } from "@/schemas/api/index";
 
 const inter = Inter({ subsets: ["latin"] });
-
-type Question = {
-  id: number;
-  title: string;
-  points: number;
-  content: string[];
-};
 
 interface QuestionWindowProps {
   questions: Question[];
   setQuestions: React.Dispatch<React.SetStateAction<Question[]>>;
-  setQuestionID: React.Dispatch<React.SetStateAction<number>>;
-  questionID: number;
+  setQuestionID: React.Dispatch<React.SetStateAction<string>>;
+  questionID: string;
 }
 
 const QuestionWindow: React.FC<QuestionWindowProps> = ({
@@ -33,15 +26,15 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
   questionID,
   setQuestionID,
 }) => {
-  const [activeTab, setActiveTab] = useState<number>(
-    questionID || questions[0]?.id || 1
+  const [activeTab, setActiveTab] = useState<string>(
+    questionID || questions[0]?.id || "1"
   );
   const [selectedQuestion, setSelectedQuestion] = useState<
     Question | undefined
   >(questions[0]);
   const router = useRouter();
 
-  const handleQuestionChange = (id: number) => {
+  const handleQuestionChange = (id: string) => {
     setActiveTab(id);
     setQuestionID(id);
     setSelectedQuestion(questions.find((q) => q.id === id));
@@ -58,23 +51,9 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
       try {
         const response = await byRound();
         const fetched: Question[] = response.map(
-          (item: unknown, index: number) => {
-            const question = item as {
-              question: {
-                Title: string;
-                Points: number;
-                Description: string;
-                Constraints?: string[];
-              };
-            };
+          (item: QuestionWithTestcases) => {
             return {
-              id: index + 1,
-              title: question.question.Title,
-              points: question.question.Points,
-              content: [
-                question.question.Description,
-                ...(question.question.Constraints ?? []),
-              ],
+              ...item.question,
             };
           }
         );
@@ -88,11 +67,12 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
         }
       } catch (err) {
         if (err instanceof ApiError && err.statusCode === 401) {
-          router.push("/");
+          // router.push("/");
+          console.log("error 401");
           return;
         }
         toast.error("Failed to fetch questions");
-        setTimeout(() => router.push("/kitchen"), 2000);
+        // setTimeout(() => router.push("/kitchen"), 2000);
       }
     };
 
@@ -127,9 +107,7 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
                 {selectedQuestion.points} Points
               </span>
               <div className="prose prose-invert prose-sm sm:prose-base max-w-none text-gray-400 space-y-4">
-                {selectedQuestion.content.map((para, i) => (
-                  <Markdown key={i}>{para}</Markdown>
-                ))}
+                <Markdown>{selectedQuestion.description}</Markdown>
               </div>
 
               {/* Example syntax highlighting block */}
@@ -139,7 +117,7 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
                   style={vscDarkPlus}
                   className="rounded-md"
                 >
-                  {"Sample code or input/output can go here"}
+                  {selectedQuestion.inputFormat}
                 </SyntaxHighlighter>
               </div>
             </main>
