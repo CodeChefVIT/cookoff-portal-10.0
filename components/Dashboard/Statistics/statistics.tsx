@@ -1,7 +1,8 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-
-interface RoundStats {
+import { getRounds } from "@/services/dashboard"; // import your service
+export interface RoundStats {
   round: number;
   status: "Closed" | "In Progress" | "Completed";
   progress: number;
@@ -131,12 +132,25 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
 
 
 const Statistics: React.FC = () => {
-  const rounds: RoundStats[] = [
-    { round: 0, status: "Closed", progress: 75, completed: 3, incomplete: 1, score: 20 },
-    { round: 1, status: "In Progress", progress: 85, completed: 5, incomplete: 1, score: 49 },
-    { round: 2, status: "Completed", progress: 0, completed: 0, incomplete: 0, score: 0, locked: true },
-    { round: 3, status: "Completed", progress: 0, completed: 0, incomplete: 0, score: 0, locked: true },
-  ];
+  const [rounds, setRounds] = useState<RoundStats[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRounds = async () => {
+      try {
+        const roundsData = await getRounds();
+        setRounds(roundsData);
+      } catch (err) {
+        console.error("Failed to fetch rounds:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRounds();
+  }, []);
+
+  if (loading) return <p className="text-center text-white mt-10">Loading rounds...</p>;
 
 return (
   <div className="w-full h-full text-[#ccc] font-[Nulshock,monospace]">
