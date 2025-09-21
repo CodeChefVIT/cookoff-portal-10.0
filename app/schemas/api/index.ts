@@ -35,3 +35,24 @@ export interface Testcase {
   runtime: number; // double
   question_id: string; // uuid
 }
+
+export interface DashboardResponse {
+  status: "success";
+  data: {
+    userName: string;
+    email: string;
+    currentRound: number;
+    questionsCompleted0: number;
+    questionsCompleted1: number;
+    questionsCompleted2: number;
+    questionsCompleted3: number;
+    questionsNotCompleted0: number;
+    questionsNotCompleted1: number;
+    questionsNotCompleted2: number;
+    questionsNotCompleted3: number;
+    round0Score: number;
+    round1Score: number;
+    round2Score: number;
+    round3Score: number;
+  };
+}
