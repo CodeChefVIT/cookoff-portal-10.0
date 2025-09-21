@@ -40,7 +40,7 @@ api.interceptors.response.use(
 
       try {
         await axios.post<ApiResponse>(
-          `${process.env.NEXT_PUBLIC_CLIENTVAR}/token/refresh`,
+          `${process.env.NEXT_PUBLIC_CLIENTVAR}/refreshToken`,
           {},
           {
             withCredentials: true,
