@@ -120,6 +120,7 @@ export default function UIPage() {
               selectedLanguage={selectedLanguage}
               onLanguageChange={setSelectedLanguage}
               round="Round 1"
+              questionId={questionID}
             />
           </div>
 

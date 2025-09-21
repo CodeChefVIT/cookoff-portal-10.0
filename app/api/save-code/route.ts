@@ -13,7 +13,14 @@ import {
 
 export async function POST(request: NextRequest) {
   const body: SaveCodeRequest = await request.json();
-  const result = await saveCodeController(body);
+
+  console.log("All cookies:", request.cookies.getAll());
+
+  // Read JWT from cookie
+  const token = request.cookies.get("refresh_token")?.value;
+  console.log("Token from cookie:", token);
+
+  const result = await saveCodeController(body, token);
 
   if (!result.success) {
     return NextResponse.json(
@@ -32,21 +39,26 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
   const codeId = searchParams.get("id");
-  const userId = searchParams.get("userId");
   const questionId = searchParams.get("questionId");
 
-  if (!codeId && !(userId && questionId)) {
+  if (!codeId && !questionId) {
     return NextResponse.json(
-      { message: "id or (userId + questionId) is required" },
+      { message: "id or questionId is required" },
       { status: 400 }
     );
   }
 
-  const result = await getCodeController({
-    id: codeId ?? undefined,
-    userId: userId ?? undefined,
-    questionId: questionId ?? undefined,
-  });
+  // Read JWT from cookie
+  const token = request.cookies.get("refresh_token")?.value;
+  console.log("Token from cookie:", token);
+
+  const result = await getCodeController(
+    {
+      id: codeId ?? undefined,
+      questionId: questionId ?? undefined,
+    },
+    token
+  );
 
   if (!result.success) {
     return NextResponse.json(

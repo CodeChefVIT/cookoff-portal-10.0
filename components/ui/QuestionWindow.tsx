@@ -53,51 +53,51 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
   }, [questions, activeTab]);
 
   // fetch questions from API
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const response = await byRound();
-        const fetched: Question[] = response.map(
-          (item: unknown, index: number) => {
-            const question = item as {
-              question: {
-                Title: string;
-                Points: number;
-                Description: string;
-                Constraints?: string[];
-              };
-            };
-            return {
-              id: index + 1,
-              title: question.question.Title,
-              points: question.question.Points,
-              content: [
-                question.question.Description,
-                ...(question.question.Constraints ?? []),
-              ],
-            };
-          }
-        );
+  // useEffect(() => {
+  //   const fetchQuestions = async () => {
+  //     try {
+  //       const response = await byRound();
+  //       const fetched: Question[] = response.map(
+  //         (item: unknown, index: number) => {
+  //           const question = item as {
+  //             question: {
+  //               Title: string;
+  //               Points: number;
+  //               Description: string;
+  //               Constraints?: string[];
+  //             };
+  //           };
+  //           return {
+  //             id: index + 1,
+  //             title: question.question.Title,
+  //             points: question.question.Points,
+  //             content: [
+  //               question.question.Description,
+  //               ...(question.question.Constraints ?? []),
+  //             ],
+  //           };
+  //         }
+  //       );
 
-        setQuestions(fetched);
+  //       setQuestions(fetched);
 
-        if (fetched[0]) {
-          setActiveTab(fetched[0].id);
-          setQuestionID(fetched[0].id);
-          setSelectedQuestion(fetched[0]);
-        }
-      } catch (err) {
-        if (err instanceof ApiError && err.statusCode === 401) {
-          router.push("/");
-          return;
-        }
-        toast.error("Failed to fetch questions");
-        setTimeout(() => router.push("/kitchen"), 2000);
-      }
-    };
+  //       if (fetched[0]) {
+  //         setActiveTab(fetched[0].id);
+  //         setQuestionID(fetched[0].id);
+  //         setSelectedQuestion(fetched[0]);
+  //       }
+  //     } catch (err) {
+  //       if (err instanceof ApiError && err.statusCode === 401) {
+  //         router.push("/");
+  //         return;
+  //       }
+  //       toast.error("Failed to fetch questions");
+  //       setTimeout(() => router.push("/kitchen"), 2000);
+  //     }
+  //   };
 
-    void fetchQuestions();
-  }, [router, setQuestions, setQuestionID]);
+  //   void fetchQuestions();
+  // }, [router, setQuestions, setQuestionID]);
 
   return (
     <div

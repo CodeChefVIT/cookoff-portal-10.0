@@ -20,12 +20,14 @@ import type { ViewUpdate } from "@codemirror/view";
 import LanguageSelector from "./LanguageSelector/LanguageSelector";
 import RoundTimer from "./RoundTimer/RoundTimer";
 import Button from "../ui/Button";
+import axios from "axios";
 
 type EditorProps = {
   languages: string[];
   selectedLanguage: string;
   onLanguageChange: (lang: string) => void;
   round?: string;
+  questionId?: number;
 };
 
 export default function Editor({
@@ -33,6 +35,7 @@ export default function Editor({
   selectedLanguage,
   onLanguageChange,
   round,
+  questionId,
 }: EditorProps) {
   const languageExtensions: Record<string, LanguageSupport> = {
     cpp: cpp(),
@@ -66,9 +69,6 @@ export default function Editor({
   const [customInput, setCustomInput] = useState(false);
   const editorRef = useRef<EditorView | null>(null);
 
-  const [userId] = useState(35);
-  const [questionId] = useState(45);
-
   const handleChange = (value: string, viewUpdate: ViewUpdate) => {
     setCode(value);
     const view = viewUpdate.view;
@@ -81,9 +81,7 @@ export default function Editor({
   useEffect(() => {
     const fetchSavedCode = async () => {
       try {
-        const res = await fetch(
-          `/api/save-code?userId=${userId}&questionId=${questionId}`
-        );
+        const res = await fetch(`/api/save-code?questionId=${questionId}`);
         if (res.ok) {
           const data = await res.json();
           if (data?.code) setCode(data.code);
@@ -93,13 +91,12 @@ export default function Editor({
       }
     };
     fetchSavedCode();
-  }, [userId, questionId]);
+  }, [questionId]);
 
   useEffect(() => {
     const interval = setInterval(async () => {
       if (code.trim() === "") return;
       const payload = {
-        userId,
         questionId,
         code,
         language: selectedLanguage,
@@ -107,19 +104,19 @@ export default function Editor({
       };
 
       try {
-        await fetch("/api/save-code", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+        await axios.post("/api/save-code", payload, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
         });
-        console.log("Auto-saved code:", payload);
       } catch (err) {
         console.error("Error auto-saving code:", err);
       }
-    }, 10000);
+    }, 5000);
 
     return () => clearInterval(interval);
-  }, [code, selectedLanguage, round, userId, questionId]);
+  }, [code, selectedLanguage, round, questionId]);
 
   return (
     <div className="w-full mx-auto flex flex-col bg-[#131414] rounded-xl shadow-lg overflow-hidden">
@@ -180,17 +177,23 @@ export default function Editor({
             size="default"
             onClick={async () => {
               const payload = {
-                userId,
                 questionId,
                 code,
                 language: selectedLanguage,
                 round,
               };
-              await fetch("/api/save-code", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-              });
+              await axios.post(
+                "/api/save-code",
+                {
+                  ...payload,
+                },
+                {
+                  withCredentials: true,
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
               console.log("Manually submitted code:", payload);
             }}
           >

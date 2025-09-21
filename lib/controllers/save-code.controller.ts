@@ -7,6 +7,7 @@ import {
 } from "@/lib/types/save-code";
 import { getMongoClient } from "@/lib/db";
 import type { Filter, UpdateFilter } from "mongodb";
+import jwt from "jsonwebtoken";
 
 async function getCollection() {
   const client = await getMongoClient();
@@ -28,14 +29,18 @@ function buildCodeResponse(code: CodeState): CodeResponse {
   };
 }
 
-export async function saveCodeController(request: SaveCodeRequest): Promise<{
+export async function saveCodeController(
+  request: SaveCodeRequest,
+  token?: string
+): Promise<{
   success: boolean;
   data?: CodeResponse;
   error?: string;
   status: number;
 }> {
   try {
-    const { userId, questionId, language, code, round } = request;
+    const { questionId, language, code, round } = request;
+    let { userId = 50 } = request;
 
     if (!userId || !questionId) {
       return {
@@ -51,6 +56,19 @@ export async function saveCodeController(request: SaveCodeRequest): Promise<{
         error: "Language and code are required",
         status: 400,
       };
+    }
+
+    if (token) {
+      try {
+        const payload = jwt.verify(
+          token,
+          process.env.SECRET_KEY || "secret"
+        ) as any;
+        userId = payload.user_id || payload.userId || userId;
+      } catch (err) {
+        console.error("Invalid JWT:", err);
+        return { success: false, error: "Invalid token", status: 401 };
+      }
     }
 
     const col = await getCollection();
@@ -91,18 +109,36 @@ export async function saveCodeController(request: SaveCodeRequest): Promise<{
   }
 }
 
-export async function getCodeController(request: {
-  id?: string;
-  userId?: string | number;
-  questionId?: string | number;
-}): Promise<{
+export async function getCodeController(
+  request: {
+    id?: string;
+    userId?: string | number;
+    questionId?: string | number;
+  },
+  token?: string
+): Promise<{
   success: boolean;
   data?: CodeResponse;
   error?: string;
   status: number;
 }> {
   try {
-    const { id, userId, questionId } = request;
+    const { id, questionId } = request;
+
+    let userId = 50;
+
+    if (token) {
+      try {
+        const payload = jwt.verify(
+          token,
+          process.env.SECRET_KEY || "secret"
+        ) as any;
+        userId = payload.user_id || payload.userId || userId;
+      } catch (err) {
+        console.error("Invalid JWT:", err);
+        return { success: false, error: "Invalid token", status: 401 };
+      }
+    }
 
     const col = await getCollection();
     let code: CodeState | null = null;
