@@ -10,7 +10,8 @@ import { Inter } from "next/font/google";
 import TabButton from "./TabButton";
 import Markdown from "react-markdown";
 import toast from "react-hot-toast";
-
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import vscDarkPlus from "react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -111,9 +112,7 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
   }, [router, setQuestions, setQuestionID]);
 
   return (
-    <div
-      className={`bg-[#E0A070] text-gray-300 min-h-screen p-4 sm:p-8 flex items-center justify-center ${inter.className}`}
-    >
+    <div className="bg-[#131414] p-6 sm:p-8 max-w-4xl mx-auto relative w-full min-h-[120vh]">
       <div className="w-full max-w-4xl">
         {/* Tabs */}
         <div className="flex items-center space-x-1 sm:space-x-2 mb-[-1px] pl-4">
