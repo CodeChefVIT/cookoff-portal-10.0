@@ -10,16 +10,16 @@ export default function Header() {
   if (pathname === "/") return null;
 
   return (
-    <header className="relative flex items-center justify-between w-full h-20 px-4 py-10 md:px-12 border-b-2 border-b-[#B7AB98] select-none">
+    <header className="relative flex items-center justify-between w-full px-4 py-2 md:px-12 border-b-2 border-b-[#B7AB98] select-none">
       <Image
         src={icon}
         alt="CodechefVIT Logo"
-        width={40}
-        height={40}
-        className="h-8 w-8 md:h-12 md:w-12"
+        width={20}
+        height={20}
+        className="h-4 w-4 md:h-12 md:w-12"
       />
 
-      <h1 className="font-nulshock font-bold text-2xl md:text-4xl lg:text-6xl capitalize text-center text-[#B7AB98]">
+      <h1 className="font-nulshock font-bold text-2xl md:text-4xl lg:text-5xl capitalize text-center text-[#B7AB98]">
         COOK OFF{" "}
         <span
           className="inline-block bg-clip-text text-transparent"

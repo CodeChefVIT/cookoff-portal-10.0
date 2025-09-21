@@ -1,6 +1,6 @@
 "use client";
 import Editor from "@/components/Editor/Editor";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/Modal/Modal";
 import QuestionWindow from "@/components/ui/QuestionWindow";
@@ -9,11 +9,14 @@ import { QuestionWithTestcases } from "@/api/question";
 
 export default function UIPage() {
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
+  const [fullScreenRight, setFullScreen] = useState(false);
+  const [fullScreenEditor, setFullScreenEditor] = useState(false);
+  const [fullScreenTestCases, setFullScreenTestCases] = useState(false);
+  const [fullScreenQuestion, setFullScreenQuestion] = useState(false);
   const [showModal, setShowModal] = useState<
     "default" | "green" | "red" | "yellow" | null
   >(null);
   const [questionID, setQuestionID] = useState<string>("1");
-
   const [questionsWithTestcases, setQuestionsWithTestcases] = useState<
     QuestionWithTestcases[]
   >([
@@ -23,7 +26,7 @@ export default function UIPage() {
         title: "PROBLEM 1: TWO SUM",
         points: 10,
         description:
-          "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+          "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?",
         qType: "EASY",
         isBountyActive: false,
         inputFormat: [
@@ -122,7 +125,6 @@ export default function UIPage() {
       ],
     },
   ]);
-
   const questions = useMemo(
     () => questionsWithTestcases.map((q) => q.question),
     [questionsWithTestcases]
@@ -133,12 +135,10 @@ export default function UIPage() {
         ?.testcases || [],
     [questionsWithTestcases, questionID]
   );
-
   const defaultCompilerDetails = {
     isCompileSuccess: false,
     message: "Compilation Successful !!",
   };
-
   const languages = [
     "C++",
     "C",
@@ -151,35 +151,57 @@ export default function UIPage() {
     "Ruby",
     "Go",
   ];
+  useEffect(() => {
+    let bol = fullScreenEditor || fullScreenTestCases;
+    setFullScreen(bol);
+  }, [fullScreenEditor, fullScreenTestCases]);
 
   return (
-    <div className="bg-[#070E0A] min-h-screen p-4 sm:p-6 text-gray-200">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
+    <div
+      className={`relative bg-[#070E0A] max-h-screen text-gray-200 overflow-hidden ${
+        fullScreenEditor || fullScreenTestCases || fullScreenQuestion
+          ? `absolute`
+          : ` `
+      }`}
+    >
+      <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 align-baseline `}>
         {/* Left - Question window */}
-        <div className="bg-[#131414] p-4 sm:p-0 -mt-5">
-          <QuestionWindow
-            questions={questions}
-            setQuestions={() => {}}
-            questionID={questionID}
-            setQuestionID={setQuestionID}
-          />
+        <div className="bg-[#131414] p-4 sm:p-0 -mt-5 h-[90vh]  overflow-x-hidden [&::-webkit-scrollbar]:w-0">
+          {!fullScreenRight && (
+            <QuestionWindow
+              questions={questions}
+              setQuestions={() => {}}
+              questionID={questionID}
+              setQuestionID={setQuestionID}
+              setfullScreen={setFullScreenQuestion}
+              fullScreen={fullScreenQuestion}
+            />
+          )}
         </div>
 
         {/* Right - Editor and Test cases */}
-        <div className="flex flex-col space-y-6 mt-0 transform -translate-x-6 translate-y-12">
+        <div
+          className={`${
+            fullScreenRight ? `absolute` : ` `
+          } flex flex-col gap-4 mt-0 transform translate-y-12`}
+        >
           <div className="bg-[#131414]">
             <Editor
               languages={languages}
               selectedLanguage={selectedLanguage}
               onLanguageChange={setSelectedLanguage}
               round="Round 1"
+              setfullScreen={setFullScreenEditor}
+              fullScreen={fullScreenEditor}
             />
           </div>
 
-          <div className="bg-[#131414] p-4 sm:p-6 transform scale-90 -translate-x-8">
+          <div className={`bg-[#131414]`}>
             <TestCases
               results={selectedTestcases}
               compilerDetails={defaultCompilerDetails}
+              fullScreen={fullScreenTestCases}
+              setfullScreen={setFullScreenTestCases}
             />
           </div>
         </div>

@@ -18,6 +18,8 @@ interface QuestionWindowProps {
   setQuestions: React.Dispatch<React.SetStateAction<Question[]>>;
   setQuestionID: React.Dispatch<React.SetStateAction<string>>;
   questionID: string;
+  setfullScreen: React.Dispatch<React.SetStateAction<boolean>>;
+  fullScreen: boolean;
 }
 
 const QuestionWindow: React.FC<QuestionWindowProps> = ({
@@ -25,6 +27,8 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
   setQuestions,
   questionID,
   setQuestionID,
+  setfullScreen,
+  fullScreen,
 }) => {
   const [activeTab, setActiveTab] = useState<string>(
     questionID || questions[0]?.id || "1"
@@ -76,16 +80,16 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
       }
     };
 
-    void fetchQuestions();
+    // void fetchQuestions();
   }, [router, setQuestions, setQuestionID]);
 
   return (
     <div
       className={`bg-[#070E0A] text-gray-300 min-h-screen p-4 sm:p-8 flex items-center justify-center ${inter.className}`}
     >
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-4xl ">
         {/* Tabs */}
-        <div className="flex items-center space-x-1 sm:space-x-2 mb-[-1px] pl-4">
+        <div className="flex items-center space-x-1 sm:space-x-2 mb-[-1px] pl-4 ">
           {questions.map((q) => (
             <TabButton
               key={q.id}
@@ -97,7 +101,7 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
         </div>
 
         {/* Question content */}
-        <div className="bg-[#131414] p-6 sm:p-8 max-w-4xl mx-auto relative w-full min-h-[120vh]">
+        <div className="bg-[#131414] p-6 sm:p-8 max-w-4xl mx-auto relative w-full min-h-[60vh] h-[90vh] overflow-y-scroll [&::-webkit-scrollbar]:w-0">
           {selectedQuestion && (
             <main>
               <h1 className="text-2xl sm:text-3xl font-bold text-green-400 mb-2 font-nulshock">
