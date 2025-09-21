@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,6 +25,8 @@ const formSchema = z.object({
 });
 
 export default function Login() {
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -34,6 +36,7 @@ export default function Login() {
   });
   const router = navigation.useRouter();
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
     try {
       const res = await login(values);
       if (res.status === "success") {
@@ -85,8 +88,9 @@ export default function Login() {
         console.log("error is login");
       }
       console.log(err);
+    } finally {
+      setIsLoading(false);
     }
-
   }
   return (
     <div className="relative flex h-screen w-full items-center justify-center text-white overflow-hidden">
@@ -221,9 +225,10 @@ export default function Login() {
 
               <Button
                 type="submit"
-                className="w-[148px] h-[53px] rounded-[9px] !mt-[68.92px] !bg-gradient-to-r from-[#32CA67] via-[#26AD55] to-[#26AD55] text-white font-[Ballega] flex items-center justify-center"
+                disabled={isLoading || !form.formState.isValid}
+                className="w-[148px] h-[53px] rounded-[9px] !mt-[68.92px] !bg-gradient-to-r from-[#32CA67] via-[#26AD55] to-[#26AD55] text-white font-[Ballega] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Log In
+                {isLoading ? "Logging In..." : "Log In"}
               </Button>
             </form>
           </Form>
