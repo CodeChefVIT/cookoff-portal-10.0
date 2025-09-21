@@ -6,7 +6,7 @@ import { Quicksand } from "next/font/google";
 const quicksand = Quicksand({ subsets: ["latin"] });
 
 interface TabButtonProps {
-  id: number;
+  id: string;
   active: boolean;
   onClick: () => void;
 }

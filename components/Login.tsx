@@ -82,7 +82,9 @@ export default function Login() {
         });
       } else {
         toast.error(err.message || "An error occurred");
+        console.log("error is login");
       }
+      console.log(err);
     }
   }
 
