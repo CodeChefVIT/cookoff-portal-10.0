@@ -3,12 +3,18 @@ import Statistics from "./Statistics/statistics";
 export default function Dashboard() {
   return (
     <div className="relative min-h-screen">
-      <div className="absolute inset-0 -z-10 bg-black"> 
-        <Image src="/dashboard/background.svg" alt="Background" fill className="absolute -top-[136px]" />
-      </div>   
+      <div className="absolute inset-0 -z-10 bg-black">
+        <Image
+          src="/dashboard/background.svg"
+          alt="Background"
+          fill
+          className="absolute -top-[136px]"
+        />
+      </div>
       {/* Page container */}
       <div className="flex flex-col gap-[34px] w-[1440px] mx-auto">
-
+        {/*Header Component*/}
+        {/* 
         <header className="flex items-center justify-between h-[150px] w-full">
 
           <Image src="/ccLogo.svg" alt="Logo" width={75} height={75} className="opacity-100" priority />
@@ -25,18 +31,22 @@ export default function Dashboard() {
 
           </div>
           <div className="absolute left-0 right-0 top-[145px] border-t-2 border-[#B7AB98]"></div>
-        </header>
+        </header> */}
 
         <section className="h-[120px] w-full rounded-2xl flex items-center justify-center text-white border border-gray-500 text-lg">
           Timeline
         </section>
 
         <div className="flex gap-[56px]">
-          <div className="w-[325px] h-[618px] rounded-2xl flex items-center justify-center text-white border border-gray-500">Profile</div>
-          <div className="w-[692px] h-[618px] rounded-2xl flex items-center justify-center text-white">
-            <Statistics/>
+          <div className="w-[325px] h-[618px] rounded-2xl flex items-center justify-center text-white border border-gray-500">
+            Profile
           </div>
-          <div className="w-[325px] h-[618px] rounded-2xl flex items-center justify-center text-white border border-gray-500">Details</div>
+          <div className="w-[692px] h-[618px] rounded-2xl flex items-center justify-center text-white">
+            <Statistics />
+          </div>
+          <div className="w-[325px] h-[618px] rounded-2xl flex items-center justify-center text-white border border-gray-500">
+            Details
+          </div>
         </div>
       </div>
     </div>
