@@ -2,56 +2,128 @@
 
 import Link from "next/link";
 import Editor from "@/components/Editor/Editor";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 import TabButton from "@/components/ui/TabButton";
 import Modal from "@/components/Modal/Modal";
 import QuestionWindow from "@/components/ui/QuestionWindow";
 import TestCases from "@/components/TestCases/TestCases";
+import { byRound } from "@/api/question";
+
+
+export interface Question {
+  id: string;
+  title: string;
+  points: number;
+  description: string;
+  constraints: string[];
+  explanation: string[];
+  inputFormat: string[];
+  outputFormat: string[];
+  sampleTestInput: string[];
+  sampleTestOutput: string[];
+  qType: string;
+  round: number;
+  isBountyActive: boolean;
+}
+
+
+type TestCase = {
+  id: string;
+  input: string;
+  output: string;
+  expected_output: string;
+  hidden: boolean;
+  runtime: number;
+  memory: number;
+  question_id: string;
+};
 
 export default function UIPage() {
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
-  const [showModal, setShowModal] = useState<"default" | "green" | "red" | "yellow" | null>(null);
-  const [questionID, setQuestionID] = useState<number>(1);
+  const [showModal, setShowModal] = useState<
+    "default" | "green" | "red" | "yellow" | null
+  >(null);
 
-  const [questions, setQuestions] = useState([
+
+  const [questionID, setQuestionID] = useState<string>("1");
+
+ 
+  const [questions, setQuestions] = useState<Question[]>([
     {
-      id: 1,
+      id: "1",
       title: "PROBLEM 1: HELLO WORLD",
       points: 10,
-      content: [
-        "A queue is an abstract data type that maintains order...",
-        "A basic queue has the following operations:",
-        "Enqueue: add to the end.",
-        "Dequeue: remove from the front.",
-      ],
+      description: "A queue is an abstract data type that maintains order...",
+      constraints: [],
+      explanation: [],
+      inputFormat: ["Enqueue: add to the end.", "Dequeue: remove from the front."],
+      outputFormat: [],
+      sampleTestInput: ["2 3"],
+      sampleTestOutput: ["5"],
+      qType: "DS",
+      round: 1,
+      isBountyActive: false,
     },
     {
-      id: 2,
+      id: "2",
       title: "PROBLEM 2: STACK IMPLEMENTATION",
       points: 15,
-      content: [
-        "A stack is a Last-In-First-Out (LIFO) data structure...",
-        "Operations: Push, Pop, Peek.",
-      ],
+      description: "A stack is a Last-In-First-Out (LIFO) data structure...",
+      constraints: [],
+      explanation: [],
+      inputFormat: ["Operations: Push, Pop, Peek."],
+      outputFormat: [],
+      sampleTestInput: ["1 2 3"],
+      sampleTestOutput: ["3"],
+      qType: "DS",
+      round: 1,
+      isBountyActive: false,
     },
   ]);
 
-  // local test case type
-  type TestCase = {
-    id: number;
-    status: "Passed" | "Failed" | "Error";
-    input: string;
-    output: string;
-    expectedOutput: string;
-    isHidden: boolean;
-  };
 
   const defaultResults: TestCase[] = [
-    { id: 1, status: "Passed", input: "2 3", output: "5", expectedOutput: "5", isHidden: false },
-    { id: 2, status: "Failed", input: "10 4", output: "15", expectedOutput: "14", isHidden: false },
-    { id: 4, status: "Passed", input: "10 5", output: "20", expectedOutput: "20", isHidden: false },
-    { id: 3, status: "Passed", input: "7 8", output: "15", expectedOutput: "15", isHidden: true },
+    {
+      id: "1",
+      input: "2 3",
+      output: "5",
+      expected_output: "5",
+      hidden: false,
+      runtime: 0,
+      memory: 0,
+      question_id: "1",
+    },
+    {
+      id: "2",
+      input: "10 4",
+      output: "15",
+      expected_output: "14",
+      hidden: false,
+      runtime: 0,
+      memory: 0,
+      question_id: "1",
+    },
+    {
+      id: "3",
+      input: "10 5",
+      output: "20",
+      expected_output: "20",
+      hidden: false,
+      runtime: 0,
+      memory: 0,
+      question_id: "1",
+    },
+    {
+      id: "4",
+      input: "7 8",
+      output: "15",
+      expected_output: "15",
+      hidden: true,
+      runtime: 0,
+      memory: 0,
+      question_id: "2",
+    },
   ];
 
   const defaultCompilerDetails = {
@@ -59,7 +131,18 @@ export default function UIPage() {
     message: "Compilation Successful !!",
   };
 
-  const languages = ["C++", "C", "C#", "Java", "Python3", "PHP", "Rust", "Racket", "Ruby", "Go"];
+  const languages = [
+    "C++",
+    "C",
+    "C#",
+    "Java",
+    "Python3",
+    "PHP",
+    "Rust",
+    "Racket",
+    "Ruby",
+    "Go",
+  ];
 
   return (
     <div className="bg-[#070E0A] h-screen px-6 py-2 text-gray-200 overflow-hidden">
@@ -87,16 +170,7 @@ export default function UIPage() {
 
           <div className="bg-[#131414] p-2 flex-1 min-h-0 rounded-lg overflow-hidden">
             <TestCases
-              results={defaultResults.map(tc => ({
-                id: String(tc.id),
-                input: tc.input,
-                output: tc.output,
-                expected_output: tc.expectedOutput,
-                hidden: tc.isHidden,
-                runtime: 0,
-                memory: 0,
-                question_id: String(questionID),
-              }))}
+              results={defaultResults}
               compilerDetails={defaultCompilerDetails}
             />
           </div>
