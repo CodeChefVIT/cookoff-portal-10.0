@@ -86,8 +86,8 @@ export default function Login() {
       }
       console.log(err);
     }
-  }
 
+  }
   return (
     <div className="relative flex h-screen w-full items-center justify-center text-white overflow-hidden">
       {/* Background */}

@@ -23,7 +23,7 @@ export default function UIPage() {
         title: "PROBLEM 1: TWO SUM",
         points: 10,
         description:
-          "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+          "# Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
         qType: "EASY",
         isBountyActive: false,
         inputFormat: [
