@@ -11,7 +11,7 @@ import { getMongoClient } from "@/lib/db";
 import type { Filter, UpdateFilter } from "mongodb";
 
 const TIMER_COLLECTION = "timer";
-const SECRET_KEY = process.env.SECRET_KEY || "your-secret-key";
+const SECRET_KEY = process.env.SECRET_KEY || "supersecretkey";
 
 function generateId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto)

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { FaToggleOn, FaToggleOff } from "react-icons/fa";
 import { oneDark } from "@codemirror/theme-one-dark";
@@ -20,12 +20,14 @@ import type { ViewUpdate } from "@codemirror/view";
 import LanguageSelector from "./LanguageSelector/LanguageSelector";
 import RoundTimer from "./RoundTimer/RoundTimer";
 import Button from "../ui/Button";
+import api from "@/services";
 
 type EditorProps = {
   languages: string[];
   selectedLanguage: string;
   onLanguageChange: (lang: string) => void;
   round?: string;
+  questionId?: number;
 };
 
 export default function Editor({
@@ -33,6 +35,7 @@ export default function Editor({
   selectedLanguage,
   onLanguageChange,
   round,
+  questionId,
 }: EditorProps) {
   const languageExtensions: Record<string, LanguageSupport> = {
     cpp: cpp(),
@@ -75,6 +78,52 @@ export default function Editor({
     setCursor({ line, ch });
   };
 
+  useEffect(() => {
+    const fetchSavedCode = async () => {
+      if (!questionId) return;
+
+      try {
+        const res = await api.get(`/save-code?questionId=${questionId}`);
+
+        if (res.status === 200) {
+          const data = await res.data;
+          if (data?.code) {
+            setCode(data.code);
+          } else {
+            setCode("");
+          }
+        } else {
+          setCode("");
+        }
+      } catch (err) {
+        console.error("Error fetching saved code:", err);
+        setCode("");
+      }
+    };
+
+    fetchSavedCode();
+  }, [questionId]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (code.trim() === "") return;
+      const payload = {
+        questionId,
+        code,
+        language: selectedLanguage,
+        round,
+      };
+
+      try {
+        await api.post("/save-code", payload);
+      } catch (err) {
+        console.error("Error auto-saving code:", err);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [code, selectedLanguage, round, questionId]);
+
   return (
     <div className="w-full mx-auto flex flex-col bg-[#131414] rounded-xl shadow-lg overflow-hidden">
       <div className="flex items-center justify-between px-6 py-3 bg-[#1e1f1f] border-b border-gray-700">
@@ -111,7 +160,6 @@ export default function Editor({
             onClick={() => setCustomInput((prev) => !prev)}
             className="focus:outline-none !bg-transparent !shadow-none border-0 p-0 m-0"
           >
-            {" "}
             <span className="text-gray-300 text-xl flex items-center gap-3">
               {customInput ? (
                 <FaToggleOn size={39} color="#22c55e" />
@@ -123,10 +171,29 @@ export default function Editor({
           </button>
         </div>
         <div className="flex gap-4">
-          <Button variant="run" size="default">
+          <Button
+            variant="run"
+            size="default"
+            onClick={() => console.log("Run code:", code)}
+          >
             Run Code
           </Button>
-          <Button variant="green" size="default">
+          <Button
+            variant="green"
+            size="default"
+            onClick={async () => {
+              const payload = {
+                questionId,
+                code,
+                language: selectedLanguage,
+                round,
+              };
+              await api.post("/api/save-code", {
+                ...payload,
+              });
+              console.log("Manually submitted code:", payload);
+            }}
+          >
             Submit Code
           </Button>
         </div>

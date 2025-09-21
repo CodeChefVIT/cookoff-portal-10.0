@@ -10,12 +10,8 @@ import { Inter } from "next/font/google";
 import TabButton from "./TabButton";
 import Markdown from "react-markdown";
 import toast from "react-hot-toast";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import vscDarkPlus from "react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus";
 
 const inter = Inter({ subsets: ["latin"] });
-
-
 
 interface Question {
   id: number;
@@ -44,28 +40,44 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
   questionID,
   setQuestionID,
 }) => {
-  const [activeTab, setActiveTab] = useState<number>(
-    questionID || questions[0]?.id || 1
-  );
-  const [selectedQuestion, setSelectedQuestion] = useState<Question | undefined>(
-    questions[0]
-  );
+  const [activeTab, setActiveTab] = useState<number>(questionID || 1);
+  const [selectedQuestion, setSelectedQuestion] = useState<Question | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState<boolean>(questions.length === 0);
   const router = useRouter();
 
   const handleQuestionChange = (id: number) => {
     setActiveTab(id);
     setQuestionID(id);
-    setSelectedQuestion(questions.find((q) => q.id === id));
+    const found = questions.find((q) => q.id === id);
+    setSelectedQuestion(found);
   };
 
+  // Update selected question when questions or activeTab changes
   useEffect(() => {
-    const found = questions.find((q) => q.id === activeTab);
-    setSelectedQuestion(found);
+    if (questions.length > 0) {
+      const found = questions.find((q) => q.id === activeTab);
+      setSelectedQuestion(found);
+    }
   }, [questions, activeTab]);
 
+  // Fetch questions only if not already provided
   useEffect(() => {
     const fetchQuestions = async () => {
+      if (questions.length > 0) {
+        // Questions already provided, just set initial state
+        setIsLoading(false);
+        const initialQuestion = questions.find((q) => q.id === questionID) || questions[0];
+        if (initialQuestion) {
+          setActiveTab(initialQuestion.id);
+          setQuestionID(initialQuestion.id);
+          setSelectedQuestion(initialQuestion);
+        }
+        return;
+      }
+
+      // No questions provided, fetch them
       try {
+        setIsLoading(true);
         const response = await byRound();
         const fetched: Question[] = response.map(
           (item: unknown, index: number) => {
@@ -93,10 +105,12 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
 
         setQuestions(fetched);
 
-        if (fetched[0]) {
-          setActiveTab(fetched[0].id);
-          setQuestionID(fetched[0].id);
-          setSelectedQuestion(fetched[0]);
+        // Set initial question
+        if (fetched.length > 0) {
+          const initialQuestion = fetched.find((q) => q.id === questionID) || fetched[0];
+          setActiveTab(initialQuestion.id);
+          setQuestionID(initialQuestion.id);
+          setSelectedQuestion(initialQuestion);
         }
       } catch (err) {
         if (err instanceof ApiError && err.statusCode === 401) {
@@ -105,135 +119,175 @@ const QuestionWindow: React.FC<QuestionWindowProps> = ({
         }
         toast.error("Failed to fetch questions");
         setTimeout(() => router.push("/kitchen"), 2000);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    void fetchQuestions();
-  }, [router, setQuestions, setQuestionID]);
+    fetchQuestions();
+  }, []); // Remove dependencies to prevent refetching
+
+  if (isLoading) {
+    return (
+      <div className="bg-[#131414] p-6 sm:p-8 max-w-4xl mx-auto relative w-full min-h-[120vh] flex items-center justify-center">
+        <div className="text-green-400 text-xl">Loading questions...</div>
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="bg-[#131414] p-6 sm:p-8 max-w-4xl mx-auto relative w-full min-h-[120vh] flex items-center justify-center">
+        <div className="text-gray-400 text-xl">No questions available</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-[#131414] p-6 sm:p-8 max-w-4xl mx-auto relative w-full min-h-[120vh]">
-      <div className="w-full max-w-4xl">
-        {/* Tabs */}
-        <div className="flex items-center space-x-1 sm:space-x-2 mb-[-1px] pl-4">
-          {questions.map((q) => (
-            <TabButton
-              key={q.id}
-              id={String(q.id)}
-              active={activeTab === q.id}
-              onClick={() => handleQuestionChange(q.id)}
-            />
-          ))}
-        </div>
+    <div className="bg-[#131414] max-w-4xl mx-auto relative w-full min-h-[120vh]">
+      {/* Tabs */}
+      <div className="flex items-center space-x-1 sm:space-x-2 mb-[-1px] pl-4 pt-6 sm:pt-8">
+        {questions.map((q) => (
+          <TabButton
+            key={q.id}
+            id={String(q.id)}
+            active={activeTab === q.id}
+            onClick={() => handleQuestionChange(q.id)}
+          />
+        ))}
+      </div>
 
-        {/* Question content */}
-        <div className="bg-[#131414] p-6 sm:p-8 max-w-4xl mx-auto relative w-full min-h-[120vh]">
-          {selectedQuestion && (
-            <main>
-              <h1 className="text-2xl sm:text-3xl font-bold text-green-400 mb-2 font-nulshock">
-                {selectedQuestion.title}
-              </h1>
-              <span className="inline-block bg-[#484848] text-gray-200 text-xs font-semibold px-3 py-1 mt-4 mb-8">
-                {selectedQuestion.points} Points
-              </span>
-              <div className="prose prose-invert prose-sm sm:prose-base max-w-none text-gray-400 space-y-4">
-                {selectedQuestion.content.map((para, i) => (
-                  <Markdown key={i}>{para}</Markdown>
-                ))}
-              </div>
+      {/* Question content */}
+      <div className="p-6 sm:p-8">
+        {selectedQuestion ? (
+          <main>
+            <h1 className="text-2xl sm:text-3xl font-bold text-green-400 mb-2 font-nulshock">
+              {selectedQuestion.title}
+            </h1>
+            <span className="inline-block bg-[#484848] text-gray-200 text-xs font-semibold px-3 py-1 mt-4 mb-8">
+              {selectedQuestion.points} Points
+            </span>
 
-              <div className="prose prose-invert prose-sm sm:prose-base max-w-none text-gray-400 space-y-6">
-                {/* Problem */}
+            <div className="prose prose-invert prose-sm sm:prose-base max-w-none text-gray-400 space-y-4">
+              {selectedQuestion.content.map((para, i) => (
+                <Markdown key={i}>{para}</Markdown>
+              ))}
+            </div>
+
+            <div className="prose prose-invert prose-sm sm:prose-base max-w-none text-gray-400 space-y-6 mt-8">
+              {/* Problem */}
+              <section>
+                <h2 className="text-green-400 font-semibold mb-2">Problem</h2>
+                <Markdown>{selectedQuestion.description ?? ""}</Markdown>
+              </section>
+
+              {/* Input Format */}
+              {selectedQuestion.inputFormat && selectedQuestion.inputFormat.length > 0 && (
                 <section>
-                  <h2 className="text-green-400 font-semibold mb-2">Problem</h2>
-                  <Markdown>{selectedQuestion.description ?? ""}</Markdown>
+                  <h2 className="text-green-400 font-semibold mb-2">
+                    Input Format
+                  </h2>
+                  <Markdown>
+                    {selectedQuestion.inputFormat
+                      .map((item) => `- ${item}`)
+                      .join("\n")}
+                  </Markdown>
                 </section>
+              )}
 
+              {/* Constraints */}
+              <section>
+                <h2 className="text-green-400 font-semibold mb-2">
+                  Constraints
+                </h2>
+                {selectedQuestion.constraints && selectedQuestion.constraints.length > 0 ? (
+                  <Markdown>
+                    {selectedQuestion.constraints
+                      .map((item) => `- ${item}`)
+                      .join("\n")}
+                  </Markdown>
+                ) : (
+                  <p className="text-gray-500">No constraints provided.</p>
+                )}
+              </section>
+
+              {/* Output Format */}
+              {selectedQuestion.outputFormat && selectedQuestion.outputFormat.length > 0 && (
                 <section>
-  <h2 className="text-green-400 font-semibold mb-2">Input Format</h2>
-  {selectedQuestion.inputFormat?.length ? (
-    <Markdown>
-      {selectedQuestion.inputFormat.map((item) => `- ${item}`).join("\n")}
-    </Markdown>
-  ): null }
-</section>
+                  <h2 className="text-green-400 font-semibold mb-2">
+                    Output Format
+                  </h2>
+                  <Markdown>
+                    {selectedQuestion.outputFormat
+                      .map((item) => `- ${item}`)
+                      .join("\n")}
+                  </Markdown>
+                </section>
+              )}
 
+              {/* Sample Test Cases */}
+              <section>
+                <h2 className="text-green-400 font-semibold mb-2">
+                  Sample Test Cases
+                </h2>
+                {(() => {
+                  const sampleCount = Math.max(
+                    selectedQuestion.sampleTestInput?.length || 0,
+                    selectedQuestion.sampleTestOutput?.length || 0,
+                    selectedQuestion.explanation?.length || 0
+                  );
 
-               {/* Constraints */}
-<section>
-  <h2 className="text-green-400 font-semibold mb-2">Constraints</h2>
-  {selectedQuestion.constraints?.length ? (
-    <Markdown>
-      {selectedQuestion.constraints.map((item) => `- ${item}`).join("\n")}
-    </Markdown>
-  ) : (
-    <p className="text-gray-500">No constraints provided.</p>
-  )}
-</section>
+                  return sampleCount > 0 ? (
+                    Array.from({ length: sampleCount }).map((_, i) => (
+                      <div key={i} className="mb-6">
+                        {selectedQuestion.sampleTestInput?.[i] && (
+                          <div className="mb-4">
+                            <h3 className="text-green-400 font-semibold">
+                              Sample Input {i + 1}
+                            </h3>
+                            <Markdown>
+                              {`\`\`\`\n${selectedQuestion.sampleTestInput[i]}\n\`\`\``}
+                            </Markdown>
+                          </div>
+                        )}
 
-{/* Output Format */}
-<section>
-  <h2 className="text-green-400 font-semibold mb-2">Output Format</h2>
-  {selectedQuestion.outputFormat?.length ? (
-    <Markdown>
-      {selectedQuestion.outputFormat.map((item) => `- ${item}`).join("\n")}
-    </Markdown>
-  ) : (
-    <p className="text-gray-500">No output format provided.</p>
-  )}
-</section>
+                        {selectedQuestion.sampleTestOutput?.[i] && (
+                          <div className="mb-4">
+                            <h3 className="text-green-400 font-semibold">
+                              Sample Output {i + 1}
+                            </h3>
+                            <Markdown>
+                              {`\`\`\`\n${selectedQuestion.sampleTestOutput[i]}\n\`\`\``}
+                            </Markdown>
+                          </div>
+                        )}
 
-{/* Sample Test Cases */}
-<section>
-  <h2 className="text-green-400 font-semibold mb-2">Sample Test Cases</h2>
-  {(() => {
-    const sampleCount = Math.max(
-      selectedQuestion.sampleTestInput?.length || 0,
-      selectedQuestion.sampleTestOutput?.length || 0,
-      selectedQuestion.explanation?.length || 0
-    );
-
-    return sampleCount > 0 ? (
-      Array.from({ length: sampleCount }).map((_, i) => (
-        <div key={i} className="mb-6">
-          {selectedQuestion.sampleTestInput?.[i] && (
-            <div className="mb-4">
-              <h3 className="text-green-400 font-semibold">
-                Sample Input {i + 1}
-              </h3>
-              <Markdown>{`\`\`\`\n${selectedQuestion.sampleTestInput[i]}\n\`\`\``}</Markdown>
+                        {selectedQuestion.explanation?.[i] && (
+                          <div className="mb-4">
+                            <h3 className="text-green-400 font-semibold">
+                              Explanation {i + 1}
+                            </h3>
+                            <Markdown>
+                              {selectedQuestion.explanation[i]}
+                            </Markdown>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500">
+                      No sample test cases available.
+                    </p>
+                  );
+                })()}
+              </section>
             </div>
-          )}
-
-          {selectedQuestion.sampleTestOutput?.[i] && (
-            <div className="mb-4">
-              <h3 className="text-green-400 font-semibold">
-                Sample Output {i + 1}
-              </h3>
-              <Markdown>{`\`\`\`\n${selectedQuestion.sampleTestOutput[i]}\n\`\`\``}</Markdown>
-            </div>
-          )}
-
-          {selectedQuestion.explanation?.[i] && (
-            <div className="mb-4">
-              <h3 className="text-green-400 font-semibold">
-                Explanation {i + 1}
-              </h3>
-              <Markdown>{selectedQuestion.explanation[i]}</Markdown>
-            </div>
-          )}
-        </div>
-      ))
-    ) : (
-      <p className="text-gray-500">No sample test cases available.</p>
-    );
-  })()}
-</section>
-
-              </div>
-            </main>
-          )}
-        </div>
+          </main>
+        ) : (
+          <div className="flex items-center justify-center h-64">
+            <div className="text-gray-400 text-xl">Question not found</div>
+          </div>
+        )}
       </div>
     </div>
   );
