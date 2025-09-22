@@ -6,7 +6,7 @@ import api from "@/services";
 export interface TestcaseFromAPI {
   id: string;
   input: string;
-  output: string;
+  output?: string;
   expected_output: string;
   hidden: boolean;
   runtime: number;
@@ -14,26 +14,22 @@ export interface TestcaseFromAPI {
   question_id: string;
 }
 
-export interface QuestionWithTestcases {
-  id: string; // uuid
-  title: string;
-  points: number;
+// 👇 derived type without testcases
+export type Question = {
+  id: string;
   description: string;
-  constraints: string[];
-  explanation: string[];
+  title: string;
+  qType: string;
+  isBountyActive: boolean;
   inputFormat: string[];
+  points: number;
+  round: number;
+  constraints: string[];
   outputFormat: string[];
   sampleTestInput: string[];
   sampleTestOutput: string[];
-  qType: string;
-  round: number;
-  isBountyActive: boolean;
-  testcases: TestcaseFromAPI[];
-}
-
-// 👇 derived type without testcases
-export type Question = Omit<QuestionWithTestcases, "testcases">;
-
+  explanation: string[];
+};
 // your API function
 export async function byRound(): Promise<QuestionWithTestcases[]> {
   const res = await fetch("/api/round"); // example
@@ -41,11 +37,10 @@ export async function byRound(): Promise<QuestionWithTestcases[]> {
   return res.json();
 }
 
-
 export interface TestcaseFromAPI {
- id: string;
+  id: string;
   input: string;
-  output: string;
+  output?: string;
   expected_output: string;
   hidden: boolean;
   runtime: number;
@@ -63,4 +58,3 @@ interface ByRoundApiResponse {
   round: number;
   questions_testcases: QuestionWithTestcases[];
 }
-

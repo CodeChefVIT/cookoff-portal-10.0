@@ -5,15 +5,8 @@ import Button from "../ui/Button";
 import { BsEyeSlash, BsCheckCircleFill, BsXCircleFill } from "react-icons/bs";
 import CompilerMessage from "./CompilerMessage";
 import { TestcaseFromAPI } from "@/api/question";
-interface TestCase {
-  id: number;
-  status: "Passed" | "Failed" | "Error";
-  input: string;
-  output: string;
-  expectedOutput: string;
-  isHidden: boolean;
-}
-
+import { MdFullscreen } from "react-icons/md";
+import { MdFullscreenExit } from "react-icons/md";
 interface CompilerResult {
   isCompileSuccess: boolean;
   message: string;
@@ -22,6 +15,8 @@ interface CompilerResult {
 interface TestCasesProps {
   results: TestcaseFromAPI[];
   compilerDetails: CompilerResult;
+  setfullScreen: React.Dispatch<React.SetStateAction<boolean>>;
+  fullScreen: boolean;
 }
 
 function getScoreColor(count: number, total: number) {
@@ -31,9 +26,13 @@ function getScoreColor(count: number, total: number) {
   return "text-accent";
 }
 
-const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
+const TestCases = ({
+  results,
+  compilerDetails,
+  fullScreen,
+  setfullScreen,
+}: TestCasesProps) => {
   const [activeCaseIndex, setActiveCaseIndex] = useState(0);
-
   const visibleCases = results.filter((r) => !r.hidden);
   const hiddenCases = results.filter((r) => r.hidden);
   const passedCount = results.filter(
@@ -42,21 +41,37 @@ const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
   const hiddenPassedCount = hiddenCases.filter(
     (r) => r.expected_output === r.output
   ).length;
-
   const activeCaseData = visibleCases[activeCaseIndex];
   const totalCases = results.length;
-
   return (
-    <div className="flex w-[50vw] flex-col flex-wrap gap-4 bg-testcasesBG p-2 font-roboto">
-      <div
-        className={`rounded-xl bg-secondary px-4 py-4 text-3xl font-bold ${getScoreColor(
-          passedCount,
-          totalCases
-        )}`}
-      >
-        {`${passedCount}/${totalCases} Test Cases Passed !!`}
+    <div
+      className={`${
+        fullScreen
+          ? "h-[95vh] w-screen -top-0 left-0 fixed z-50 overflow-y-scroll "
+          : "min-h-[50vh] h-full "
+      }flex flex-col flex-wrap gap-4 bg-testcasesBG p-2 font-roboto`}
+    >
+      <div className="flex justify-between items-center">
+        <div
+          className={`rounded-xl bg-testcasesBG px-4 py-4 text-3xl font-bold ${getScoreColor(
+            passedCount,
+            totalCases
+          )}`}
+        >
+          {`${passedCount}/${totalCases} Test Cases Passed !!`}
+        </div>
+        {fullScreen ? (
+          <MdFullscreenExit
+            className="scale-200"
+            onClick={() => setfullScreen((prev) => !prev)}
+          />
+        ) : (
+          <MdFullscreen
+            className="scale-200 "
+            onClick={() => setfullScreen((prev) => !prev)}
+          />
+        )}
       </div>
-
       <div className="flex items-center gap-3">
         {visibleCases.map((testCase, idx) => (
           <Button
@@ -86,52 +101,56 @@ const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
           </div>
         )}
       </div>
-
-      <CompilerMessage isCompileSuccess={compilerDetails.isCompileSuccess} />
-
-      {activeCaseData && (
-        <>
-          {activeCaseData.expected_output ? (
-            <div className="flex justify-between font-inter">
-              <InputOutputCard
-                title={"Input"}
-                data={activeCaseData.input}
-                className={"w-[31%]"}
-              />
-              <InputOutputCard
-                title={"Expected Output"}
-                data={activeCaseData.expected_output}
-                className={"w-[31%]"}
-              />
-              <InputOutputCard
-                title={"Your Output"}
-                data={
-                  activeCaseData.output
-                    ? activeCaseData.output
-                    : "no output given"
-                }
-                className={"w-[31%]"}
-              />
-            </div>
-          ) : (
-            <div className="flex justify-between font-inter">
-              <InputOutputCard
-                title={"Input"}
-                data={activeCaseData.input}
-                className={"w-[48%]"}
-              />
-              <InputOutputCard
-                title={"Your Output"}
-                data={
-                  activeCaseData.output
-                    ? activeCaseData.output
-                    : "no output given"
-                }
-                className={"w-[48%]"}
-              />
-            </div>
+      {fullScreen && (
+        <div className="">
+          <CompilerMessage
+            isCompileSuccess={compilerDetails.isCompileSuccess}
+          />
+          {activeCaseData && (
+            <>
+              {activeCaseData.expected_output ? (
+                <div className="flex justify-between font-inter">
+                  <InputOutputCard
+                    title={"Input"}
+                    data={activeCaseData.input}
+                    className={"w-[31%]"}
+                  />
+                  <InputOutputCard
+                    title={"Expected Output"}
+                    data={activeCaseData.expected_output}
+                    className={"w-[31%]"}
+                  />
+                  <InputOutputCard
+                    title={"Your Output"}
+                    data={
+                      activeCaseData.output
+                        ? activeCaseData.output
+                        : "no output given"
+                    }
+                    className={"w-[31%]"}
+                  />
+                </div>
+              ) : (
+                <div className="flex justify-between font-inter">
+                  <InputOutputCard
+                    title={"Input"}
+                    data={activeCaseData.input}
+                    className={"w-[48%]"}
+                  />
+                  <InputOutputCard
+                    title={"Your Output"}
+                    data={
+                      activeCaseData.output
+                        ? activeCaseData.output
+                        : "no output given"
+                    }
+                    className={"w-[48%]"}
+                  />
+                </div>
+              )}
+            </>
           )}
-        </>
+        </div>
       )}
     </div>
   );
