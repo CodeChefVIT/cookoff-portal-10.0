@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import api from "@/services/index";
+import { useRouter } from "next/navigation";
 
 interface DetailsCardProps {
   currentRound: string;
@@ -9,9 +10,12 @@ interface DetailsCardProps {
 }
 
 
+
 const DetailsCard: React.FC = () => {
   const [details, setDetails] = useState<DetailsCardProps | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -83,13 +87,10 @@ const DetailsCard: React.FC = () => {
           <p className="font-bold not-italic text-white font-inter mb-1">Tip:</p>
           <p className="font-extralight font-inter text-center justify-start text-white text-base pb-4">Remember: partial scores are awarded for partial solutions</p>
         </div>
-
         {/* Enter Kitchen Button */}
         <div className="mt-7 mb-4">
         <button
-          onClick={() => {
-            // TODO: navigate to kitchen here
-          }}
+          onClick={() => router.push("/kitchen")}
           className="!border-2 !border-green-500 !text-[#c5bba7] font-nulshock !bg-neutral-900 !px-2 !py-2 text-sm rounded-md !hover:bg-green-500 hover:text-white transition flex items-center">
           ENTER KITCHEN
           <Image
