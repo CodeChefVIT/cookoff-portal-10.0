@@ -2,6 +2,7 @@ import Image from "next/image";
 import Statistics from "./Statistics/statistics";
 import Timeline from "./Timeline/timeline";
 import ProfileCard from "./Profile/profile";
+import DetailsCard from "./Details/details";
 export default function Dashboard() {
   return (
     <div className="relative min-h-screen">
@@ -20,13 +21,12 @@ export default function Dashboard() {
         </section>
 
         <div className="flex gap-[56px]">
-          <div className="w-[325px] h-[618px] rounded-2xl flex items-center justify-center text-white border border-gray-500">
-            Profile
-            {/* <ProfileCard/> */}
-          </div>
+            <ProfileCard name={"soham sexy"} email={"ganeshan@xyz.com"} totalScore={0} maxScore={0}/>
           <div className="w-[692px] h-[618px] rounded-2xl flex items-center justify-center text-white">
             <Statistics />
           </div>
+
+            <DetailsCard currentRound={"3"} timeRemaining={"333"}></DetailsCard>
         </div>
       </div>
     </div>
