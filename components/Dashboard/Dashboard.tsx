@@ -17,11 +17,11 @@ export default function Dashboard() {
         </section>
 
         <div className="flex gap-[56px]">
-            <ProfileCard name={"soham sexy"} email={"ganeshan@xyz.com"} totalScore={0} maxScore={0}/>
+            <ProfileCard/>
           <div className="w-[692px] h-[618px] rounded-2xl flex items-center justify-center text-white">
             <Statistics/>
           </div>
-            <DetailsCard currentRound={"3"} timeRemaining={"333"}></DetailsCard>
+            <DetailsCard />
         </div>
       </div>
     </div>

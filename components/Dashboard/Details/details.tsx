@@ -1,16 +1,58 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import api from "@/services/index";
 
 interface DetailsCardProps {
   currentRound: string;
   timeRemaining: string;
 }
 
-const DetailsCard: React.FC<DetailsCardProps> = ({
-  currentRound,
-  timeRemaining,
-}) => {
+
+const DetailsCard: React.FC = () => {
+  const [details, setDetails] = useState<DetailsCardProps | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        const res = await api.get("/dashboard");
+        const data = res.data.data;
+
+        const mapped: DetailsCardProps = {
+          currentRound: data.current_round,
+          timeRemaining: "00:30:00", // placeholder for now
+        };
+
+        setDetails(mapped);
+      } catch (err) {
+        console.error("Failed to fetch details:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDetails();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md p-6 text-center">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!details) {
+    return (
+      <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md p-6 text-center">
+        Failed to load details
+      </div>
+    );
+  }
+
+
+
   return (
     <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
       {/* Header */}
@@ -25,14 +67,14 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
         {/* Current Round */}
         <div>
           <p className="text-lg font-inter font-normal text-white">Current Round</p>
-          <p className="text-2xl font-normal font-brunoace text-green-500">{currentRound}</p>
+          <p className="text-2xl font-normal font-brunoace text-green-500">{details.currentRound}</p>
         </div>
 
         {/* Time Remaining */}
         <div>
           <p className="text-lg font-inter font-normal text-white">Time Remaining</p>
           <div className="border border-[#c5bba7] rounded-md px-4 py-2 mt-2">
-            <p className="text-xl font-brunoace font-normal text-green-500">{timeRemaining}</p>
+            <p className="text-xl font-brunoace font-normal text-green-500">{details.timeRemaining}</p>
           </div>
         </div>
 
