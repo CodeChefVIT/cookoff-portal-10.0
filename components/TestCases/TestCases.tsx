@@ -47,9 +47,9 @@ const TestCases = ({
     <div
       className={`${
         fullScreen
-          ? "h-[95vh] w-screen -top-10 left-0 fixed z-50 overflow-y-scroll "
-          : "h-[50vh]"
-      }flex w-[48vw] flex-col flex-wrap gap-4 bg-testcasesBG p-2 font-roboto`}
+          ? "h-[95vh] w-screen -top-0 left-0 fixed z-50 overflow-y-scroll "
+          : "min-h-[50vh] h-full "
+      }flex flex-col flex-wrap gap-4 bg-testcasesBG p-2 font-roboto`}
     >
       <div className="flex justify-between items-center">
         <div

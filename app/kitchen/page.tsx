@@ -1,11 +1,43 @@
 "use client";
+
 import Editor from "@/components/Editor/Editor";
 import React, { useState, useMemo, useEffect } from "react";
-import Button from "@/components/ui/Button";
-import Modal from "@/components/Modal/Modal";
 import QuestionWindow from "@/components/ui/QuestionWindow";
 import TestCases from "@/components/TestCases/TestCases";
 import { QuestionWithTestcases } from "@/api/question";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import { byRound } from "@/api/question";
+
+export interface Question {
+  id: string;
+  description: string;
+  title: string;
+  qType: string;
+  isBountyActive: boolean;
+  inputFormat: string[];
+  points: number;
+  round: number;
+  constraints: string[];
+  outputFormat: string[];
+  sampleTestInput: string[];
+  sampleTestOutput: string[];
+  explanation: string[];
+}
+
+type TestCase = {
+  id: string;
+  input: string;
+  output: string;
+  expected_output: string;
+  hidden: boolean;
+  runtime: number;
+  memory: number;
+  question_id: string;
+};
 
 export default function UIPage() {
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
@@ -16,6 +48,7 @@ export default function UIPage() {
   const [showModal, setShowModal] = useState<
     "default" | "green" | "red" | "yellow" | null
   >(null);
+
   const [questionID, setQuestionID] = useState<string>("1");
   const [questionsWithTestcases, setQuestionsWithTestcases] = useState<
     QuestionWithTestcases[]
@@ -75,55 +108,6 @@ export default function UIPage() {
         },
       ],
     },
-    {
-      question: {
-        id: "2",
-        title: "PROBLEM 2: PALINDROME NUMBER",
-        points: 15,
-        description:
-          "Given an integer x, return true if x is a palindrome, and false otherwise.",
-        qType: "EASY",
-        isBountyActive: true,
-        inputFormat: ["Line 1: An integer x."],
-        round: 1,
-        constraints: ["-2^31 <= x <= 2^31 - 1"],
-        outputFormat: ["A boolean value."],
-        sampleTestInput: ["121"],
-        sampleTestOutput: ["true"],
-        explanation: [
-          "121 reads as 121 from left to right and from right to left.",
-        ],
-      },
-      testcases: [
-        {
-          id: "t2-1",
-          expected_output: "true",
-          memory: 50,
-          input: "121",
-          hidden: false,
-          runtime: 1,
-          question_id: "2",
-        },
-        {
-          id: "t2-2",
-          expected_output: "false",
-          memory: 50,
-          input: "-121",
-          hidden: false,
-          runtime: 1,
-          question_id: "2",
-        },
-        {
-          id: "t2-3",
-          expected_output: "false",
-          memory: 50,
-          input: "10",
-          hidden: true,
-          runtime: 1,
-          question_id: "2",
-        },
-      ],
-    },
   ]);
   const questions = useMemo(
     () => questionsWithTestcases.map((q) => q.question),
@@ -164,48 +148,71 @@ export default function UIPage() {
           : ` `
       }`}
     >
-      <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 align-baseline `}>
-        {/* Left - Question window */}
-        <div className=" -mt-2 py-4 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
-          {!fullScreenRight && (
-            <QuestionWindow
-              questions={questions}
-              setQuestions={() => {}}
-              questionID={questionID}
-              setQuestionID={setQuestionID}
-              setfullScreen={setFullScreenQuestion}
-              fullScreen={fullScreenQuestion}
-            />
-          )}
-        </div>
+      <ResizablePanelGroup direction="horizontal" className="">
+        {/* Left: Question Panel */}
+        <ResizablePanel defaultSize={50} className="">
+          <div className="grid grid-cols-1 gap-6 lg:gap-10">
+            {/* Left - Question window */}
+            <div className=" -mt-2 py-4 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
+              {!fullScreenRight && (
+                <QuestionWindow
+                  questions={questions}
+                  setQuestions={() => {}}
+                  questionID={questionID}
+                  setQuestionID={setQuestionID}
+                  setfullScreen={setFullScreenQuestion}
+                  fullScreen={fullScreenQuestion}
+                />
+              )}
+            </div>
+          </div>
+        </ResizablePanel>
+
+        <ResizableHandle withHandle />
 
         {/* Right - Editor and Test cases */}
-        <div
-          className={`${
-            fullScreenRight ? `absolute` : ` `
-          } flex flex-col gap-2 mt-0 transform translate-y-12`}
-        >
-          <div className="bg-[#131414]">
-            <Editor
-              languages={languages}
-              selectedLanguage={selectedLanguage}
-              onLanguageChange={setSelectedLanguage}
-              round="Round 1"
-              setfullScreen={setFullScreenEditor}
-              fullScreen={fullScreenEditor}
-            />
-          </div>
+        <ResizablePanel defaultSize={fullScreenEditor ? 100 : 50}>
+          <ResizablePanelGroup
+            direction="vertical"
+            className=""
+            defaultValue={75}
+          >
+            {/* Editor */}
+            <ResizablePanel
+              defaultSize={fullScreenEditor ? 100 : 75}
+              className="pb-4 pl-4"
+            >
+              <div
+                className={`h-full flex flex-col gap-2 mt-0 ${
+                  !fullScreenEditor ? "transform translate-y-12" : ""
+                }`}
+              >
+                <Editor
+                  languages={languages}
+                  selectedLanguage={selectedLanguage}
+                  onLanguageChange={setSelectedLanguage}
+                  round="Round 1"
+                  setfullScreen={setFullScreenEditor}
+                  fullScreen={fullScreenEditor}
+                />
+              </div>
+            </ResizablePanel>
 
-          <div className={`bg-[#131414]`}>
-            <TestCases
-              results={selectedTestcases}
-              compilerDetails={defaultCompilerDetails}
-              fullScreen={fullScreenTestCases}
-              setfullScreen={setFullScreenTestCases}
-            />
-          </div>
-        </div>
-      </div>
+            <ResizableHandle withHandle />
+
+            <ResizablePanel defaultSize={20} className="pt-4 pl-4">
+              <div className={`bg-[#131414]`}>
+                <TestCases
+                  results={selectedTestcases}
+                  compilerDetails={defaultCompilerDetails}
+                  fullScreen={fullScreenTestCases}
+                  setfullScreen={setFullScreenTestCases}
+                />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }
