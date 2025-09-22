@@ -1,6 +1,7 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import api from "@/services/index";
 
 interface ProfileCardProps {
   name: string;
@@ -9,8 +10,56 @@ interface ProfileCardProps {
   maxScore: number;
 }
 
-const ProfileCard: React.FC<ProfileCardProps> = ({ name, email, totalScore, maxScore }) => {
-  const progress = (totalScore / maxScore) * 100;
+const ProfileCard: React.FC = () => {
+  const [profile, setProfile] = useState<ProfileCardProps | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        
+        const res = await api.get("/dashboard");
+        const data = res.data.data;
+        const mapped: ProfileCardProps = {
+          name: data.user_name,
+          email: data.email,
+          totalScore:
+            data.round_1_score + data.round_2_score + data.round_3_score,
+          maxScore: 300, // TODO: max score???
+        };
+
+        setProfile(mapped);
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+
+   if (loading) {
+    return (
+      <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md p-6 text-center">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md p-6 text-center">
+        Failed to load profile
+      </div>
+    );
+  }
+
+
+
+  
+  const progress = (profile.totalScore / profile.maxScore) * 100;
 
   return (
     <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
@@ -37,12 +86,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ name, email, totalScore, maxS
         {/* Info */}
         <div className="mt-4 mb-2">
           <p className="justify-start text-sm font-normal font-inter text-[#c5bba7]">Name</p>
-          <p className="justify-start text-white text-lg font-normal font-inter">{name}</p>
+          <p className="justify-start text-white text-lg font-normal font-inter">{profile.name}</p>
         </div>
 
         <div className="mt-2 mb-4">
           <p className="justify-start text-sm font-normal font-inter text-[#c5bba7]">Email</p>
-          <p className="justify-start text-white text-lg font-normal font-inter truncate">{email}</p>
+          <p className="justify-start text-white text-lg font-normal font-inter truncate">{profile.email}</p>
         </div>
 
         {/* Score */}
@@ -62,7 +111,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ name, email, totalScore, maxS
     {/* Score text (overlaid, centered across full bar) */}
     <div className="absolute inset-0 flex items-center justify-center">
       <span className="text-neutral-900 text-lg font-bold font-inter">
-        {totalScore}/{maxScore}
+        {profile.totalScore}/{profile.maxScore}
       </span>
     </div>
   </div>
