@@ -23,7 +23,6 @@ const router = useRouter();
       router.push("/");           // navigate to home page
     } catch (err) {
       console.error("Logout failed:", err);
-      // Optionally show a toast or alert
     }
   };
 
@@ -38,7 +37,7 @@ const router = useRouter();
           email: data.email,
           totalScore:
             data.round_1_score + data.round_2_score + data.round_3_score,
-          maxScore: 300, // TODO: max score???
+          maxScore: 180, // TODO: max score???
         };
 
         setProfile(mapped);
