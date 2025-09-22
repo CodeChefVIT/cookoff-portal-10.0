@@ -77,7 +77,7 @@ const DetailsCard: React.FC = () => {
         <div>
           <p className="text-lg font-inter font-normal text-white">Time Remaining</p>
           <div className="px-4 py-2 mt-2">
-            <p className="text-xl font-brunoace font-normal text-green-500"><RoundTimer round={details.currentRound}></RoundTimer></p>
+            <div className="text-xl font-brunoace font-normal text-green-500"><RoundTimer round={details.currentRound} /></div>
           </div>
         </div>
 
