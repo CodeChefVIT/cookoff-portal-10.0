@@ -22,12 +22,16 @@ import RoundTimer from "./RoundTimer/RoundTimer";
 import Button from "../ui/Button";
 import api from "@/services";
 
+import { MdFullscreen } from "react-icons/md";
+import { MdFullscreenExit } from "react-icons/md";
 type EditorProps = {
   languages: string[];
   selectedLanguage: string;
   onLanguageChange: (lang: string) => void;
   round?: string;
   questionId?: number;
+  setfullScreen: React.Dispatch<React.SetStateAction<boolean>>;
+  fullScreen: boolean;
 };
 
 export default function Editor({
@@ -36,6 +40,8 @@ export default function Editor({
   onLanguageChange,
   round,
   questionId,
+  fullScreen,
+  setfullScreen,
 }: EditorProps) {
   const languageExtensions: Record<string, LanguageSupport> = {
     cpp: cpp(),
@@ -125,17 +131,36 @@ export default function Editor({
   }, [code, selectedLanguage, round, questionId]);
 
   return (
-    <div className="w-full mx-auto flex flex-col bg-[#131414] rounded-xl shadow-lg overflow-hidden">
-      <div className="flex items-center justify-between px-6 py-3 bg-[#1e1f1f] border-b border-gray-700">
+    <div
+      className={`${
+        fullScreen
+          ? "max-h-[95vh] w-screen -top-0 left-0 fixed z-50 overflow-y-scroll "
+          : "h-full   w-[50vw ]"
+      }mx-auto flex flex-col bg-[#131414]  shadow-lg overflow-hidden`}
+    >
+      <div className="flex items-center justify-between px-6 py-3 z-20 bg-[#1e1f1f] border-b border-gray-700">
         <RoundTimer round={round} />
-        <LanguageSelector
-          languages={languages}
-          selectedLanguage={selectedLanguage}
-          onLanguageChange={onLanguageChange}
-        />
+        <div className="flex gap-10 items-center ">
+          <LanguageSelector
+            languages={languages}
+            selectedLanguage={selectedLanguage}
+            onLanguageChange={onLanguageChange}
+          />
+          {fullScreen ? (
+            <MdFullscreenExit
+              className="scale-200"
+              onClick={() => setfullScreen((prev) => !prev)}
+            />
+          ) : (
+            <MdFullscreen
+              className="scale-200 "
+              onClick={() => setfullScreen((prev) => !prev)}
+            />
+          )}
+        </div>
       </div>
 
-      <div className="h-[500px]">
+      <div className={`${fullScreen ? "h-[90vh]" : "min-h-[50vh]"}`}>
         <CodeMirror
           ref={editorRef}
           value={code || placeholder}

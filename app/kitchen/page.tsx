@@ -1,13 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import Editor from "@/components/Editor/Editor";
-import React, { useEffect, useState } from "react";
-import Button from "@/components/ui/Button";
-import TabButton from "@/components/ui/TabButton";
-import Modal from "@/components/Modal/Modal";
+import React, { useState, useMemo, useEffect } from "react";
 import QuestionWindow from "@/components/ui/QuestionWindow";
 import TestCases from "@/components/TestCases/TestCases";
+import { QuestionWithTestcases } from "@/api/question";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -17,18 +14,18 @@ import { byRound } from "@/api/question";
 
 export interface Question {
   id: string;
-  title: string;
-  points: number;
   description: string;
-  constraints: string[];
-  explanation: string[];
+  title: string;
+  qType: string;
+  isBountyActive: boolean;
   inputFormat: string[];
+  points: number;
+  round: number;
+  constraints: string[];
   outputFormat: string[];
   sampleTestInput: string[];
   sampleTestOutput: string[];
-  qType: string;
-  round: number;
-  isBountyActive: boolean;
+  explanation: string[];
 }
 
 type TestCase = {
@@ -44,96 +41,88 @@ type TestCase = {
 
 export default function UIPage() {
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
+  const [fullScreenRight, setFullScreen] = useState(false);
+  const [fullScreenEditor, setFullScreenEditor] = useState(false);
+  const [fullScreenTestCases, setFullScreenTestCases] = useState(false);
+  const [fullScreenQuestion, setFullScreenQuestion] = useState(false);
   const [showModal, setShowModal] = useState<
     "default" | "green" | "red" | "yellow" | null
   >(null);
 
   const [questionID, setQuestionID] = useState<string>("1");
-
-  const [questions, setQuestions] = useState<Question[]>([
+  const [questionsWithTestcases, setQuestionsWithTestcases] = useState<
+    QuestionWithTestcases[]
+  >([
     {
-      id: "1",
-      title: "PROBLEM 1: HELLO WORLD",
-      points: 10,
-      description: "A queue is an abstract data type that maintains order...",
-      constraints: [],
-      explanation: [],
-      inputFormat: [
-        "Enqueue: add to the end.",
-        "Dequeue: remove from the front.",
+      question: {
+        id: "1",
+        title: "PROBLEM 1: TWO SUM",
+        points: 10,
+        description:
+          "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?",
+        qType: "EASY",
+        isBountyActive: false,
+        inputFormat: [
+          "Line 1: An array of integers nums.",
+          "Line 2: An integer target.",
+        ],
+        round: 1,
+        constraints: [
+          "2 <= nums.length <= 10^4",
+          "-10^9 <= nums[i] <= 10^9",
+          "-10^9 <= target <= 10^9",
+          "Only one valid answer exists.",
+        ],
+        outputFormat: ["An array containing the indices of the two numbers."],
+        sampleTestInput: ["[2, 7, 11, 15]", "9"],
+        sampleTestOutput: ["[0, 1]"],
+        explanation: ["Because nums[0] + nums[1] == 9, we return [0, 1]."],
+      },
+      testcases: [
+        {
+          id: "t1-1",
+          expected_output: "[0, 1]",
+          memory: 100,
+          input: "[2, 7, 11, 15]\n9",
+          hidden: false,
+          runtime: 1,
+          question_id: "1",
+        },
+        {
+          id: "t1-2",
+          expected_output: "[1, 2]",
+          memory: 100,
+          input: "[3, 2, 4]\n6",
+          hidden: false,
+          runtime: 1,
+          question_id: "1",
+        },
+        {
+          id: "t1-3",
+          expected_output: "[0, 1]",
+          memory: 100,
+          input: "[3, 3]\n6",
+          hidden: true,
+          runtime: 1,
+          question_id: "1",
+        },
       ],
-      outputFormat: [],
-      sampleTestInput: ["2 3"],
-      sampleTestOutput: ["5"],
-      qType: "DS",
-      round: 1,
-      isBountyActive: false,
-    },
-    {
-      id: "2",
-      title: "PROBLEM 2: STACK IMPLEMENTATION",
-      points: 15,
-      description: "A stack is a Last-In-First-Out (LIFO) data structure...",
-      constraints: [],
-      explanation: [],
-      inputFormat: ["Operations: Push, Pop, Peek."],
-      outputFormat: [],
-      sampleTestInput: ["1 2 3"],
-      sampleTestOutput: ["3"],
-      qType: "DS",
-      round: 1,
-      isBountyActive: false,
     },
   ]);
-
-  const defaultResults: TestCase[] = [
-    {
-      id: "1",
-      input: "2 3",
-      output: "5",
-      expected_output: "5",
-      hidden: false,
-      runtime: 0,
-      memory: 0,
-      question_id: "1",
-    },
-    {
-      id: "2",
-      input: "10 4",
-      output: "15",
-      expected_output: "14",
-      hidden: false,
-      runtime: 0,
-      memory: 0,
-      question_id: "1",
-    },
-    {
-      id: "3",
-      input: "10 5",
-      output: "20",
-      expected_output: "20",
-      hidden: false,
-      runtime: 0,
-      memory: 0,
-      question_id: "1",
-    },
-    {
-      id: "4",
-      input: "7 8",
-      output: "15",
-      expected_output: "15",
-      hidden: true,
-      runtime: 0,
-      memory: 0,
-      question_id: "2",
-    },
-  ];
-
+  const questions = useMemo(
+    () => questionsWithTestcases.map((q) => q.question),
+    [questionsWithTestcases]
+  );
+  const selectedTestcases = useMemo(
+    () =>
+      questionsWithTestcases.find((q) => q.question.id === questionID)
+        ?.testcases || [],
+    [questionsWithTestcases, questionID]
+  );
   const defaultCompilerDetails = {
     isCompileSuccess: false,
     message: "Compilation Successful !!",
   };
-
   const languages = [
     "C++",
     "C",
@@ -146,47 +135,78 @@ export default function UIPage() {
     "Ruby",
     "Go",
   ];
+  useEffect(() => {
+    let bol = fullScreenEditor || fullScreenTestCases;
+    setFullScreen(bol);
+  }, [fullScreenEditor, fullScreenTestCases]);
 
   return (
-    <div className="bg-[#070E0A] h-screen p-4 text-gray-200 overflow-hidden">
-      <ResizablePanelGroup direction="horizontal" className="w-full h-full">
+    <div
+      className={`relative  bg-[#070E0A] max-h-screen text-gray-200 overflow-hidden  ${
+        fullScreenEditor || fullScreenTestCases || fullScreenQuestion
+          ? `absolute`
+          : ` `
+      }`}
+    >
+      <ResizablePanelGroup direction="horizontal" className="">
         {/* Left: Question Panel */}
-        <ResizablePanel defaultSize={50} className="pr-4">
-          <div className="bg-[#131414] h-full rounded-lg overflow-auto">
-            <QuestionWindow
-              questions={questions}
-              setQuestions={setQuestions}
-              questionID={questionID}
-              setQuestionID={setQuestionID}
-            />
+        <ResizablePanel defaultSize={50} className="">
+          <div className="grid grid-cols-1 gap-6 lg:gap-10">
+            {/* Left - Question window */}
+            <div className=" -mt-2 py-4 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
+              {!fullScreenRight && (
+                <QuestionWindow
+                  questions={questions}
+                  setQuestions={() => {}}
+                  questionID={questionID}
+                  setQuestionID={setQuestionID}
+                  setfullScreen={setFullScreenQuestion}
+                  fullScreen={fullScreenQuestion}
+                />
+              )}
+            </div>
           </div>
         </ResizablePanel>
 
         <ResizableHandle withHandle />
 
-        {/* Right: Code + TestCases */}
-        <ResizablePanel defaultSize={50}>
-          <ResizablePanelGroup direction="vertical" className="h-full">
+        {/* Right - Editor and Test cases */}
+        <ResizablePanel defaultSize={fullScreenEditor ? 100 : 50}>
+          <ResizablePanelGroup
+            direction="vertical"
+            className=""
+            defaultValue={75}
+          >
             {/* Editor */}
-            <ResizablePanel defaultSize={25} className="pb-4 pl-4">
-              <div className="bg-[#131414] h-full rounded-lg overflow-auto">
+            <ResizablePanel
+              defaultSize={fullScreenEditor ? 100 : 75}
+              className="pb-4 pl-4"
+            >
+              <div
+                className={`h-full flex flex-col gap-2 mt-0 ${
+                  !fullScreenEditor ? "transform translate-y-12" : ""
+                }`}
+              >
                 <Editor
                   languages={languages}
                   selectedLanguage={selectedLanguage}
                   onLanguageChange={setSelectedLanguage}
                   round="Round 1"
+                  setfullScreen={setFullScreenEditor}
+                  fullScreen={fullScreenEditor}
                 />
               </div>
             </ResizablePanel>
 
             <ResizableHandle withHandle />
 
-            {/* Test Cases */}
-            <ResizablePanel defaultSize={75} className="pt-4 pl-4">
-              <div className="bg-[#131414] h-full rounded-lg overflow-auto p-2">
+            <ResizablePanel defaultSize={20} className="pt-4 pl-4">
+              <div className={`bg-[#131414]`}>
                 <TestCases
-                  results={defaultResults}
+                  results={selectedTestcases}
                   compilerDetails={defaultCompilerDetails}
+                  fullScreen={fullScreenTestCases}
+                  setfullScreen={setFullScreenTestCases}
                 />
               </div>
             </ResizablePanel>

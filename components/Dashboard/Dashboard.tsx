@@ -6,20 +6,24 @@ import DetailsCard from "./Details/details";
 export default function Dashboard() {
   return (
     <div className="relative min-h-screen">
-      <div className="absolute inset-0 -z-10 bg-black"> 
-        <Image src="/dashboard/background.svg" alt="Background" fill className="absolute -top-[136px]" />
-      </div>   
+      <div className="absolute inset-0 -z-10 bg-black">
+        <Image
+          src="/dashboard/background.svg"
+          alt="Background"
+          fill
+          className="absolute -top-[136px]"
+        />
+      </div>
       {/* Page container */}
       <div className="flex flex-col gap-[34px] w-[1440px] mx-auto">
-
         <section className="h-[120px] w-full rounded-2xl flex items-center justify-center text-white text-lg">
-          <Timeline/>
+          <Timeline />
         </section>
 
         <div className="flex gap-[56px]">
             <ProfileCard/>
           <div className="w-[692px] h-[618px] rounded-2xl flex items-center justify-center text-white">
-            <Statistics/>
+            <Statistics />
           </div>
             <DetailsCard />
         </div>
