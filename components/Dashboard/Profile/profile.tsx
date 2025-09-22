@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import api from "@/services/index";
+import { useRouter } from "next/navigation";
 
 interface ProfileCardProps {
   name: string;
@@ -14,6 +15,17 @@ const ProfileCard: React.FC = () => {
   const [profile, setProfile] = useState<ProfileCardProps | null>(null);
   const [loading, setLoading] = useState(true);
 
+const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await api.post("/logout"); // call logout endpoint
+      router.push("/");           // navigate to home page
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -25,7 +37,7 @@ const ProfileCard: React.FC = () => {
           email: data.email,
           totalScore:
             data.round_1_score + data.round_2_score + data.round_3_score,
-          maxScore: 300, // TODO: max score???
+          maxScore: 180, // TODO: max score???
         };
 
         setProfile(mapped);
@@ -121,9 +133,7 @@ const ProfileCard: React.FC = () => {
         {/* Log Out Button */}
         <div className="flex justify-center mt-16 mb-8">
           <button 
-           onClick={() => {
-              // TODO: add logout path here
-            }}
+           onClick={handleLogout}
             className="!border-2 !border-red-500 !text-[#c5bba7] font-nulshock !bg-neutral-900 !px-2 !py-2 text-sm rounded-md !hover:bg-red-500 hover:text-white transition flex items-center gap-1">
             <Image
             src="/logout.svg"
