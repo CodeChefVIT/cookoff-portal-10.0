@@ -68,6 +68,7 @@ const ProgressCircle: React.FC<{ progress: number }> = ({ progress }) => {
 
 const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
   const { round, status, progress, completed, incomplete, score, locked } = stats;
+  const isLocked = status === "Closed";
 
   return (
     <div className="relative bg-[#111] text-[#B7AB98] rounded-xl p-5 mb-5 shadow-[-9.63px_8.67px_0_#1BA94C] w-[307.17px] min-h-[233.33px] font-[Nulshock,monospace]">
@@ -91,7 +92,7 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
               width={21}
               height={21}
             />
-            Completed: {locked ? 0 : completed}
+            Completed: {isLocked ? 0 : completed}
           </p>
           <p className="flex items-center gap-2">
             <Image
@@ -100,18 +101,18 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
               width={21}
               height={21}
             />
-            Incomplete: {locked ? 0 : incomplete}
+            Incomplete: {isLocked ? 0 : incomplete}
           </p>
         </div>
       </div>
 
       {/* Score aligned under */}
       <p className="text-[18.89px] mt-[45.62px] font-brunoace text-white">
-        Score: {locked ? 0 : score}
+        Score: {isLocked ? 0 : score}
       </p>
 
       {/* Blur Overlay for locked rounds */}
-      {locked && (
+      {isLocked && (
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex flex-col items-center justify-center rounded-xl">
           <Image
             src="/statistics/lock.svg"
