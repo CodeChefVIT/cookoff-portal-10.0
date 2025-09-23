@@ -14,11 +14,10 @@ import {
 export async function POST(request: NextRequest) {
   const body: SaveCodeRequest = await request.json();
 
-  console.log("All cookies:", request.cookies.getAll());
-
-  // Read JWT from cookie
   const token = request.cookies.get("refresh_token")?.value;
-  console.log("Token from cookie:", token);
+  if (!token) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
 
   const result = await saveCodeController(body, token);
 
@@ -48,9 +47,10 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Read JWT from cookie
   const token = request.cookies.get("refresh_token")?.value;
-  console.log("Token from cookie:", token);
+  if (!token) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
 
   const result = await getCodeController(
     {
@@ -72,7 +72,13 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   const body: UpdateCodeRequest = await request.json();
-  const result = await updateCodeController(body);
+
+  const token = request.cookies.get("refresh_token")?.value;
+  if (!token) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  const result = await updateCodeController(body, token);
 
   if (!result.success) {
     return NextResponse.json(
@@ -89,7 +95,13 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   const body: DeleteCodeRequest = await request.json();
-  const result = await deleteCodeController(body);
+
+  const token = request.cookies.get("refresh_token")?.value;
+  if (!token) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  const result = await deleteCodeController(body, token);
 
   if (!result.success) {
     return NextResponse.json(

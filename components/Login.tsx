@@ -41,7 +41,7 @@ export default function Login() {
       const res = await login(values);
       if (res.status === "success") {
         toast.success("Login successful. Welcome, Chef!");
-        router.push("/kitchen");
+        router.push("/dashboard");
       } else {
         const { error } = res;
         toast.error("An error occurred. Login failed.");
@@ -171,7 +171,6 @@ export default function Login() {
         />
       </div>  */}
       </div>
-
 
       {/* Right Section - Login Form */}
       <div className="w-1/2 flex items-center justify-center z-10">

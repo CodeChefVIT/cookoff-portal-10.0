@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@codemirror/lang-cpp": "^6.0.3",
+    "@codemirror/lang-go": "^6.0.1",
     "@codemirror/lang-java": "^6.0.2",
     "@codemirror/lang-javascript": "^6.2.4",
     "@codemirror/lang-php": "^6.0.2",
@@ -40,11 +41,13 @@
     "react-resizable-panels": "^3.0.6",
     "react-syntax-highlighter": "^15.6.6",
     "tailwind-merge": "^3.3.1",
-    "zod": "^4.1.9"
+    "zod": "^4.1.9",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -4,9 +4,9 @@ export interface ApiResponse {
 }
 
 export interface Question {
-  id: string; 
+  id: string;
   title: string;
-  points: number; 
+  points: number;
   description: string;
   inputFormat: string[];
   constraints: string[];
@@ -15,35 +15,34 @@ export interface Question {
   sampleTestOutput: string[];
   explanation: string[];
   qType: string;
-  round: number; 
+  round: number;
   isBountyActive: boolean;
 }
 
-
 export interface Testcase {
-  id: string; // uuid
+  id: string;
   expected_output: string;
-  memory: number; // double
+  memory: number;
   input: string;
   hidden: boolean;
-  runtime: number; // double
-  question_id: string; // uuid
+  runtime: number;
+  question_id: string;
 }
 export interface Testcase {
-  id: string; // uuid
+  id: string;
   expected_output: string;
-  memory: number; // double
+  memory: number;
   input: string;
   hidden: boolean;
-  runtime: number; // double
-  question_id: string; // uuid
+  runtime: number;
+  question_id: string;
   output?: string;
 }
 
 export interface Question {
-  id: string; // uuid
+  id: string;
   title: string;
-  points: number; // integer
+  points: number;
   description: string;
   inputFormat: string[];
   constraints: string[];
@@ -52,7 +51,7 @@ export interface Question {
   sampleTestOutput: string[];
   explanation: string[];
   qType: string;
-  round: number; // integer
+  round: number;
   isBountyActive: boolean;
 }
 
@@ -64,7 +63,7 @@ export interface QuestionTestcasePair {
 export interface QuestionWindowProps {
   questions: Question[];
   setQuestions: React.Dispatch<React.SetStateAction<Question[]>>;
-  setQuestionID: React.Dispatch<React.SetStateAction<string>>; // string, matches API
+  setQuestionID: React.Dispatch<React.SetStateAction<string>>;
   questionID: string;
 }
 
@@ -88,4 +87,3 @@ export interface DashboardResponse {
     round3Score: number;
   };
 }
-

@@ -1,7 +1,7 @@
 "use client";
 
 import Editor from "@/components/Editor/Editor";
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import QuestionWindow from "@/components/ui/QuestionWindow";
 import TestCases from "@/components/TestCases/TestCases";
 import { QuestionWithTestcases } from "@/api/question";
@@ -10,6 +10,8 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import useKitchenStore from "store/zustant";
+import { LANGUAGES } from "@/lib/languages";
 
 export interface Question {
   id: string;
@@ -27,171 +29,242 @@ export interface Question {
   explanation: string[];
 }
 
-type TestCase = {
-  id: string;
-  input: string;
-  output: string;
-  expected_output: string;
-  hidden: boolean;
-  runtime: number;
-  memory: number;
-  question_id: string;
-};
-
 export default function UIPage() {
-  const [selectedLanguage, setSelectedLanguage] = useState("C++");
-  const [fullScreenRight, setFullScreen] = useState(false);
-  const [fullScreenEditor, setFullScreenEditor] = useState(false);
-  const [fullScreenTestCases, setFullScreenTestCases] = useState(false);
-  const [fullScreenQuestion, setFullScreenQuestion] = useState(false);
-  const [showModal, setShowModal] = useState<
-    "default" | "green" | "red" | "yellow" | null
-  >(null);
+  const {
+    selectedQuestionId,
+    setSelectedQuestionId,
+    fullScreenEditor,
+    fullScreenTestCases,
+    fullScreenQuestion,
+    setFullScreenEditor,
+    setFullScreenTestCases,
+    setFullScreenQuestion,
+  } = useKitchenStore();
 
-  const [questionID, setQuestionID] = useState<string>("1");
+  const [testCasesPanelSize, setTestCasesPanelSize] = useState(20);
+
   const [questionsWithTestcases, setQuestionsWithTestcases] = useState<
     QuestionWithTestcases[]
   >([
     {
       question: {
         id: "1",
-        title: "PROBLEM 1: TWO SUM",
+        title: "PROBLEM 1: REVERSE STRING",
         points: 10,
         description:
-          "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?",
+          "Given a string s, return the string reversed. The string may contain letters, digits, and special characters. You must return the reversed version of the string without modifying the original input.",
         qType: "EASY",
         isBountyActive: false,
-        inputFormat: [
-          "Line 1: An array of integers nums.",
-          "Line 2: An integer target.",
-        ],
+        inputFormat: ["Line 1: A string s."],
         round: 1,
         constraints: [
-          "2 <= nums.length <= 10^4",
-          "-10^9 <= nums[i] <= 10^9",
-          "-10^9 <= target <= 10^9",
-          "Only one valid answer exists.",
+          "1 <= s.length <= 10^5",
+          "s consists of printable ASCII characters.",
         ],
-        outputFormat: ["An array containing the indices of the two numbers."],
-        sampleTestInput: ["[2, 7, 11, 15]", "9"],
-        sampleTestOutput: ["[0, 1]"],
-        explanation: ["Because nums[0] + nums[1] == 9, we return [0, 1]."],
+        outputFormat: ["A reversed string."],
+        sampleTestInput: ["hello"],
+        sampleTestOutput: ["olleh"],
+        explanation: ["Reversing 'hello' gives 'olleh'."],
       },
       testcases: [
         {
           id: "t1-1",
-          expected_output: "[0, 1]",
-          memory: 100,
-          input: "[2, 7, 11, 15]\n9",
+          expected_output: "olleh",
+          memory: 50,
+          input: "hello",
           hidden: false,
           runtime: 1,
+          output: "[something]",
           question_id: "1",
         },
         {
           id: "t1-2",
-          expected_output: "[1, 2]",
-          memory: 100,
-          input: "[3, 2, 4]\n6",
+          expected_output: "321cba",
+          memory: 50,
+          input: "abc123",
           hidden: false,
           runtime: 1,
+          output: "[something]",
           question_id: "1",
         },
         {
           id: "t1-3",
-          expected_output: "[0, 1]",
-          memory: 100,
-          input: "[3, 3]\n6",
+          expected_output: "racecar",
+          memory: 50,
+          input: "racecar",
           hidden: true,
           runtime: 1,
+          output: "[something]",
           question_id: "1",
         },
       ],
     },
+    {
+      question: {
+        id: "2",
+        title: "PROBLEM 2: MAXIMUM ELEMENT",
+        points: 15,
+        description:
+          "Given an array of integers nums, return the maximum element in the array. You must do this in O(n) time by scanning through the array once.",
+        qType: "EASY",
+        isBountyActive: false,
+        inputFormat: ["Line 1: An array of integers nums."],
+        round: 1,
+        constraints: ["1 <= nums.length <= 10^5", "-10^9 <= nums[i] <= 10^9"],
+        outputFormat: ["An integer representing the maximum element."],
+        sampleTestInput: ["[1, 5, 3, 9, 2]"],
+        sampleTestOutput: ["9"],
+        explanation: ["The maximum element in [1,5,3,9,2] is 9."],
+      },
+      testcases: [
+        {
+          id: "t2-1",
+          expected_output: "9",
+          memory: 100,
+          input: "[1, 5, 3, 9, 2]",
+          hidden: false,
+          runtime: 1,
+          output: "[something]",
+          question_id: "2",
+        },
+        {
+          id: "t2-2",
+          expected_output: "-1",
+          memory: 100,
+          input: "[-5, -10, -1, -3]",
+          hidden: false,
+          runtime: 1,
+          output: "[something]",
+          question_id: "2",
+        },
+        {
+          id: "t2-3",
+          expected_output: "1000000000",
+          memory: 100,
+          input: "[1, 1000000000, 500, 999999999]",
+          hidden: true,
+          runtime: 1,
+          output: "[something]",
+          question_id: "2",
+        },
+      ],
+    },
   ]);
+
   const questions = useMemo(
-    () => questionsWithTestcases.map((q) => q.question),
+    () => questionsWithTestcases.map((q: QuestionWithTestcases) => q.question),
     [questionsWithTestcases]
   );
   const selectedTestcases = useMemo(
     () =>
-      questionsWithTestcases.find((q) => q.question.id === questionID)
-        ?.testcases || [],
-    [questionsWithTestcases, questionID]
+      questionsWithTestcases.find(
+        (q: QuestionWithTestcases) => q.question.id === selectedQuestionId
+      )?.testcases || [],
+    [questionsWithTestcases, selectedQuestionId]
   );
   const defaultCompilerDetails = {
     isCompileSuccess: false,
     message: "Compilation Successful !!",
   };
-  const languages = [
-    "C++",
-    "C",
-    "C#",
-    "Java",
-    "Python3",
-    "PHP",
-    "Rust",
-    "Racket",
-    "Ruby",
-    "Go",
-  ];
-  useEffect(() => {
-    const bol = fullScreenEditor || fullScreenTestCases;
-    setFullScreen(bol);
-  }, [fullScreenEditor, fullScreenTestCases]);
+
+  const languages = Object.values(LANGUAGES);
+  const handleSetQuestionID: React.Dispatch<React.SetStateAction<string>> = (
+    id
+  ) =>
+    setSelectedQuestionId(
+      typeof id === "function" ? id(selectedQuestionId) : id
+    );
+  const handleSetFullScreenQuestion: React.Dispatch<
+    React.SetStateAction<boolean>
+  > = (fullScreen) =>
+    setFullScreenQuestion(
+      typeof fullScreen === "function"
+        ? fullScreen(fullScreenQuestion)
+        : fullScreen
+    );
+  const handleSetFullScreenEditor: React.Dispatch<
+    React.SetStateAction<boolean>
+  > = (fullScreen) =>
+    setFullScreenEditor(
+      typeof fullScreen === "function"
+        ? fullScreen(fullScreenEditor)
+        : fullScreen
+    );
+  const handleSetFullScreenTestCases: React.Dispatch<
+    React.SetStateAction<boolean>
+  > = (fullScreen) =>
+    setFullScreenTestCases(
+      typeof fullScreen === "function"
+        ? fullScreen(fullScreenTestCases)
+        : fullScreen
+    );
+
+  if (fullScreenQuestion) {
+    return (
+      <QuestionWindow
+        questions={questions}
+        setQuestions={() => {}}
+        questionID={selectedQuestionId}
+        setQuestionID={handleSetQuestionID}
+        setfullScreen={handleSetFullScreenQuestion}
+        fullScreen={fullScreenQuestion}
+      />
+    );
+  }
+
+  if (fullScreenEditor) {
+    return (
+      <Editor
+        languages={languages}
+        round="round 0"
+        setfullScreen={handleSetFullScreenEditor}
+        fullScreen={fullScreenEditor}
+      />
+    );
+  }
+
+  if (fullScreenTestCases) {
+    return (
+      <TestCases
+        results={selectedTestcases}
+        compilerDetails={defaultCompilerDetails}
+        panelSize={100}
+      />
+    );
+  }
 
   return (
-    <div
-      className={`relative  bg-[#070E0A] max-h-screen text-gray-200 overflow-hidden  ${
-        fullScreenEditor || fullScreenTestCases || fullScreenQuestion
-          ? `absolute`
-          : ` `
-      }`}
-    >
+    <div className="relative bg-[#070E0A] max-h-screen text-gray-200 overflow-hidden">
       <ResizablePanelGroup direction="horizontal" className="">
-        {/* Left: Question Panel */}
-        <ResizablePanel defaultSize={50} className="">
+        <ResizablePanel defaultSize={50}>
           <div className="grid grid-cols-1 gap-6 lg:gap-10">
-            {/* Left - Question window */}
-            <div className=" -mt-2 py-4 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
-              {!fullScreenRight && (
-                <QuestionWindow
-                  questions={questions}
-                  setQuestions={() => {}}
-                  questionID={questionID}
-                  setQuestionID={setQuestionID}
-                  setfullScreen={setFullScreenQuestion}
-                  fullScreen={fullScreenQuestion}
-                />
-              )}
+            <div className="-mt-2 py-4 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
+              <QuestionWindow
+                questions={questions}
+                setQuestions={() => {}}
+                questionID={selectedQuestionId}
+                setQuestionID={handleSetQuestionID}
+                setfullScreen={handleSetFullScreenQuestion}
+                fullScreen={fullScreenQuestion}
+              />
             </div>
           </div>
         </ResizablePanel>
 
         <ResizableHandle withHandle />
 
-        {/* Right - Editor and Test cases */}
-        <ResizablePanel defaultSize={fullScreenEditor ? 100 : 50}>
+        <ResizablePanel defaultSize={50}>
           <ResizablePanelGroup
             direction="vertical"
-            className=""
-            defaultValue={75}
+            className="translate-y-12"
+            defaultValue={80}
           >
-            {/* Editor */}
-            <ResizablePanel
-              defaultSize={fullScreenEditor ? 100 : 75}
-              className="pb-4 pl-4"
-            >
-              <div
-                className={`h-full flex flex-col gap-2 mt-0 ${
-                  !fullScreenEditor ? "transform translate-y-12" : ""
-                }`}
-              >
+            <ResizablePanel defaultSize={75} className="pb-4 pl-4">
+              <div className="h-full flex flex-col gap-2 mt-0">
                 <Editor
                   languages={languages}
-                  selectedLanguage={selectedLanguage}
-                  onLanguageChange={setSelectedLanguage}
-                  round="Round 1"
-                  setfullScreen={setFullScreenEditor}
+                  round="round 0"
+                  setfullScreen={handleSetFullScreenEditor}
                   fullScreen={fullScreenEditor}
                 />
               </div>
@@ -199,13 +272,16 @@ export default function UIPage() {
 
             <ResizableHandle withHandle />
 
-            <ResizablePanel defaultSize={20} className="pt-4 pl-4">
-              <div className={`bg-[#131414]`}>
+            <ResizablePanel
+              defaultSize={20}
+              className="pt-4 pl-4"
+              onResize={(size) => setTestCasesPanelSize(size)}
+            >
+              <div className="bg-[#131414]">
                 <TestCases
                   results={selectedTestcases}
                   compilerDetails={defaultCompilerDetails}
-                  fullScreen={fullScreenTestCases}
-                  setfullScreen={setFullScreenTestCases}
+                  panelSize={testCasesPanelSize}
                 />
               </div>
             </ResizablePanel>
