@@ -135,7 +135,7 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
 const Statistics: React.FC = () => {
   const [rounds, setRounds] = useState<RoundStats[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [error, setError] = useState(false);
   useEffect(() => {
     const fetchRounds = async () => {
       try {
@@ -143,6 +143,7 @@ const Statistics: React.FC = () => {
         setRounds(roundsData);
       } catch (err) {
         console.error("Failed to fetch rounds:", err);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -152,6 +153,11 @@ const Statistics: React.FC = () => {
   }, []);
 
   if (loading) return <p className="text-center text-white mt-10">Loading rounds...</p>;
+  if (error)
+    return (
+      <p className="text-center text-red-500 mt-10 font-bold">
+        Failed to fetch statistics.
+      </p>);
 
 return (
   <div className="w-full h-full text-[#ccc] font-[Nulshock,monospace]">
