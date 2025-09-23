@@ -17,7 +17,7 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error: AxiosError) => Promise.reject(error),
+  (error: AxiosError) => Promise.reject(error)
 );
 
 // Add a response interceptor
@@ -32,6 +32,18 @@ api.interceptors.response.use(
         window.location.href = "/";
       }, 2000);
     }
+    else if (error.response && error.response.status === 401) {
+      const data = error.response.data as { error?: string }; // <-- cast to proper shape
+
+      if (data.error === "User is banned") {
+        toast.error("You have been banned. Please contact CC members.");
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2000);
+
+        return Promise.reject(error);
+      }
+    }
 
     // If the error status is 401 and there is no originalRequest._retry flag,
     // it means the token has expired and we need to refresh it
@@ -44,7 +56,7 @@ api.interceptors.response.use(
           {},
           {
             withCredentials: true,
-          },
+          }
         );
         return api(originalRequest); // Use the api instance to retry the request
       } catch {
@@ -57,7 +69,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  },
+  }
 );
 
 export default api;
