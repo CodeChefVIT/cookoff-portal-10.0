@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { IoPersonCircleOutline } from "react-icons/io5";
 import { usePathname } from "next/navigation";
 
 export default function Header() {
   const icon = "/icon.avif";
+  const paper ="/paper.png"
   const pathname = usePathname();
   if (pathname === "/") return null;
 
@@ -20,7 +20,7 @@ export default function Header() {
       />
 
       <h1 className="font-nulshock font-bold text-2xl md:text-4xl lg:text-5xl capitalize text-center text-[#B7AB98]">
-        COOK OFF{" "}
+        COOK {""}
         <span
           className="inline-block bg-clip-text text-transparent"
           style={{
@@ -28,14 +28,19 @@ export default function Header() {
             WebkitBackgroundClip: "text",
           }}
         >
-          10.0
+        OFF 10.0
         </span>
       </h1>
 
-      <IoPersonCircleOutline
-        size={32}
-        className="text-[#B7AB98] flex-shrink-0"
+      <Image
+        src={paper}
+        alt="Papers"
+        width={20}
+        height={20}
+        className="h-4 w-4 md:h-12 md:w-12"
       />
+
+      
     </header>
   );
 }
