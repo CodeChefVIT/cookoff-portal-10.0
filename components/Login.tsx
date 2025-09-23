@@ -93,7 +93,7 @@ export default function Login() {
     }
   }
   return (
-    <div className="relative flex h-screen w-full items-center justify-center text-white overflow-hidden">
+    <div className="relative flex min-h-screen w-full flex-col lg:flex-row items-center justify-center text-white overflow-hidden pb-0 sm:pb-48 md:pb-0">
       {/* Background */}
       <div className="absolute inset-0 -z-10 bg-black">
         <Image
@@ -117,14 +117,16 @@ export default function Login() {
         </h2>
       </div>
 
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center z-20">
+      <div className="absolute left-1/2 -translate-x-1/2 text-center z-20 -bottom-56 sm:bottom-24 md:bottom-32 lg:bottom-6">
         <p className="text-[38px] font-[Nulshock] tracking-widest text-[#D9D9D9]">
           10 YEARS. ONE LEGACY.
         </p>
       </div>
 
+<div className="flex flex-col lg:flex-row items-center justify-center w-full min-h-screen text-white overflow-hidden
+  pt-20 sm:pt-44 lg:pt-0">
       {/* Left Section */}
-      <div className="flex flex-col items-center justify-center w-1/2 p-8 text-center z-10">
+      <div className="flex flex-col items-center justify-center w-full lg:w-1/2 p-8 text-center z-10">
         <div className="flex flex-col items-center gap-2 ml-[50px]">
           <div className="relative inline-block">
             <h1 className="absolute inset-0 text-[96.75px] font-[Nulshock] text-[#125128] z-0 translate-x-[-6px] translate-y-[6px] stroke">
@@ -174,8 +176,8 @@ export default function Login() {
 
 
       {/* Right Section - Login Form */}
-      <div className="w-1/2 flex items-center justify-center z-10">
-        <div className="w-[460px] h-[536px] p-8 shadow-lg rounded-[32px] bg-[#19231E] border border-[#6B6262]">
+      <div className="w-full lg:w-1/2 flex items-center justify-center z-10 px-4">
+        <div className="w-full max-w-md p-6 p-8 shadow-lg rounded-[32px] bg-[#19231E] border border-[#6B6262]">
           <h2 className="text-center text-[26.51px] font-[Nulshock] text-white mt-[75.46px]">
             START COOKING
           </h2>
@@ -232,6 +234,7 @@ export default function Login() {
             </form>
           </Form>
         </div>
+      </div>
       </div>
     </div>
   );
