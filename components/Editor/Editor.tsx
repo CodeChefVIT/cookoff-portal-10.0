@@ -4,71 +4,39 @@ import React, { useRef, useState, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { FaToggleOn, FaToggleOff } from "react-icons/fa";
 import { oneDark } from "@codemirror/theme-one-dark";
-import { cpp } from "@codemirror/lang-cpp";
-import { python } from "@codemirror/lang-python";
-import { java } from "@codemirror/lang-java";
-import { php } from "@codemirror/lang-php";
-import { rust } from "@codemirror/lang-rust";
-import { StreamLanguage } from "@codemirror/language";
-import { c } from "@codemirror/legacy-modes/mode/clike";
-import { csharp } from "@codemirror/legacy-modes/mode/clike";
-import { ruby } from "@codemirror/legacy-modes/mode/ruby";
-import { scheme } from "@codemirror/legacy-modes/mode/scheme";
-import { LanguageSupport } from "@codemirror/language";
 import type { EditorView } from "@codemirror/view";
 import type { ViewUpdate } from "@codemirror/view";
 import LanguageSelector from "./LanguageSelector/LanguageSelector";
 import RoundTimer from "./RoundTimer/RoundTimer";
 import Button from "../ui/Button";
-import api from "@/services";
-
+import useEditorState, { editorState } from "store/zustant";
+import { Language } from "@/lib/languages";
+import axios from "axios";
+import { getUserFromToken } from "@/lib/auth";
 import { MdFullscreen } from "react-icons/md";
 import { MdFullscreenExit } from "react-icons/md";
 type EditorProps = {
-  languages: string[];
-  selectedLanguage: string;
-  onLanguageChange: (lang: string) => void;
+  languages: Language[];
   round?: string;
-  questionId?: number;
   setfullScreen: React.Dispatch<React.SetStateAction<boolean>>;
   fullScreen: boolean;
 };
 
 export default function Editor({
   languages,
-  selectedLanguage,
-  onLanguageChange,
   round,
-  questionId,
   fullScreen,
   setfullScreen,
 }: EditorProps) {
-  const languageExtensions: Record<string, LanguageSupport> = {
-    cpp: cpp(),
-    c: new LanguageSupport(StreamLanguage.define(c)),
-    "c#": new LanguageSupport(StreamLanguage.define(csharp)),
-    java: java(),
-    python3: python(),
-    php: php(),
-    rust: rust(),
-    racket: new LanguageSupport(StreamLanguage.define(scheme)),
-    ruby: new LanguageSupport(StreamLanguage.define(ruby)),
-  };
+  const {
+    selectedLanguage,
+    setSelectedLanguage,
+    selectedQuestionId,
+    editorsState,
+    setEditorsState,
+  } = useEditorState();
 
-  const commentSyntax: Record<string, string> = {
-    cpp: "//",
-    c: "//",
-    "c#": "//",
-    java: "//",
-    python3: "#",
-    php: "//",
-    rust: "//",
-    racket: "#",
-    ruby: "#",
-  };
-
-  const commentSymbol = commentSyntax[selectedLanguage.toLowerCase()] || "//";
-  const placeholder = `${commentSymbol} Write your ${selectedLanguage} solution here`;
+  const placeholder = `${selectedLanguage.commentSymbol} Write your ${selectedLanguage.name} solution here`;
 
   const [code, setCode] = useState("");
   const [cursor, setCursor] = useState({ line: 1, ch: 1 });
@@ -77,6 +45,26 @@ export default function Editor({
 
   const handleChange = (value: string, viewUpdate: ViewUpdate) => {
     setCode(value);
+
+    if (selectedQuestionId) {
+      const newEditorState: editorState = {
+        questionId: selectedQuestionId,
+        code: value,
+      };
+
+      const existingStateIndex = editorsState.findIndex(
+        (state) => state.questionId === selectedQuestionId
+      );
+
+      if (existingStateIndex >= 0) {
+        const updatedStates = [...editorsState];
+        updatedStates[existingStateIndex] = newEditorState;
+        setEditorsState(updatedStates);
+      } else {
+        setEditorsState([...editorsState, newEditorState]);
+      }
+    }
+
     const view = viewUpdate.view;
     const pos = view.state.selection.main.head;
     const line = view.state.doc.lineAt(pos).number;
@@ -86,57 +74,96 @@ export default function Editor({
 
   useEffect(() => {
     const fetchSavedCode = async () => {
-      if (!questionId) return;
+      if (!selectedQuestionId) return;
+
+      const cachedState = editorsState.find(
+        (state) => state.questionId === selectedQuestionId
+      );
+      if (cachedState) {
+        setCode(cachedState.code);
+        return;
+      } else {
+        setCode(placeholder);
+      }
 
       try {
-        const res = await api.get(`/save-code?questionId=${questionId}`);
+        const userInfo = getUserFromToken();
+        if (!userInfo) {
+          console.log("User not authenticated - skipping code fetch");
+          return;
+        }
+
+        const res = await axios.get(
+          `/api/save-code?questionId=${selectedQuestionId}&userId=${userInfo.userId}&secretKey=${userInfo.secretKey}`
+        );
 
         if (res.status === 200) {
           const data = await res.data;
           if (data?.code) {
             setCode(data.code);
+            setEditorsState([
+              ...editorsState,
+              { questionId: selectedQuestionId, code: data.code },
+            ]);
           } else {
             setCode("");
           }
         } else {
           setCode("");
         }
-      } catch (err) {
-        console.error("Error fetching saved code:", err);
-        setCode("");
+      } catch (err: any) {
+        if (err.response?.status === 401) {
+          console.log("User not authenticated - skipping code fetch");
+          setCode("");
+        } else {
+          console.error("Error fetching saved code:", err);
+        }
       }
     };
 
     fetchSavedCode();
-  }, [questionId]);
+  }, [selectedQuestionId, editorsState, setEditorsState]);
 
   useEffect(() => {
     const interval = setInterval(async () => {
       if (code.trim() === "") return;
+
+      const userInfo = getUserFromToken();
+      if (!userInfo) {
+        console.log("User not authenticated - skipping auto-save");
+        return;
+      }
+
       const payload = {
-        questionId,
+        secretKey: userInfo.secretKey,
+        userId: userInfo.userId,
+        questionId: selectedQuestionId,
         code,
-        language: selectedLanguage,
+        language: selectedLanguage.name,
         round,
       };
 
       try {
-        await api.post("/save-code", payload);
-      } catch (err) {
-        console.error("Error auto-saving code:", err);
+        await axios.post("/api/save-code", payload);
+      } catch (err: any) {
+        if (err.response?.status === 401) {
+          console.log("User not authenticated - skipping auto-save");
+        } else {
+          console.error("Error auto-saving code:", err);
+        }
       }
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [code, selectedLanguage, round, questionId]);
+  }, [code, selectedLanguage, round, selectedQuestionId]);
 
   return (
     <div
       className={`${
         fullScreen
-          ? "max-h-[95vh] w-screen -top-0 left-0 fixed z-50 overflow-y-scroll "
-          : "h-full   w-[50vw ]"
-      }mx-auto flex flex-col bg-[#131414]  shadow-lg overflow-hidden`}
+          ? "h-[95vh] w-screen -top-0 left-0 fixed z-50 "
+          : "h-full w-[50vw]"
+      }mx-auto flex flex-col bg-[#131414] shadow-lg overflow-hidden`}
     >
       <div className="flex items-center justify-between px-6 py-3 z-20 bg-[#1e1f1f] border-b border-gray-700">
         <RoundTimer round={round} />
@@ -144,7 +171,7 @@ export default function Editor({
           <LanguageSelector
             languages={languages}
             selectedLanguage={selectedLanguage}
-            onLanguageChange={onLanguageChange}
+            onLanguageChange={setSelectedLanguage}
           />
           {fullScreen ? (
             <MdFullscreenExit
@@ -160,16 +187,13 @@ export default function Editor({
         </div>
       </div>
 
-      <div className={`${fullScreen ? "h-[90vh]" : "min-h-[50vh]"}`}>
+      <div className={`flex-1 overflow-hidden ${fullScreen ? "h-[95vh]" : "min-h-[200px]"}`}>
         <CodeMirror
           ref={editorRef}
           value={code || placeholder}
           height="100%"
           theme={oneDark}
-          extensions={[
-            languageExtensions[selectedLanguage.toLowerCase()] ||
-              languageExtensions["cpp"],
-          ]}
+          extensions={[selectedLanguage.extension]}
           onChange={handleChange}
         />
       </div>
@@ -178,7 +202,7 @@ export default function Editor({
         Line: {cursor.line} &nbsp;|&nbsp; Col: {cursor.ch}
       </div>
 
-      <div className="flex items-center justify-between px-6 py-3 bg-[#181919]">
+      <div className="flex items-center justify-between px-6 py-3 bg-[#181919] z-100">
         <div className="flex items-center gap-2">
           <button
             aria-label="Toggle Custom Input"
@@ -207,15 +231,22 @@ export default function Editor({
             variant="green"
             size="default"
             onClick={async () => {
+              const userInfo = getUserFromToken();
+              if (!userInfo) {
+                console.log("User not authenticated - cannot submit code");
+                return;
+              }
+
               const payload = {
-                questionId,
+                secretKey: userInfo.secretKey,
+                userId: userInfo.userId,
+                questionId: selectedQuestionId,
                 code,
-                language: selectedLanguage,
+                language: selectedLanguage.name,
+                languageId: selectedLanguage.id,
                 round,
               };
-              await api.post("/api/save-code", {
-                ...payload,
-              });
+              await axios.post("/api/save-code", payload);
               console.log("Manually submitted code:", payload);
             }}
           >

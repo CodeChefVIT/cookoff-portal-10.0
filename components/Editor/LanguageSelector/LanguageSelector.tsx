@@ -2,11 +2,12 @@
 
 import React, { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
+import { Language } from "@/lib/languages";
 
 type LanguageSelectorProps = {
-  languages: string[];
-  selectedLanguage: string;
-  onLanguageChange: (lang: string) => void;
+  languages: Language[];
+  selectedLanguage: Language;
+  onLanguageChange: (language: Language) => void;
 };
 
 export default function LanguageSelector({
@@ -26,7 +27,7 @@ export default function LanguageSelector({
         onClick={() => setOpen(!open)}
         className="w-full h-10 !bg-white rounded-lg flex items-center justify-between px-4 shadow-md !text-black text-lg transition-colors duration-200 hover:bg-gray-100"
       >
-        {selectedLanguage}
+        {selectedLanguage.name}
         <FaChevronDown
           className={`w-4 h-4 text-black transition-transform duration-200 ${
             open ? "rotate-180" : ""
@@ -35,14 +36,13 @@ export default function LanguageSelector({
       </button>
 
       {open && (
-        <div className="absolute mt-2 w-full min-w-[200px] max-w-[340px] bg-white rounded-xl shadow-lg z-50 p-4 flex flex-col sm:flex-row sm:gap-4 flex-wrap sm:flex-nowrap">
+        <div className="absolute mt-2 right-0 w-full min-w-[300px]  bg-white rounded-xl shadow-lg z-50 p-4 flex flex-col sm:flex-row sm:gap-4 flex-wrap sm:flex-nowrap">
           <div className="flex-1 flex flex-col gap-2 sm:border-r sm:border-gray-300 pr-0 sm:pr-4">
             {leftColumn.map((lang) => {
-              const isSelected =
-                lang.toLowerCase() === selectedLanguage.toLowerCase();
+              const isSelected = lang.id === selectedLanguage.id;
               return (
                 <div
-                  key={lang}
+                  key={lang.id}
                   onClick={() => {
                     onLanguageChange(lang);
                     setOpen(false);
@@ -54,7 +54,7 @@ export default function LanguageSelector({
                         : "hover:bg-gray-100"
                     }`}
                 >
-                  {lang}
+                  {lang.name}
                 </div>
               );
             })}
@@ -62,11 +62,10 @@ export default function LanguageSelector({
 
           <div className="flex-1 flex flex-col gap-2 mt-2 sm:mt-0">
             {rightColumn.map((lang) => {
-              const isSelected =
-                lang.toLowerCase() === selectedLanguage.toLowerCase();
+              const isSelected = lang.id === selectedLanguage.id;
               return (
                 <div
-                  key={lang}
+                  key={lang.id}
                   onClick={() => {
                     onLanguageChange(lang);
                     setOpen(false);
@@ -78,7 +77,7 @@ export default function LanguageSelector({
                         : "hover:bg-gray-100"
                     }`}
                 >
-                  {lang}
+                  {lang.name}
                 </div>
               );
             })}
