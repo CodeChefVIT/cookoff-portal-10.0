@@ -41,7 +41,7 @@ export default function Login() {
       const res = await login(values);
       if (res.status === "success") {
         toast.success("Login successful. Welcome, Chef!");
-        router.push("/kitchen");
+        router.push("/dashboard");
       } else {
         const { error } = res;
         toast.error("An error occurred. Login failed.");
