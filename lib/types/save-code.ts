@@ -1,6 +1,4 @@
 export interface SaveCodeRequest {
-  secretKey: string;
-  userId: string;
   questionId: string;
   language: string;
   code: string;
@@ -8,19 +6,16 @@ export interface SaveCodeRequest {
 }
 
 export interface UpdateCodeRequest {
-  secretKey: string;
   id: string;
   code: string;
 }
 
 export interface DeleteCodeRequest {
-  secretKey: string;
   id: string;
 }
 
 export interface CodeState {
   _id: string;
-  secretKey: string;
   userId: string;
   questionId: string;
   language: string;

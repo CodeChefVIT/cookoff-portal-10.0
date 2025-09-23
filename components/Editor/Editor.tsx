@@ -11,6 +11,7 @@ import RoundTimer from "./RoundTimer/RoundTimer";
 import Button from "../ui/Button";
 import useEditorState from "store/zustant";
 import { Language } from "@/lib/languages";
+import axios from "axios";
 import { MdFullscreen } from "react-icons/md";
 import { MdFullscreenExit } from "react-icons/md";
 type EditorProps = {
@@ -55,17 +56,72 @@ export default function Editor({
   };
 
   useEffect(() => {
-    if (selectedQuestionId) {
+    const fetchSavedCode = async () => {
+      if (!selectedQuestionId) return;
+
       const cachedState = codeByQuestion.find(
         (state) => state.questionId === selectedQuestionId
       );
       if (cachedState) {
         setCode(cachedState.code);
+        return;
       } else {
         setCode(placeholder);
       }
-    }
-  }, [selectedQuestionId, codeByQuestion, placeholder]);
+
+      try {
+        const res = await axios.get(
+          `/api/save-code?questionId=${selectedQuestionId}`
+        );
+
+        if (res.status === 200) {
+          const data = await res.data;
+          if (data?.code) {
+            setCode(data.code);
+            setCodeForQuestion(selectedQuestionId, data.code);
+          } else {
+            setCode("");
+          }
+        } else {
+          setCode("");
+        }
+      } catch (err: any) {
+        if (err.response?.status === 401) {
+          console.log("User not authenticated - skipping code fetch");
+          setCode("");
+        } else {
+          console.error("Error fetching saved code:", err);
+        }
+      }
+    };
+
+    fetchSavedCode();
+  }, [selectedQuestionId, codeByQuestion, setCodeForQuestion, placeholder]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (code.trim() === "" || code === placeholder) return;
+
+      const payload = {
+        questionId: selectedQuestionId,
+        code,
+        language: selectedLanguage.name,
+        round,
+      };
+
+      try {
+        await axios.post("/api/save-code", payload);
+      } catch (err: any) {
+        if (err.response?.status === 401) {
+          console.log("User not authenticated - skipping auto-save");
+        } else {
+          console.error("Error auto-saving code:", err);
+        }
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [code, selectedLanguage, round, selectedQuestionId, placeholder]);
 
   return (
     <div
@@ -145,7 +201,15 @@ export default function Editor({
             variant="green"
             size="default"
             onClick={async () => {
-              console.log("Manually submitted code:", code);
+              const payload = {
+                questionId: selectedQuestionId,
+                code,
+                language: selectedLanguage.name,
+                languageId: selectedLanguage.id,
+                round,
+              };
+              await axios.post("/api/save-code", payload);
+              console.log("Manually submitted code:", payload);
             }}
           >
             Submit Code

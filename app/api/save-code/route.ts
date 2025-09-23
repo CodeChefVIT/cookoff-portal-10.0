@@ -39,8 +39,6 @@ export async function GET(request: NextRequest) {
 
   const codeId = searchParams.get("id");
   const questionId = searchParams.get("questionId");
-  const userId = searchParams.get("userId");
-  const secretKey = searchParams.get("secretKey");
 
   if (!codeId && !questionId) {
     return NextResponse.json(
@@ -50,9 +48,7 @@ export async function GET(request: NextRequest) {
   }
 
   const token = request.cookies.get("refresh_token")?.value;
-  
-  // Allow authentication via either JWT token OR userId+secretKey query parameters
-  if (!token && (!userId || !secretKey)) {
+  if (!token) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
@@ -60,10 +56,8 @@ export async function GET(request: NextRequest) {
     {
       id: codeId ?? undefined,
       questionId: questionId ?? undefined,
-      userId: userId ?? undefined,
-      secretKey: secretKey ?? undefined,
     },
-    token || "" // Provide empty string as fallback if no token
+    token
   );
 
   if (!result.success) {

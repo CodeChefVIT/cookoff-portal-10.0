@@ -34,19 +34,39 @@ function buildCodeResponse(code: CodeState): CodeResponse {
   };
 }
 
-export async function saveCodeController(request: SaveCodeRequest): Promise<{
+export async function saveCodeController(
+  request: SaveCodeRequest,
+  token: string
+): Promise<{
   success: boolean;
   data?: CodeResponse;
   error?: string;
   status: number;
 }> {
   try {
-    const { userId, questionId, language, code, round } = request;
+    const { questionId, language, code, round } = request;
 
-    if (!userId || !questionId) {
+    let userId: string;
+    try {
+      const payload = jwt.decode(token) as JwtPayload;
+      const id = payload?.user_id || payload?.userId;
+      if (!id) {
+        return {
+          success: false,
+          error: "Invalid token: missing userId",
+          status: 401,
+        };
+      }
+      userId = id;
+    } catch (err) {
+      console.error("Error decoding JWT:", err);
+      return { success: false, error: "Invalid token", status: 401 };
+    }
+
+    if (!questionId) {
       return {
         success: false,
-        error: "userId and questionId are required",
+        error: "questionId is required",
         status: 400,
       };
     }
@@ -154,7 +174,10 @@ export async function getCodeController(
   }
 }
 
-export async function updateCodeController(request: UpdateCodeRequest): Promise<{
+export async function updateCodeController(
+  request: UpdateCodeRequest,
+  token: string
+): Promise<{
   success: boolean;
   data?: CodeResponse;
   error?: string;
@@ -163,8 +186,25 @@ export async function updateCodeController(request: UpdateCodeRequest): Promise<
   try {
     const { id, code } = request;
 
+    let userId: string;
+    try {
+      const payload = jwt.decode(token) as JwtPayload;
+      const uId = payload?.user_id || payload?.userId;
+      if (!uId) {
+        return {
+          success: false,
+          error: "Invalid token: missing userId",
+          status: 401,
+        };
+      }
+      userId = uId;
+    } catch (err) {
+      console.error("Error decoding JWT:", err);
+      return { success: false, error: "Invalid token", status: 401 };
+    }
+
     const col = await getCollection();
-    const existing = await col.findOne({ _id: id } as Filter<CodeState>);
+    const existing = await col.findOne({ _id: id, userId } as Filter<CodeState>);
     if (!existing) {
       return { success: false, error: "Code not found", status: 404 };
     }
@@ -191,16 +231,32 @@ export async function updateCodeController(request: UpdateCodeRequest): Promise<
   }
 }
 
-export async function deleteCodeController(request: DeleteCodeRequest): Promise<{
-  success: boolean;
-  error?: string;
-  status: number;
-}> {
+export async function deleteCodeController(
+  request: DeleteCodeRequest,
+  token: string
+): Promise<{ success: boolean; error?: string; status: number }> {
   try {
     const { id } = request;
 
+    let userId: string;
+    try {
+      const payload = jwt.decode(token) as JwtPayload;
+      const uId = payload?.user_id || payload?.userId;
+      if (!uId) {
+        return {
+          success: false,
+          error: "Invalid token: missing userId",
+          status: 401,
+        };
+      }
+      userId = uId;
+    } catch (err) {
+      console.error("Error decoding JWT:", err);
+      return { success: false, error: "Invalid token", status: 401 };
+    }
+
     const col = await getCollection();
-    const result = await col.deleteOne({ _id: id } as Filter<CodeState>);
+    const result = await col.deleteOne({ _id: id, userId } as Filter<CodeState>);
 
     if (!result.deletedCount) {
       return { success: false, error: "Code not found", status: 404 };
