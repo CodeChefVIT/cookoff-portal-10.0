@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import * as navigation from "next/navigation";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import Button from "@/components/ui/Button";
 import {
   Form,
@@ -172,7 +172,6 @@ export default function Login() {
       </div>  */}
       </div>
 
-      <Toaster position="top-right" reverseOrder={false} />
 
       {/* Right Section - Login Form */}
       <div className="w-1/2 flex items-center justify-center z-10">

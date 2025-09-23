@@ -10,7 +10,6 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { byRound } from "@/api/question";
 
 export interface Question {
   id: string;
@@ -136,7 +135,7 @@ export default function UIPage() {
     "Go",
   ];
   useEffect(() => {
-    let bol = fullScreenEditor || fullScreenTestCases;
+    const bol = fullScreenEditor || fullScreenTestCases;
     setFullScreen(bol);
   }, [fullScreenEditor, fullScreenTestCases]);
 
