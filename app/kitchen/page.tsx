@@ -1,7 +1,7 @@
 "use client";
 
 import Editor from "@/components/Editor/Editor";
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import QuestionWindow from "@/components/ui/QuestionWindow";
 import TestCases from "@/components/TestCases/TestCases";
 import { QuestionWithTestcases } from "@/api/question";
@@ -11,7 +11,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import useKitchenStore from "store/zustant";
-import { LANGUAGES, Language } from "@/lib/languages";
+import { LANGUAGES } from "@/lib/languages";
 
 export interface Question {
   id: string;
@@ -33,15 +33,15 @@ export default function UIPage() {
   const {
     selectedQuestionId,
     setSelectedQuestionId,
-    fullScreenRight,
     fullScreenEditor,
     fullScreenTestCases,
     fullScreenQuestion,
-    setFullScreenRight,
     setFullScreenEditor,
     setFullScreenTestCases,
     setFullScreenQuestion,
   } = useKitchenStore();
+
+  const [testCasesPanelSize, setTestCasesPanelSize] = useState(20);
 
   const [questionsWithTestcases, setQuestionsWithTestcases] = useState<
     QuestionWithTestcases[]
@@ -205,58 +205,70 @@ export default function UIPage() {
         : fullScreen
     );
 
-  useEffect(() => {
-    const bol = fullScreenEditor || fullScreenTestCases;
-    setFullScreenRight(bol);
-  }, [fullScreenEditor, fullScreenTestCases, setFullScreenRight]);
+  if (fullScreenQuestion) {
+    return (
+      <QuestionWindow
+        questions={questions}
+        setQuestions={() => {}}
+        questionID={selectedQuestionId}
+        setQuestionID={handleSetQuestionID}
+        setfullScreen={handleSetFullScreenQuestion}
+        fullScreen={fullScreenQuestion}
+      />
+    );
+  }
+
+  if (fullScreenEditor) {
+    return (
+      <Editor
+        languages={languages}
+        round="round 0"
+        setfullScreen={handleSetFullScreenEditor}
+        fullScreen={fullScreenEditor}
+      />
+    );
+  }
+
+  if (fullScreenTestCases) {
+    return (
+      <TestCases
+        results={selectedTestcases}
+        compilerDetails={defaultCompilerDetails}
+        fullScreen={fullScreenTestCases}
+        setfullScreen={handleSetFullScreenTestCases}
+        panelSize={100}
+      />
+    );
+  }
 
   return (
-    <div
-      className={`relative  bg-[#070E0A] max-h-screen text-gray-200 overflow-hidden  ${
-        fullScreenEditor || fullScreenTestCases || fullScreenQuestion
-          ? `absolute`
-          : ` `
-      }`}
-    >
+    <div className="relative bg-[#070E0A] max-h-screen text-gray-200 overflow-hidden">
       <ResizablePanelGroup direction="horizontal" className="">
-        {/* Left: Question Panel */}
-        <ResizablePanel defaultSize={50} className="">
+        <ResizablePanel defaultSize={50}>
           <div className="grid grid-cols-1 gap-6 lg:gap-10">
-            {/* Left - Question window */}
-            <div className=" -mt-2 py-4 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
-              {!fullScreenRight && (
-                <QuestionWindow
-                  questions={questions}
-                  setQuestions={() => {}}
-                  questionID={selectedQuestionId}
-                  setQuestionID={handleSetQuestionID}
-                  setfullScreen={handleSetFullScreenQuestion}
-                  fullScreen={fullScreenQuestion}
-                />
-              )}
+            <div className="-mt-2 py-4 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
+              <QuestionWindow
+                questions={questions}
+                setQuestions={() => {}}
+                questionID={selectedQuestionId}
+                setQuestionID={handleSetQuestionID}
+                setfullScreen={handleSetFullScreenQuestion}
+                fullScreen={fullScreenQuestion}
+              />
             </div>
           </div>
         </ResizablePanel>
 
         <ResizableHandle withHandle />
 
-        {/* Right - Editor and Test cases */}
-        <ResizablePanel defaultSize={fullScreenEditor ? 100 : 50}>
+        <ResizablePanel defaultSize={50}>
           <ResizablePanelGroup
             direction="vertical"
             className="translate-y-12"
             defaultValue={80}
           >
-            {/* Editor */}
-            <ResizablePanel
-              defaultSize={fullScreenEditor ? 100 : 75}
-              className="pb-4 pl-4 "
-            >
-              <div
-                className={`h-full flex flex-col gap-2 mt-0 ${
-                  !fullScreenEditor ? "transform " : ""
-                }`}
-              >
+            <ResizablePanel defaultSize={75} className="pb-4 pl-4">
+              <div className="h-full flex flex-col gap-2 mt-0">
                 <Editor
                   languages={languages}
                   round="round 0"
@@ -268,13 +280,18 @@ export default function UIPage() {
 
             <ResizableHandle withHandle />
 
-            <ResizablePanel defaultSize={20} className="pt-4 pl-4">
-              <div className={`bg-[#131414]`}>
+            <ResizablePanel
+              defaultSize={20}
+              className="pt-4 pl-4"
+              onResize={(size) => setTestCasesPanelSize(size)}
+            >
+              <div className="bg-[#131414]">
                 <TestCases
                   results={selectedTestcases}
                   compilerDetails={defaultCompilerDetails}
                   fullScreen={fullScreenTestCases}
                   setfullScreen={handleSetFullScreenTestCases}
+                  panelSize={testCasesPanelSize}
                 />
               </div>
             </ResizablePanel>

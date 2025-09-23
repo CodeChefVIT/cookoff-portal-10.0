@@ -20,6 +20,7 @@ export interface DeleteCodeRequest {
 
 export interface CodeState {
   _id: string;
+  secretKey: string;
   userId: string;
   questionId: string;
   language: string;

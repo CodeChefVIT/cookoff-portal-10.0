@@ -17,6 +17,7 @@ interface TestCasesProps {
   compilerDetails: CompilerResult;
   setfullScreen: React.Dispatch<React.SetStateAction<boolean>>;
   fullScreen: boolean;
+  panelSize: number;
 }
 
 function getScoreColor(count: number, total: number) {
@@ -31,6 +32,7 @@ const TestCases = ({
   compilerDetails,
   fullScreen,
   setfullScreen,
+  panelSize,
 }: TestCasesProps) => {
   const [activeCaseIndex, setActiveCaseIndex] = useState(0);
   const visibleCases = results.filter((r) => !r.hidden);
@@ -43,6 +45,12 @@ const TestCases = ({
   ).length;
   const activeCaseData = visibleCases[activeCaseIndex];
   const totalCases = results.length;
+  
+  // Helper function to determine if panel is large enough for certain components
+  const isPanelLarge = panelSize >= 70; // 30% or larger
+  const isPanelMedium = panelSize >= 15; // 20% or larger
+  const isPanelSmall = panelSize < 5; // Less than 20%
+  
   return (
     <div
       className={`${
@@ -52,15 +60,29 @@ const TestCases = ({
       }flex flex-col flex-wrap gap-4 bg-testcasesBG p-2 font-roboto`}
     >
       <div className="flex justify-between items-center">
-        <div
-          className={`rounded-xl bg-testcasesBG px-4 py-4 text-3xl font-bold ${getScoreColor(
-            passedCount,
-            totalCases
-          )}`}
-        >
-          {`${passedCount}/${totalCases} Test Cases Passed !!`}
-        </div>
-        {fullScreen ? (
+        {/* Conditional score display based on panel size */}
+        {isPanelMedium ? (
+          <div
+            className={`rounded-xl bg-testcasesBG px-4 py-4 text-3xl font-bold ${getScoreColor(
+              passedCount,
+              totalCases
+            )}`}
+          >
+            {`${passedCount}/${totalCases} Test Cases Passed !!`}
+          </div>
+        ) : (
+          <div
+            className={`rounded-xl bg-testcasesBG px-2 py-2 text-lg font-bold ${getScoreColor(
+              passedCount,
+              totalCases
+            )}`}
+          >
+            {`${passedCount}/${totalCases}`}
+          </div>
+        )}
+        
+        {/* Conditional fullscreen button */}
+        {isPanelMedium && (fullScreen ? (
           <MdFullscreenExit
             className="scale-200"
             onClick={() => setfullScreen((prev) => !prev)}
@@ -70,38 +92,64 @@ const TestCases = ({
             className="scale-200 "
             onClick={() => setfullScreen((prev) => !prev)}
           />
-        )}
-      </div>
-      <div className="flex items-center gap-3">
-        {visibleCases.map((testCase, idx) => (
-          <Button
-            key={testCase.id}
-            variant={"secondary"}
-            className={`rounded-xl px-4 py-2 text-sm font-semibold bg-secondary hover:bg-border`}
-            onClick={() => setActiveCaseIndex(idx)}
-          >
-            {testCase.expected_output === testCase.expected_output ? (
-              <BsCheckCircleFill className={`mr-2 size-4 text-ring`} />
-            ) : (
-              <BsXCircleFill className={`mr-2 size-4 text-accent`} />
-            )}
-            {`Case ${idx + 1}`}
-          </Button>
         ))}
-        {hiddenCases.length > 0 && (
-          <div className="ml-auto flex cursor-pointer items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-sm hover:scale-105 hover:bg-border">
-            <BsEyeSlash
-              className={`opacity-80 ${getScoreColor(
-                hiddenPassedCount,
-                hiddenCases.length
-              )}`}
-            />
-            <span className="opacity-80">Hidden Testcases</span>
-            <span className="opacity-80">{`${hiddenPassedCount}/${hiddenCases.length}`}</span>
-          </div>
-        )}
       </div>
-      {fullScreen && (
+      {/* Conditional test case buttons based on panel size */}
+      {isPanelMedium ? (
+        <div className="flex items-center gap-3">
+          {visibleCases.map((testCase, idx) => (
+            <Button
+              key={testCase.id}
+              variant={"secondary"}
+              className={`rounded-xl px-4 py-2 text-sm font-semibold bg-secondary hover:bg-border`}
+              onClick={() => setActiveCaseIndex(idx)}
+            >
+              {testCase.expected_output === testCase.output ? (
+                <BsCheckCircleFill className={`mr-2 size-4 text-ring`} />
+              ) : (
+                <BsXCircleFill className={`mr-2 size-4 text-accent`} />
+              )}
+              {`Case ${idx + 1}`}
+            </Button>
+          ))}
+          {hiddenCases.length > 0 && (
+            <div className="ml-auto flex cursor-pointer items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-sm hover:scale-105 hover:bg-border">
+              <BsEyeSlash
+                className={`opacity-80 ${getScoreColor(
+                  hiddenPassedCount,
+                  hiddenCases.length
+                )}`}
+              />
+              <span className="opacity-80">Hidden</span>
+              <span className="opacity-80">{`${hiddenPassedCount}/${hiddenCases.length}`}</span>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="flex items-center gap-2">
+          {/* Compact view for small panels */}
+          {visibleCases.slice(0, 3).map((testCase, idx) => (
+            <Button
+              key={testCase.id}
+              variant={"secondary"}
+              className={`rounded-lg px-2 py-1 text-xs font-semibold bg-secondary hover:bg-border`}
+              onClick={() => setActiveCaseIndex(idx)}
+            >
+              {testCase.expected_output === testCase.output ? (
+                <BsCheckCircleFill className={`mr-1 size-3 text-ring`} />
+              ) : (
+                <BsXCircleFill className={`mr-1 size-3 text-accent`} />
+              )}
+              {idx + 1}
+            </Button>
+          ))}
+          {visibleCases.length > 3 && (
+            <span className="text-xs opacity-60">+{visibleCases.length - 3} more</span>
+          )}
+        </div>
+      )}
+      {/* Conditional compiler message and input/output cards */}
+      {isPanelMedium && (
         <div className="">
           <CompilerMessage
             isCompileSuccess={compilerDetails.isCompileSuccess}
@@ -113,22 +161,24 @@ const TestCases = ({
                   <InputOutputCard
                     title={"Input"}
                     data={activeCaseData.input}
-                    className={"w-[31%]"}
+                    className={isPanelLarge ? "w-[31%]" : "w-[48%]"}
                   />
                   <InputOutputCard
                     title={"Expected Output"}
                     data={activeCaseData.expected_output}
-                    className={"w-[31%]"}
+                    className={isPanelLarge ? "w-[31%]" : "w-[48%]"}
                   />
-                  <InputOutputCard
-                    title={"Your Output"}
-                    data={
-                      activeCaseData.output
-                        ? activeCaseData.output
-                        : "no output given"
-                    }
-                    className={"w-[31%]"}
-                  />
+                  {isPanelLarge && (
+                    <InputOutputCard
+                      title={"Your Output"}
+                      data={
+                        activeCaseData.output
+                          ? activeCaseData.output
+                          : "no output given"
+                      }
+                      className={"w-[31%]"}
+                    />
+                  )}
                 </div>
               ) : (
                 <div className="flex justify-between font-inter">
@@ -142,7 +192,7 @@ const TestCases = ({
                     data={
                       activeCaseData.output
                         ? activeCaseData.output
-                        : "no output given"
+                          : "no output given"
                     }
                     className={"w-[48%]"}
                   />
@@ -150,6 +200,13 @@ const TestCases = ({
               )}
             </>
           )}
+        </div>
+      )}
+      
+      {/* Show minimal info for very small panels */}
+      {isPanelSmall && (
+        <div className="text-center text-sm opacity-60">
+          Resize panel to view test case details
         </div>
       )}
     </div>

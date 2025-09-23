@@ -12,10 +12,10 @@ export interface TestCase {
   memory: number;
   question_id: string;
 }
-export type editorState={
-  questionId: string,
-  code: string,
-}
+export type QuestionCode = {
+  questionId: string;
+  code: string;
+};
 
 export interface CompilerResult {
   isCompileSuccess: boolean;
@@ -25,7 +25,7 @@ export interface CompilerResult {
 interface KitchenState {
   selectedQuestionId: string;
   selectedLanguage: Language;
-  editorsState:editorState[];
+  codeByQuestion: QuestionCode[];
 
   fullScreenRight: boolean;
   fullScreenEditor: boolean;
@@ -37,10 +37,9 @@ interface KitchenState {
   compilerDetails: CompilerResult | null;
   activeCaseIndex: number;
 
-
   setSelectedQuestionId: (id: string) => void;
   setSelectedLanguage: (language: Language) => void;
-  setEditorsState: (state: editorState[]) => void;
+  setCodeForQuestion: (questionId: string, code: string) => void;
   setFullScreenRight: (fullScreen: boolean) => void;
   setFullScreenEditor: (fullScreen: boolean) => void;
   setFullScreenTestCases: (fullScreen: boolean) => void;
@@ -63,7 +62,7 @@ const initialState = {
   testResults: [],
   compilerDetails: null,
   activeCaseIndex: 0,
-  editorsState: [],
+  codeByQuestion: [],
 };
 
 const useKitchenStore = create<KitchenState>()(
@@ -76,13 +75,26 @@ const useKitchenStore = create<KitchenState>()(
 
         setSelectedLanguage: (language) => set({ selectedLanguage: language }),
 
-        setEditorsState: (editorsState) => set({ editorsState }),
+        setCodeForQuestion: (questionId, code) =>
+          set((state) => {
+            const existing = state.codeByQuestion.find(
+              (q) => q.questionId === questionId
+            );
+            if (existing) {
+              return {
+                codeByQuestion: state.codeByQuestion.map((q) =>
+                  q.questionId === questionId ? { ...q, code } : q
+                ),
+              };
+            }
+            return {
+              codeByQuestion: [...state.codeByQuestion, { questionId, code }],
+            };
+          }),
 
-        setFullScreenRight: (fullScreen) =>
-          set({ fullScreenRight: fullScreen }),
+        setFullScreenRight: (fullScreen) => set({ fullScreenRight: fullScreen }),
 
-        setFullScreenEditor: (fullScreen) =>
-          set({ fullScreenEditor: fullScreen }),
+        setFullScreenEditor: (fullScreen) => set({ fullScreenEditor: fullScreen }),
 
         setFullScreenTestCases: (fullScreen) =>
           set({ fullScreenTestCases: fullScreen }),
@@ -102,6 +114,10 @@ const useKitchenStore = create<KitchenState>()(
       }),
       {
         name: "kitchen-storage",
+        partialize: (state) => ({
+          selectedLanguage: state.selectedLanguage,
+          codeByQuestion: state.codeByQuestion,
+        }),
         storage: {
           getItem: (name) => {
             const str = localStorage.getItem(name);
@@ -121,7 +137,7 @@ const useKitchenStore = create<KitchenState>()(
             const str = JSON.stringify({
               state: {
                 selectedLanguage: { name: state.selectedLanguage.name },
-                editorsState: state.editorsState,
+                codeByQuestion: state.codeByQuestion,
               },
               version,
             });

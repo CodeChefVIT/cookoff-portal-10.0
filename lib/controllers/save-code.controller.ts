@@ -9,6 +9,11 @@ import { getMongoClient } from "@/lib/db";
 import type { Filter, UpdateFilter } from "mongodb";
 import jwt from "jsonwebtoken";
 
+interface JwtPayload {
+  user_id?: string;
+  userId?: string;
+}
+
 async function getCollection() {
   const client = await getMongoClient();
   const dbName = process.env.MONGODB_DB || "app";
@@ -29,18 +34,14 @@ function buildCodeResponse(code: CodeState): CodeResponse {
   };
 }
 
-export async function saveCodeController(
-  request: SaveCodeRequest,
-  token?: string
-): Promise<{
+export async function saveCodeController(request: SaveCodeRequest): Promise<{
   success: boolean;
   data?: CodeResponse;
   error?: string;
   status: number;
 }> {
   try {
-    const { questionId, language, code, round } = request;
-    let userId = "50";
+    const { userId, questionId, language, code, round } = request;
 
     if (!userId || !questionId) {
       return {
@@ -56,16 +57,6 @@ export async function saveCodeController(
         error: "Language and code are required",
         status: 400,
       };
-    }
-
-    if (token) {
-      try {
-        const payload = jwt.decode(token) as any;
-        userId = payload?.user_id || payload?.userId || userId;
-      } catch (err) {
-        console.error("Error decoding JWT:", err);
-        return { success: false, error: "Invalid token", status: 401 };
-      }
     }
 
     const col = await getCollection();
@@ -109,10 +100,9 @@ export async function saveCodeController(
 export async function getCodeController(
   request: {
     id?: string;
-    userId?: string | number;
-    questionId?: string | number;
+    questionId?: string;
   },
-  token?: string
+  token: string
 ): Promise<{
   success: boolean;
   data?: CodeResponse;
@@ -122,16 +112,21 @@ export async function getCodeController(
   try {
     const { id, questionId } = request;
 
-    let userId = "50";
-
-    if (token) {
-      try {
-        const payload = jwt.decode(token) as any;
-        userId = payload?.user_id || payload?.userId || userId;
-      } catch (err) {
-        console.error("Error decoding JWT:", err);
-        return { success: false, error: "Invalid token", status: 401 };
+    let userId: string;
+    try {
+      const payload = jwt.decode(token) as JwtPayload;
+      const uId = payload?.user_id || payload?.userId;
+      if (!uId) {
+        return {
+          success: false,
+          error: "Invalid token: missing userId",
+          status: 401,
+        };
       }
+      userId = uId;
+    } catch (err) {
+      console.error("Error decoding JWT:", err);
+      return { success: false, error: "Invalid token", status: 401 };
     }
 
     const col = await getCollection();
@@ -159,9 +154,7 @@ export async function getCodeController(
   }
 }
 
-export async function updateCodeController(
-  request: UpdateCodeRequest
-): Promise<{
+export async function updateCodeController(request: UpdateCodeRequest): Promise<{
   success: boolean;
   data?: CodeResponse;
   error?: string;
@@ -198,9 +191,11 @@ export async function updateCodeController(
   }
 }
 
-export async function deleteCodeController(
-  request: DeleteCodeRequest
-): Promise<{ success: boolean; error?: string; status: number }> {
+export async function deleteCodeController(request: DeleteCodeRequest): Promise<{
+  success: boolean;
+  error?: string;
+  status: number;
+}> {
   try {
     const { id } = request;
 
