@@ -30,7 +30,7 @@ export default function Header() {
     alt="Papers" 
     width={75} 
     height={75} 
-    className="opacity-100" 
+    className="opacity-100 -mt-3 translate-x-10" 
     priority 
   />
 </a>
