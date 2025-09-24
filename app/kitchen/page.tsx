@@ -24,24 +24,25 @@ export default function UIPage() {
     testCases,
     setQuestions,
     setTestCases,
+    setSelectedQuestionId,
   } = useKitchenStore();
+
+  console.log("selectedQuestionId", selectedQuestionId);
+  console.log("testCases", testCases);
 
   useEffect(() => {
     const fetchData = async () => {
       const { questions, testcases } = await getKitchenData();
       setQuestions(questions);
       setTestCases(testcases);
+      if (questions.length > 0) {
+        setSelectedQuestionId(questions[0].ID);
+      }
     };
     fetchData();
-  }, [setQuestions, setTestCases]);
+  }, [setQuestions, setTestCases, setSelectedQuestionId]);
 
   const [testCasesPanelSize, setTestCasesPanelSize] = useState(20);
-
-  const selectedTestcases = useMemo(
-    () =>
-      testCases.filter((tc) => tc && tc.question_id === selectedQuestionId),
-    [testCases, selectedQuestionId]
-  );
 
   const defaultCompilerDetails = {
     isCompileSuccess: false,
@@ -85,7 +86,6 @@ export default function UIPage() {
   if (fullScreenTestCases) {
     return (
       <TestCases
-        results={selectedTestcases}
         compilerDetails={defaultCompilerDetails}
         panelSize={100}
       />
@@ -131,7 +131,6 @@ export default function UIPage() {
             >
               <div className="bg-[#131414]">
                 <TestCases
-                  results={selectedTestcases}
                   compilerDetails={defaultCompilerDetails}
                   panelSize={testCasesPanelSize}
                 />

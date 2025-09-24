@@ -2,14 +2,14 @@ import { handleAPIError } from "@/lib/error";
 import api from "@/services";
 
 export interface TestcaseFromAPI {
-  id: string;
-  input: string;
-  output?: string;
-  expected_output: string;
-  hidden: boolean;
-  runtime: number;
-  memory: number;
-  question_id: string;
+  Id: string;
+  Input: string;
+  Output?: string;
+  Expected_output: string;
+  Hidden: boolean;
+  Runtime: number;
+  Memory: number;
+  Question_id: string;
 }
 
 export type Question = {
@@ -28,15 +28,15 @@ export type Question = {
   Explanation: string[];
   testcases?: TestcaseFromAPI[];
 };
-export async function byRound(): Promise<Question[]> {
+export async function byRound(): Promise<{
+  question: Omit<Question, "testcases">;
+  testcases: TestcaseFromAPI[];
+}[]> {
   try {
     const { data } = await api.get<ByRoundApiResponse>(`/question/round`);
-    console.log(data);
+    console.log("byRound: ", data);
 
-    return data.questions_testcases.map((q) => ({
-      ...q.question,
-      testcases: q.testcases,
-    }));
+    return data.questions_testcases;
   } catch (e) {
     throw handleAPIError(e);
   }

@@ -12,11 +12,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 const QuestionWindow: React.FC = () => {
   const router = useRouter();
-  const {
-    questions,
-    selectedQuestionId,
-    setSelectedQuestionId,
-  } = useKitchenStore();
+  const { questions, selectedQuestionId, setSelectedQuestionId } =
+    useKitchenStore();
 
   const [activeTab, setActiveTab] = useState<string>(selectedQuestionId);
   const [selectedQuestion, setSelectedQuestion] = useState<
@@ -26,21 +23,13 @@ const QuestionWindow: React.FC = () => {
   const handleQuestionChange = (id: string) => {
     setActiveTab(id);
     setSelectedQuestionId(id);
-    const found = questions.find((q) => q.ID === id);
-    setSelectedQuestion(found);
   };
 
   useEffect(() => {
-    if (questions.length > 0) {
-      const initialQuestion =
-        questions.find((q) => q.ID === selectedQuestionId) || questions[0];
-      if (initialQuestion) {
-        setActiveTab(initialQuestion.ID);
-        setSelectedQuestionId(initialQuestion.ID);
-        setSelectedQuestion(initialQuestion);
-      }
-    }
-  }, [questions, selectedQuestionId, setSelectedQuestionId]);
+    const found = questions.find((q) => q.ID === selectedQuestionId);
+    setSelectedQuestion(found);
+    setActiveTab(selectedQuestionId);
+  }, [selectedQuestionId, questions]);
 
   if (questions.length === 0) {
     return (
@@ -55,7 +44,6 @@ const QuestionWindow: React.FC = () => {
       className={`bg-[#070E0A] text-gray-300 min-h-screen flex items-center justify-center ${inter.className}`}
     >
       <div className="w-full max-w-4xl">
-        {/* Tabs */}
         <div className="flex items-center space-x-1 sm:space-x-2 mb-[-1px] pl-4 ">
           {questions.map((q) => (
             <TabButton
@@ -67,7 +55,6 @@ const QuestionWindow: React.FC = () => {
           ))}
         </div>
 
-        {/* Question content */}
         <div className="bg-[#131414] p-6 sm:p-8 max-w-4xl mx-auto relative w-full min-h-[50vh] h-[90vh] overflow-y-scroll [&::-webkit-scrollbar]:w-0">
           {selectedQuestion ? (
             <main>
@@ -79,14 +66,11 @@ const QuestionWindow: React.FC = () => {
               </span>
               <div className="prose prose-invert prose-sm sm:prose-base max-w-none text-gray-400 space-y-4">
                 <section>
-                  <h2 className="text-green-400 font-semibold mb-2">
-                    Problem
-                  </h2>
+                  <h2 className="text-green-400 font-semibold mb-2">Problem</h2>
 
                   <Markdown>{selectedQuestion.Description}</Markdown>
                 </section>
 
-                {/* Input Format */}
                 <section>
                   <h2 className="text-green-400 font-semibold mb-2">
                     Input Format
@@ -98,7 +82,6 @@ const QuestionWindow: React.FC = () => {
                   </Markdown>
                 </section>
 
-                {/* Constraints */}
                 <section>
                   <h2 className="text-green-400 font-semibold mb-2">
                     Constraints
@@ -110,7 +93,6 @@ const QuestionWindow: React.FC = () => {
                   </Markdown>
                 </section>
 
-                {/* Output Format */}
                 <section>
                   <h2 className="text-green-400 font-semibold mb-2">
                     Output Format
@@ -122,7 +104,6 @@ const QuestionWindow: React.FC = () => {
                   </Markdown>
                 </section>
 
-                {/* Sample Test Cases */}
                 <section>
                   <h2 className="text-green-400 font-semibold mb-2">
                     Sample Test Cases

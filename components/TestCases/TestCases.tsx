@@ -14,7 +14,6 @@ interface CompilerResult {
 }
 
 interface TestCasesProps {
-  results: TestcaseFromAPI[];
   compilerDetails: CompilerResult;
   panelSize: number;
 }
@@ -26,7 +25,7 @@ function getTestCaseScoreColor(count: number, total: number) {
   return "text-accent";
 }
 
-const TestCases = ({ results, compilerDetails, panelSize }: TestCasesProps) => {
+const TestCases = ({ compilerDetails, panelSize }: TestCasesProps) => {
   const [activeCaseIndex, setActiveCaseIndex] = useState(0);
   const { fullScreenTestCases, setFullScreenTestCases } = useKitchenStore();
   const {
@@ -35,7 +34,7 @@ const TestCases = ({ results, compilerDetails, panelSize }: TestCasesProps) => {
     passedCount,
     hiddenPassedCount,
     totalCases,
-  } = useTestCases(results);
+  } = useTestCases();
 
   const activeCaseData = visibleCases[activeCaseIndex];
 
