@@ -45,11 +45,7 @@ export default async function Timeline() {
         steps[idx].progress =
           t.totalDuration > 0
             ? Math.max(
-                0,
-                Math.min(
-                  100,
-                  ((t.totalDuration - t.elapsedTime) / t.totalDuration) * 100
-                )
+                0, Math.min(100,((t.totalDuration - t.elapsedTime) / t.totalDuration) * 100)
               )
             : 0;
       }
