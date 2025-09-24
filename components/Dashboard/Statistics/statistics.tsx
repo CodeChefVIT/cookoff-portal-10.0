@@ -171,7 +171,7 @@ return (
       </p>
 
       {/* Grid below */}
-      <div className="mt-10 grid gap-y-6 gap-x-[49.2px] max-w-[960px] mx-auto grid-cols-[repeat(auto-fit,minmax(280px,1fr))] pb-[34px] ml-[10px]">
+      <div className="mt-10 grid gap-y-6 gap-x-[49.2px] max-w-[960px] mx-auto grid-cols-1 sm:grid-cols-2 pb-[34px] ml-[10px]">
         {rounds.map((r) => (
           <RoundCard key={r.round} stats={r} />
         ))}
