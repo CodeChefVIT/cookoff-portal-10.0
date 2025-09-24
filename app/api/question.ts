@@ -1,8 +1,6 @@
 import { handleAPIError } from "@/lib/error";
 import api from "@/services";
 
-// app/api/question.ts
-
 export interface TestcaseFromAPI {
   id: string;
   input: string;
@@ -14,27 +12,30 @@ export interface TestcaseFromAPI {
   question_id: string;
 }
 
-// 👇 derived type without testcases
 export type Question = {
-  id: string;
-  description: string;
-  title: string;
-  qType: string;
-  isBountyActive: boolean;
-  inputFormat: string[];
-  points: number;
-  round: number;
-  constraints: string[];
-  outputFormat: string[];
-  sampleTestInput: string[];
-  sampleTestOutput: string[];
-  explanation: string[];
+  ID: string;
+  Description: string;
+  Title: string;
+  Qtype: string;
+  Isbountyactive: boolean;
+  InputFormat: string[];
+  Points: number;
+  Round: number;
+  Constraints: string[];
+  OutputFormat: string[];
+  SampleTestInput: string[];
+  SampleTestOutput: string[];
+  Explanation: string[];
 };
-// your API function
 export async function byRound(): Promise<QuestionWithTestcases[]> {
-  const res = await fetch("/api/round"); // example
-  if (!res.ok) throw new Error("Failed to fetch");
-  return res.json();
+  try {
+    const { data } = await api.get<ByRoundApiResponse>(`/question/round`);
+    console.log(data);
+
+    return data.questions_testcases;
+  } catch (e) {
+    throw handleAPIError(e);
+  }
 }
 
 export interface TestcaseFromAPI {
