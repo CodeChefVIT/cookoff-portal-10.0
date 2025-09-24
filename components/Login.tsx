@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import login from "@/services/login";
+import { Eye, EyeOff } from "lucide-react";
 
 // validation schema
 const formSchema = z.object({
@@ -26,6 +27,7 @@ const formSchema = z.object({
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
+   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -212,12 +214,25 @@ export default function Login() {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Enter Password"
-                        {...field}
-                        className="bg-[#B7AB98] w-[351.66px] h-[60.08px] radius-[8.84px] mt-[28.28px] mr-[42.41px] ml-[42.42px] text-black placeholder:text-black font-[Inter] placeholder:font-[Inter] font-medium placeholder:font-medium"
-                      />
+                      <div className="relative w-[351.66px]">
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter Password"
+                            {...field}
+                            className="bg-[#B7AB98] w-full h-[60.08px] radius-[8.84px] mt-[28.28px] text-black placeholder:text-black font-[Inter] font-medium pr-10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute inset-y-6 top-[52%] right-0 flex items-center !bg-transparent !shadow-none"
+                          >
+                            {showPassword ? (
+                              <EyeOff size={20} className="text-black bg-transparent" />
+                            ) : (
+                              <Eye size={20} className="text-black bg-transparent" />
+                            )}
+                          </button>
+                        </div>
                     </FormControl>
                     <FormMessage className="text-[#FF8989] ml-[42.42px] font-[Inter] text-[13px]" />
                   </FormItem>
