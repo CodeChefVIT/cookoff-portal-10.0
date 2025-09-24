@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import login from "@/services/login";
+import { Eye, EyeOff } from "lucide-react";
 
 // validation schema
 const formSchema = z.object({
@@ -26,6 +27,7 @@ const formSchema = z.object({
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
+   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -93,7 +95,7 @@ export default function Login() {
     }
   }
   return (
-    <div className="relative flex h-screen w-full items-center justify-center text-white overflow-hidden">
+    <div className="relative flex min-h-screen w-full flex-col lg:flex-row items-center justify-center text-white overflow-hidden pb-0 sm:pb-48 md:pb-0">
       {/* Background */}
       <div className="absolute inset-0 -z-10 bg-black">
         <Image
@@ -117,14 +119,16 @@ export default function Login() {
         </h2>
       </div>
 
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center z-20">
+      <div className="absolute left-1/2 -translate-x-1/2 text-center z-20 -bottom-56 sm:bottom-24 md:bottom-32 lg:bottom-6">
         <p className="text-[38px] font-[Nulshock] tracking-widest text-[#D9D9D9]">
           10 YEARS. ONE LEGACY.
         </p>
       </div>
 
+<div className="flex flex-col lg:flex-row items-center justify-center w-full min-h-screen text-white overflow-hidden
+  pt-20 sm:pt-44 lg:pt-0">
       {/* Left Section */}
-      <div className="flex flex-col items-center justify-center w-1/2 p-8 text-center z-10">
+      <div className="flex flex-col items-center justify-center w-full lg:w-1/2 p-8 text-center z-10">
         <div className="flex flex-col items-center gap-2 ml-[50px]">
           <div className="relative inline-block">
             <h1 className="absolute inset-0 text-[96.75px] font-[Nulshock] text-[#125128] z-0 translate-x-[-6px] translate-y-[6px] stroke">
@@ -173,8 +177,8 @@ export default function Login() {
       </div>
 
       {/* Right Section - Login Form */}
-      <div className="w-1/2 flex items-center justify-center z-10">
-        <div className="w-[460px] h-[536px] p-8 shadow-lg rounded-[32px] bg-[#19231E] border border-[#6B6262]">
+      <div className="w-full lg:w-1/2 flex items-center justify-center z-10 px-4">
+        <div className="w-full max-w-md p-6 p-8 shadow-lg rounded-[32px] bg-[#19231E] border border-[#6B6262]">
           <h2 className="text-center text-[26.51px] font-[Nulshock] text-white mt-[75.46px]">
             START COOKING
           </h2>
@@ -209,12 +213,25 @@ export default function Login() {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Enter Password"
-                        {...field}
-                        className="bg-[#B7AB98] w-[351.66px] h-[60.08px] radius-[8.84px] mt-[28.28px] mr-[42.41px] ml-[42.42px] text-black placeholder:text-black font-[Inter] placeholder:font-[Inter] font-medium placeholder:font-medium"
-                      />
+                      <div className="relative w-[351.66px]">
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter Password"
+                            {...field}
+                            className="bg-[#B7AB98] w-full h-[60.08px] radius-[8.84px] mt-[28.28px] text-black placeholder:text-black font-[Inter] font-medium pr-10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute inset-y-6 top-[52%] right-0 flex items-center !bg-transparent !shadow-none"
+                          >
+                            {showPassword ? (
+                              <EyeOff size={20} className="text-black bg-transparent" />
+                            ) : (
+                              <Eye size={20} className="text-black bg-transparent" />
+                            )}
+                          </button>
+                        </div>
                     </FormControl>
                     <FormMessage className="text-[#FF8989] ml-[42.42px] font-[Inter] text-[13px]" />
                   </FormItem>
@@ -231,6 +248,7 @@ export default function Login() {
             </form>
           </Form>
         </div>
+      </div>
       </div>
     </div>
   );

@@ -68,6 +68,7 @@ const ProgressCircle: React.FC<{ progress: number }> = ({ progress }) => {
 
 const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
   const { round, status, progress, completed, incomplete, score, locked } = stats;
+  const isLocked = status === "Closed";
 
   return (
     <div className="relative bg-[#111] text-[#B7AB98] rounded-xl p-5 mb-5 shadow-[-9.63px_8.67px_0_#1BA94C] w-[307.17px] min-h-[233.33px] font-[Nulshock,monospace]">
@@ -91,7 +92,7 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
               width={21}
               height={21}
             />
-            Completed: {locked ? 0 : completed}
+            Completed: {isLocked ? 0 : completed}
           </p>
           <p className="flex items-center gap-2">
             <Image
@@ -100,18 +101,18 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
               width={21}
               height={21}
             />
-            Incomplete: {locked ? 0 : incomplete}
+            Incomplete: {isLocked ? 0 : incomplete}
           </p>
         </div>
       </div>
 
       {/* Score aligned under */}
       <p className="text-[18.89px] mt-[45.62px] font-brunoace text-white">
-        Score: {locked ? 0 : score}
+        Score: {isLocked ? 0 : score}
       </p>
 
       {/* Blur Overlay for locked rounds */}
-      {locked && (
+      {isLocked && (
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex flex-col items-center justify-center rounded-xl">
           <Image
             src="/statistics/lock.svg"
@@ -134,7 +135,7 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
 const Statistics: React.FC = () => {
   const [rounds, setRounds] = useState<RoundStats[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [error, setError] = useState(false);
   useEffect(() => {
     const fetchRounds = async () => {
       try {
@@ -142,6 +143,7 @@ const Statistics: React.FC = () => {
         setRounds(roundsData);
       } catch (err) {
         console.error("Failed to fetch rounds:", err);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -151,6 +153,11 @@ const Statistics: React.FC = () => {
   }, []);
 
   if (loading) return <p className="text-center text-white mt-10">Loading rounds...</p>;
+  if (error)
+    return (
+      <p className="text-center text-red-500 mt-10 font-bold">
+        Failed to fetch statistics.
+      </p>);
 
 return (
   <div className="w-full h-full text-[#ccc] font-[Nulshock,monospace]">
@@ -164,7 +171,7 @@ return (
       </p>
 
       {/* Grid below */}
-      <div className="mt-10 grid gap-y-6 gap-x-[49.2px] max-w-[960px] mx-auto grid-cols-[repeat(auto-fit,minmax(280px,1fr))] pb-[34px] ml-[10px]">
+      <div className="mt-10 grid gap-y-6 gap-x-[49.2px] max-w-[960px] mx-auto grid-cols-1 sm:grid-cols-2 pb-[34px] ml-[10px]">
         {rounds.map((r) => (
           <RoundCard key={r.round} stats={r} />
         ))}
