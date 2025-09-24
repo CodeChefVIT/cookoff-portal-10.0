@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/resizable";
 import useKitchenStore from "store/zustant";
 import { LANGUAGES } from "@/lib/languages";
+import Header from "@/components/Header/Header";
 
 export interface Question {
   id: string;
@@ -235,6 +236,7 @@ export default function UIPage() {
 
   return (
     <div className="relative bg-[#070E0A] max-h-screen text-gray-200 overflow-hidden">
+      <div className="mb-4"><Header /></div>
       <ResizablePanelGroup direction="horizontal" className="">
         <ResizablePanel defaultSize={50}>
           <div className="grid grid-cols-1 gap-6 lg:gap-10">
