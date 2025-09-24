@@ -18,9 +18,9 @@ export default function Dashboard() {
       </div>
 
       {/* Page container */}
-      <div className="flex flex-col lg:flex-col lg:flex-wrap lg:justify-center gap-8 w-full">
+      <div className="flex flex-col lg:flex-row lg:flex-wrap lg:justify-center gap-8 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Timeline section */}
-        <section className="h-[120px] w-full rounded-2xl flex items-center justify-center text-white text-lg p-[48px]">
+        <section className="h-[120px] w-full rounded-2xl flex items-center justify-center text-white text-lg">
           <Timeline />
         </section>
 
