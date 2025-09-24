@@ -45,10 +45,8 @@ interface KitchenState {
   setSelectedLanguage: (language: Language) => void;
   setRound: (id: number) => void;
   setCodeForQuestion: (questionId: string, code: string) => void;
-  setQuestionsAndTestcases: (
-    questions: Question[],
-    testCases: TestcaseFromAPI[]
-  ) => void;
+  setQuestions: (questions: Question[]) => void;
+  setTestCases: (testCases: TestcaseFromAPI[]) => void;
   setFullScreenRight: (fullScreen: boolean) => void;
   setFullScreenEditor: (fullScreen: boolean) => void;
   setFullScreenTestCases: (fullScreen: boolean) => void;
@@ -106,8 +104,8 @@ const useKitchenStore = create<KitchenState>()(
             };
           }),
 
-        setQuestionsAndTestcases: (questions, testCases) =>
-          set({ questions, testCases }),
+        setQuestions: (questions) => set({ questions }),
+        setTestCases: (testCases) => set({ testCases }),
 
         setFullScreenRight: (fullScreen) =>
           set({ fullScreenRight: fullScreen }),

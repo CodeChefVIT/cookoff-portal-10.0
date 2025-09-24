@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/resizable";
 import useKitchenStore from "store/zustant";
 import { LANGUAGES } from "@/lib/languages";
+import { getKitchenData } from "../api/kitchen";
 
 export default function UIPage() {
   const {
@@ -21,7 +22,18 @@ export default function UIPage() {
     setFullScreenEditor,
     setFullScreenTestCases,
     testCases,
+    setQuestions,
+    setTestCases,
   } = useKitchenStore();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { questions, testcases } = await getKitchenData();
+      setQuestions(questions);
+      setTestCases(testcases);
+    };
+    fetchData();
+  }, [setQuestions, setTestCases]);
 
   const [testCasesPanelSize, setTestCasesPanelSize] = useState(20);
 

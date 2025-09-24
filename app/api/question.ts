@@ -26,36 +26,27 @@ export type Question = {
   SampleTestInput: string[];
   SampleTestOutput: string[];
   Explanation: string[];
+  testcases?: TestcaseFromAPI[];
 };
-export async function byRound(): Promise<QuestionWithTestcases[]> {
+export async function byRound(): Promise<Question[]> {
   try {
     const { data } = await api.get<ByRoundApiResponse>(`/question/round`);
     console.log(data);
 
-    return data.questions_testcases;
+    return data.questions_testcases.map((q) => ({
+      ...q.question,
+      testcases: q.testcases,
+    }));
   } catch (e) {
     throw handleAPIError(e);
   }
 }
 
-export interface TestcaseFromAPI {
-  id: string;
-  input: string;
-  output?: string;
-  expected_output: string;
-  hidden: boolean;
-  runtime: number;
-  memory: number;
-  question_id: string;
-}
-
-export interface QuestionWithTestcases {
-  question: Question;
-  testcases: TestcaseFromAPI[];
-}
-
 interface ByRoundApiResponse {
   status: string;
   round: number;
-  questions_testcases: QuestionWithTestcases[];
+  questions_testcases: {
+    question: Omit<Question, "testcases">;
+    testcases: TestcaseFromAPI[];
+  }[];
 }

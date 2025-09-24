@@ -1,129 +1,20 @@
 "use client";
 
-import { byRound, Question } from "@/api/question";
-import { ApiError } from "next/dist/server/api-utils";
+import { Question } from "@/api/question";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { Inter } from "next/font/google";
 import TabButton from "./TabButton";
 import Markdown from "react-markdown";
-import toast from "react-hot-toast";
 import useKitchenStore from "store/zustant";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const hardcodedQuestions = [
-  {
-    question: {
-      ID: "1",
-      Title: "PROBLEM 1: REVERSE STRING",
-      Points: 10,
-      Description:
-        "Given a string s, return the string reversed. The string may contain letters, digits, and special characters. You must return the reversed version of the string without modifying the original input.",
-      Qtype: "EASY",
-      Isbountyactive: false,
-      InputFormat: ["Line 1: A string s."],
-      Round: 1,
-      Constraints: [
-        "1 <= s.length <= 10^5",
-        "s consists of printable ASCII characters.",
-      ],
-      OutputFormat: ["A reversed string."],
-      SampleTestInput: ["hello"],
-      SampleTestOutput: ["olleh"],
-      Explanation: ["Reversing 'hello' gives 'olleh'"],
-    },
-    testcases: [
-      {
-        id: "t1-1",
-        expected_output: "olleh",
-        memory: 50,
-        input: "hello",
-        hidden: false,
-        runtime: 1,
-        output: "[something]",
-        question_id: "1",
-      },
-      {
-        id: "t1-2",
-        expected_output: "321cba",
-        memory: 50,
-        input: "abc123",
-        hidden: false,
-        runtime: 1,
-        output: "[something]",
-        question_id: "1",
-      },
-      {
-        id: "t1-3",
-        expected_output: "racecar",
-        memory: 50,
-        input: "racecar",
-        hidden: true,
-        runtime: 1,
-        output: "[something]",
-        question_id: "1",
-      },
-    ],
-  },
-  {
-    question: {
-      ID: "2",
-      Title: "PROBLEM 2: MAXIMUM ELEMENT",
-      Points: 15,
-      Description:
-        "Given an array of integers nums, return the maximum element in the array. You must do this in O(n) time by scanning through the array once.",
-      Qtype: "EASY",
-      Isbountyactive: false,
-      InputFormat: ["Line 1: An array of integers nums."],
-      Round: 1,
-      Constraints: ["1 <= nums.length <= 10^5", "-10^9 <= nums[i] <= 10^9"],
-      OutputFormat: ["An integer representing the maximum element."],
-      SampleTestInput: ["[1, 5, 3, 9, 2]"],
-      SampleTestOutput: ["9"],
-      Explanation: ["The maximum element in [1,5,3,9,2] is 9."],
-    },
-    testcases: [
-      {
-        id: "t2-1",
-        expected_output: "9",
-        memory: 100,
-        input: "[1, 5, 3, 9, 2]",
-        hidden: false,
-        runtime: 1,
-        output: "[something]",
-        question_id: "2",
-      },
-      {
-        id: "t2-2",
-        expected_output: "-1",
-        memory: 100,
-        input: "[-5, -10, -1, -3]",
-        hidden: false,
-        runtime: 1,
-        output: "[something]",
-        question_id: "2",
-      },
-      {
-        id: "t2-3",
-        expected_output: "1000000000",
-        memory: 100,
-        input: "[1, 1000000000, 500, 999999999]",
-        hidden: true,
-        runtime: 1,
-        output: "[something]",
-        question_id: "2",
-      },
-    ],
-  },
-];
 
 const QuestionWindow: React.FC = () => {
   const router = useRouter();
   const {
     questions,
     selectedQuestionId,
-    setQuestionsAndTestcases,
     setSelectedQuestionId,
   } = useKitchenStore();
 
@@ -131,7 +22,6 @@ const QuestionWindow: React.FC = () => {
   const [selectedQuestion, setSelectedQuestion] = useState<
     Question | undefined
   >(undefined);
-  const [isLoading, setIsLoading] = useState<boolean>(questions.length === 0);
 
   const handleQuestionChange = (id: string) => {
     setActiveTab(id);
@@ -141,83 +31,16 @@ const QuestionWindow: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchQuestions = async () => {
-      if (questions.length > 0) {
-        setIsLoading(false);
-        const initialQuestion =
-          questions.find((q) => q.ID === selectedQuestionId) || questions[0];
-        if (initialQuestion) {
-          setActiveTab(initialQuestion.ID);
-          setSelectedQuestionId(initialQuestion.ID);
-          setSelectedQuestion(initialQuestion);
-        }
-        return;
+    if (questions.length > 0) {
+      const initialQuestion =
+        questions.find((q) => q.ID === selectedQuestionId) || questions[0];
+      if (initialQuestion) {
+        setActiveTab(initialQuestion.ID);
+        setSelectedQuestionId(initialQuestion.ID);
+        setSelectedQuestion(initialQuestion);
       }
-
-      try {
-        setIsLoading(true);
-        const response = await byRound();
-        const fetchedQuestions: Question[] = response.map(
-          ({ question }) => question
-        );
-        const fetchedTestcases = response.flatMap(
-          ({ testcases }) => testcases ?? []
-        );
-
-        setQuestionsAndTestcases(fetchedQuestions, fetchedTestcases);
-
-        if (fetchedQuestions.length > 0) {
-          const initialQuestion =
-            fetchedQuestions.find((q) => q.ID === selectedQuestionId) ||
-            fetchedQuestions[0];
-          setActiveTab(initialQuestion.ID);
-          setSelectedQuestionId(initialQuestion.ID);
-          setSelectedQuestion(initialQuestion);
-        }
-      } catch (err) {
-        if (err instanceof ApiError && err.statusCode === 401) {
-          router.push("/");
-          return;
-        }
-        toast.error("Failed to fetch questions, using hardcoded data.");
-
-        const fallbackQuestions = hardcodedQuestions.map(
-          ({ question }) => question
-        );
-        const fallbackTestcases = hardcodedQuestions.flatMap(
-          ({ testcases }) => testcases
-        );
-        setQuestionsAndTestcases(fallbackQuestions, fallbackTestcases);
-
-        if (fallbackQuestions.length > 0) {
-          const initialQuestion =
-            fallbackQuestions.find((q) => q.ID === selectedQuestionId) ||
-            fallbackQuestions[0];
-          setActiveTab(initialQuestion.ID);
-          setSelectedQuestionId(initialQuestion.ID);
-          setSelectedQuestion(initialQuestion);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void fetchQuestions();
-  }, [
-    questions,
-    selectedQuestionId,
-    setQuestionsAndTestcases,
-    setSelectedQuestionId,
-    router,
-  ]);
-
-  if (isLoading) {
-    return (
-      <div className="bg-[#131414] p-6 sm:p-8 max-w-4xl mx-auto relative w-full min-h-[120vh] flex items-center justify-center">
-        <div className="text-green-400 text-xl">Loading questions...</div>
-      </div>
-    );
-  }
+    }
+  }, [questions, selectedQuestionId, setSelectedQuestionId]);
 
   if (questions.length === 0) {
     return (
