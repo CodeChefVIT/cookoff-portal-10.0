@@ -1,34 +1,19 @@
 import { useMemo } from "react";
-import useKitchenStore from "store/zustant";
+import { TestcaseFromAPI } from "@/api/question";
 
-export function useTestCases() {
-  const { testCases, selectedQuestionId } = useKitchenStore();
-  // console.log("testcases id: ", selectedQuestionId, testCases);
-
-  const results = useMemo(
-    () =>
-      testCases.filter((tc) => {
-        // console.log(tc.QuestionID);
-        // console.log(tc);
-
-        return tc.QuestionID === selectedQuestionId;
-      }),
-    [testCases, selectedQuestionId]
-  );
-  console.log(results);
+export function useTestCases(results: TestcaseFromAPI[]) {
   const visibleCases = useMemo(
-    () => results.filter((r) => !r.Hidden),
+    () => results.filter((r) => !r.hidden),
     [results]
   );
-  const hiddenCases = useMemo(() => results.filter((r) => r.Hidden), [results]);
+  const hiddenCases = useMemo(() => results.filter((r) => r.hidden), [results]);
 
   const passedCount = useMemo(() => {
-    return results.filter((r) => r.ExpectedOutput === r.Output).length;
+    return results.filter((r) => r.expected_output === r.output).length;
   }, [results]);
-  console.log("visible cases", visibleCases);
 
   const hiddenPassedCount = useMemo(() => {
-    return hiddenCases.filter((r) => r.ExpectedOutput === r.Output).length;
+    return hiddenCases.filter((r) => r.expected_output === r.output).length;
   }, [hiddenCases]);
 
   const totalCases = results.length;
