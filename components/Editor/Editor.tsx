@@ -35,12 +35,38 @@ export default function Editor({
     setCodeForQuestion,
   } = useEditorState();
 
-  const placeholder = `${selectedLanguage.commentSymbol} Write your ${selectedLanguage.name} solution here`;
-
   const [code, setCode] = useState("");
   const [cursor, setCursor] = useState({ line: 1, ch: 1 });
   const [customInput, setCustomInput] = useState(false);
   const editorRef = useRef<EditorView | null>(null);
+
+  const handleLanguageChange = (language: Language) => {
+    setSelectedLanguage(language);
+
+    // Use template instead of placeholder
+    const newCode = language.template;
+    setCode(newCode);
+
+    if (selectedQuestionId) {
+      setCodeForQuestion(selectedQuestionId, newCode);
+    }
+
+    // Set cursor position after a brief delay to ensure editor is updated
+    setTimeout(() => {
+      if (editorRef.current && language.cursorPosition) {
+        const { line, ch } = language.cursorPosition;
+        const doc = editorRef.current.state.doc;
+        const lineObj = doc.line(Math.min(line, doc.lines));
+        const pos = Math.min(lineObj.from + ch, lineObj.to);
+
+        editorRef.current.dispatch({
+          selection: { anchor: pos, head: pos },
+          scrollIntoView: true,
+        });
+        editorRef.current.focus();
+      }
+    }, 100);
+  };
 
   const handleChange = (value: string, viewUpdate: ViewUpdate) => {
     setCode(value);
@@ -66,7 +92,7 @@ export default function Editor({
         setCode(cachedState.code);
         return;
       } else {
-        setCode(placeholder);
+        setCode(selectedLanguage.template);
       }
 
       try {
@@ -80,15 +106,60 @@ export default function Editor({
             setCode(data.code);
             setCodeForQuestion(selectedQuestionId, data.code);
           } else {
-            setCode("");
+            setCode(selectedLanguage.template);
+            // Set cursor position for new template
+            setTimeout(() => {
+              if (editorRef.current && selectedLanguage.cursorPosition) {
+                const { line, ch } = selectedLanguage.cursorPosition;
+                const doc = editorRef.current.state.doc;
+                const lineObj = doc.line(Math.min(line, doc.lines));
+                const pos = Math.min(lineObj.from + ch, lineObj.to);
+
+                editorRef.current.dispatch({
+                  selection: { anchor: pos, head: pos },
+                  scrollIntoView: true,
+                });
+                editorRef.current.focus();
+              }
+            }, 100);
           }
         } else {
-          setCode("");
+          setCode(selectedLanguage.template);
+          // Set cursor position for new template
+          setTimeout(() => {
+            if (editorRef.current && selectedLanguage.cursorPosition) {
+              const { line, ch } = selectedLanguage.cursorPosition;
+              const doc = editorRef.current.state.doc;
+              const lineObj = doc.line(Math.min(line, doc.lines));
+              const pos = Math.min(lineObj.from + ch, lineObj.to);
+
+              editorRef.current.dispatch({
+                selection: { anchor: pos, head: pos },
+                scrollIntoView: true,
+              });
+              editorRef.current.focus();
+            }
+          }, 100);
         }
       } catch (err: any) {
         if (err.response?.status === 401) {
           console.log("User not authenticated - skipping code fetch");
-          setCode("");
+          setCode(selectedLanguage.template);
+          // Set cursor position for new template
+          setTimeout(() => {
+            if (editorRef.current && selectedLanguage.cursorPosition) {
+              const { line, ch } = selectedLanguage.cursorPosition;
+              const doc = editorRef.current.state.doc;
+              const lineObj = doc.line(Math.min(line, doc.lines));
+              const pos = Math.min(lineObj.from + ch, lineObj.to);
+
+              editorRef.current.dispatch({
+                selection: { anchor: pos, head: pos },
+                scrollIntoView: true,
+              });
+              editorRef.current.focus();
+            }
+          }, 100);
         } else {
           console.error("Error fetching saved code:", err);
         }
@@ -96,11 +167,16 @@ export default function Editor({
     };
 
     fetchSavedCode();
-  }, [selectedQuestionId, codeByQuestion, setCodeForQuestion, placeholder]);
+  }, [
+    selectedQuestionId,
+    codeByQuestion,
+    setCodeForQuestion,
+    selectedLanguage,
+  ]);
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      if (code.trim() === "" || code === placeholder) return;
+      if (code.trim() === "" || code === selectedLanguage.template) return;
 
       const payload = {
         questionId: selectedQuestionId,
@@ -121,7 +197,7 @@ export default function Editor({
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [code, selectedLanguage, round, selectedQuestionId, placeholder]);
+  }, [code, selectedLanguage, round, selectedQuestionId]);
 
   return (
     <div
@@ -137,7 +213,7 @@ export default function Editor({
           <LanguageSelector
             languages={languages}
             selectedLanguage={selectedLanguage}
-            onLanguageChange={setSelectedLanguage}
+            onLanguageChange={handleLanguageChange}
           />
           {fullScreen ? (
             <MdFullscreenExit
@@ -160,7 +236,7 @@ export default function Editor({
       >
         <CodeMirror
           ref={editorRef}
-          value={code || placeholder}
+          value={code || selectedLanguage.template}
           height="100%"
           theme={oneDark}
           extensions={[selectedLanguage.extension]}

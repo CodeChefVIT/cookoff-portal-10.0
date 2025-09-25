@@ -1,5 +1,5 @@
 "use client";
-
+import { useRef } from "react";
 import Editor from "@/components/Editor/Editor";
 import React, { useState, useMemo } from "react";
 import QuestionWindow from "@/components/ui/QuestionWindow";
@@ -13,6 +13,8 @@ import {
 import useKitchenStore from "store/zustant";
 import { LANGUAGES } from "@/lib/languages";
 import Header from "@/components/Header/Header";
+import TabButton from "@/components/ui/TabButton";
+import { ImperativePanelHandle } from "react-resizable-panels";
 
 export interface Question {
   id: string;
@@ -43,7 +45,8 @@ export default function UIPage() {
   } = useKitchenStore();
 
   const [testCasesPanelSize, setTestCasesPanelSize] = useState(20);
-
+  const [sidebarWidth, setSidebarWidth] = useState(50);
+  const panelRef = useRef<ImperativePanelHandle | null>(null);
   const [questionsWithTestcases, setQuestionsWithTestcases] = useState<
     QuestionWithTestcases[]
   >([
@@ -233,14 +236,18 @@ export default function UIPage() {
       />
     );
   }
-
   return (
-    <div className="relative bg-[#070E0A] max-h-screen text-gray-200 overflow-hidden">
-      <div className="mb-4"><Header /></div>
-      <ResizablePanelGroup direction="horizontal" className="">
-        <ResizablePanel defaultSize={50}>
-          <div className="grid grid-cols-1 gap-6 lg:gap-10">
-            <div className="-mt-2 py-4 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
+    <div className="flex flex-col h-screen bg-[#070E0A] text-gray-200 overflow-hidden">
+      <Header />
+      <ResizablePanelGroup direction="horizontal" className="flex-grow">
+        <ResizablePanel
+          ref={panelRef}
+          defaultSize={50}
+          minSize={3}
+          onResize={(size) => setSidebarWidth(size)}
+        >
+          <div className="h-full overflow-hidden">
+            {sidebarWidth > 8 ? (
               <QuestionWindow
                 questions={questions}
                 setQuestions={() => {}}
@@ -249,16 +256,33 @@ export default function UIPage() {
                 setfullScreen={handleSetFullScreenQuestion}
                 fullScreen={fullScreenQuestion}
               />
-            </div>
+            ) : (
+              <div className="flex flex-col items-center gap-20 pt-14">
+                {questions.map((q) => (
+                  <div key={q.id} className="rotate-90">
+                    <TabButton
+                      id={q.id}
+                      active={selectedQuestionId === q.id}
+                      onClick={() => {
+                        handleSetQuestionID(q.id);
+                        if (panelRef.current) {
+                          panelRef.current.resize(50);
+                        }
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </ResizablePanel>
 
         <ResizableHandle withHandle />
 
-        <ResizablePanel defaultSize={50}>
+        <ResizablePanel defaultSize={70}>
           <ResizablePanelGroup
             direction="vertical"
-            className="translate-y-12"
+            className="translate-y-4"
             defaultValue={80}
           >
             <ResizablePanel defaultSize={75} className="pb-4 pl-4">
