@@ -97,7 +97,7 @@ export default function Login() {
         </h2>
       </div>
 
-      <div className="absolute left-1/2 -translate-x-1/2 text-center z-20 -bottom-56 sm:bottom-24 md:bottom-32 lg:bottom-6">
+      <div className="absolute lg:bottom-6 bottom-auto sm:bottom-24 md:bottom-32 left-1/2 -translate-x-1/2 text-center z-20 w-full max-w-[90%]">
         <p className="text-[38px] font-[Nulshock] tracking-widest text-[#D9D9D9]">
           10 YEARS. ONE LEGACY.
         </p>
