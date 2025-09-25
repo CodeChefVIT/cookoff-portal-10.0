@@ -1,7 +1,7 @@
 "use client";
+import api from "@/services/index";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import axios from "axios";
 
 interface TimelineStep {
   label: string;
@@ -20,12 +20,12 @@ export default function Timeline() {
       try {
         //current round
       console.log("Fetching /dashboard...");
-      const dashboardData = await axios.get("/dashboard");
-      const currentRound = (dashboardData.data.data.current_round);
+      const res = await api.get("/dashboard");
+      const currentRound = Number(res.data.data.current_round);
       console.log("Current round:", currentRound);
 
         //time info
-        const { data: timeData } = await axios.get("/GetTime");
+        const { data: timeData } = await api.get("/GetTime");
 
         const start = new Date(timeData.round_start_time).getTime();
         const end = new Date(timeData.round_end_time).getTime();
