@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 export default function Header() {
   const icon = "/icon.avif";
   const paper ="/paper.png"
+  const dashboardIcon = "/dashboard.svg";
   const pathname = usePathname();
   if (pathname === "/") return null;
 
@@ -33,8 +34,8 @@ export default function Header() {
       </h1>
 
       <Image
-        src={paper}
-        alt="Papers"
+        src={pathname === "/kitchen" ? dashboardIcon : paper}
+        alt={pathname === "/kitchen" ? "Dashboard" : "Papers"}
         width={20}
         height={20}
         className="h-4 w-4 md:h-12 md:w-12"
