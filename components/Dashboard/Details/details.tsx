@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import api from "@/services/index";
-import { useRouter } from "next/navigation";
+import { useRouter,usePathname } from "next/navigation";
 import RoundTimer from "@/components/Editor/RoundTimer/RoundTimer";
 import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "react-hot-toast";
@@ -18,7 +18,7 @@ const DetailsCard: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
-
+  const pathname = usePathname();
   useEffect(() => {
     const fetchDetails = async () => {
       try {
@@ -128,8 +128,19 @@ if (loading) {
         <div className="mt-7 mb-4">
         <button
           onClick={() => {
-            toast.success("Entering Kitchen... ");
-            router.push("/kitchen")}}
+            if (pathname === "/kitchen") return; // already in kitchen
+
+            const toastId = toast.loading("Entering Kitchen...");
+
+            router.push("/kitchen");
+
+            // Poll until we are actually on /kitchen
+            const checkPath = setInterval(() => {
+              if (window.location.pathname === "/kitchen") {
+                toast.success("Welcome to Kitchen", { id: toastId });
+                clearInterval(checkPath);
+              }}, 100);
+          }}
           className="!border-2 !border-green-500 !text-[#c5bba7] font-nulshock !bg-neutral-900 !px-2 !py-2 text-sm rounded-md !hover:bg-green-500 hover:text-white transition flex items-center">
           ENTER KITCHEN
           <Image
@@ -140,7 +151,7 @@ if (loading) {
             draggable={false}
             unselectable="on"
             priority
-           />
+          />
         </button>
         </div>
       </div>
