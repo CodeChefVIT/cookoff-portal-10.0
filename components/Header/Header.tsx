@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import NotificationButton from "../ui/NotificationButton";
 
 export default function Header() {
   const icon = "/icon.avif";
-  const paper ="/paper.png"
   const pathname = usePathname();
   if (pathname === "/") return null;
 
@@ -28,19 +28,13 @@ export default function Header() {
             WebkitBackgroundClip: "text",
           }}
         >
-        OFF 10.0
+          OFF 10.0
         </span>
       </h1>
 
-      <Image
-        src={paper}
-        alt="Papers"
-        width={20}
-        height={20}
-        className="h-4 w-4 md:h-12 md:w-12"
-      />
-
-      
+      <div className="relative">
+        <NotificationButton />
+      </div>
     </header>
   );
 }
