@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import api from "@/services/index";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface ProfileCardProps {
   name: string;
@@ -33,10 +34,9 @@ const router = useRouter();
         const res = await api.get("/dashboard");
         const data = res.data.data;
         const mapped: ProfileCardProps = {
-          name: data.user_name,
+          name: data.username,
           email: data.email,
-          totalScore:
-            data.round_1_score + data.round_2_score + data.round_3_score,
+          totalScore:data.round_scores[1]+data.round_scores[2]+data.round_scores[3],
           maxScore: 180, // TODO: max score???
         };
 
@@ -54,11 +54,50 @@ const router = useRouter();
 
    if (loading) {
     return (
-      <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md p-6 text-center">
-        Loading...
+      <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
+        {/* Header strip */}
+      <div className="bg-neutral-800 text-center py-2">
+        <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7]">PROFILE</h2>
+      </div>
+
+        {/* Body */}
+        <div className="p-4">
+          {/* Avatar/Icon */}
+          <div className="flex justify-center mt-2 mb-4">
+            <Skeleton className="h-[90px] w-[90px] rounded-full bg-neutral-700" />
+          </div>
+
+          {/* Name */}
+          <div className="mt-4 mb-2">
+            <Skeleton className="h-4 w-16 mb-2 rounded-md bg-neutral-700" />
+            <Skeleton className="h-6 w-40 rounded-md bg-neutral-700" />
+          </div>
+
+          {/* Email */}
+          <div className="mt-2 mb-4">
+            <Skeleton className="h-4 w-16 mb-2 rounded-md bg-neutral-700" />
+            <Skeleton className="h-6 w-60 rounded-md bg-neutral-700" />
+          </div>
+
+          {/* Score */}
+          <div className="mt-12 mb-4">
+            <Skeleton className="h-6 w-32 mx-auto mb-4 rounded-md bg-neutral-700" />
+
+            {/* Progress bar placeholder */}
+            <div className="mt-2 w-full h-5 bg-neutral-800 rounded-full relative overflow-hidden">
+              <Skeleton className="h-5 w-full rounded-full bg-neutral-700" />
+            </div>
+          </div>
+
+          {/* Log Out Button */}
+          <div className="flex justify-center mt-16 mb-8">
+            <Skeleton className="h-10 w-40 rounded-md bg-neutral-700" />
+          </div>
+        </div>
       </div>
     );
   }
+
 
   if (!profile) {
     return (
