@@ -1,27 +1,29 @@
 "use client";
 
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import { usePathname } from "next/navigation";
+import NotificationButton from "../ui/NotificationButton";
 
 export default function Header() {
   const icon = "/icon.avif";
-  const paper ="/paper.png"
-  const dashboardIcon = "/dashboard.svg";
   const pathname = usePathname();
   const router = useRouter();
   if (pathname === "/") return null;
 
   return (
     <header className="flex items-center justify-between w-full px-4 py-2 md:px-12 border-b-2 border-b-[#B7AB98] select-none">
-      <a href="https://www.codechefvit.com" target="_blank" rel="noopener noreferrer">
-      <Image
-        src={icon}
-        alt="CodechefVIT Logo"
-        width={20}
-        height={20}
-        className="h-4 w-4 md:h-12 md:w-12"
-      />
+      <a
+        href="https://www.codechefvit.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <Image
+          src={icon}
+          alt="CodechefVIT Logo"
+          width={20}
+          height={20}
+          className="h-4 w-4 md:h-12 md:w-12"
+        />
       </a>
 
       <h1 className="font-nulshock font-bold text-2xl md:text-4xl lg:text-5xl capitalize text-center text-[#B7AB98]">
@@ -33,49 +35,13 @@ export default function Header() {
             WebkitBackgroundClip: "text",
           }}
         >
-        OFF 10.0
+          OFF 10.0
         </span>
       </h1>
 
-      {pathname === "/kitchen" ? (
-        <button
-          onClick={() => {
-            if (pathname === "/dashboard") return;
-
-            const toastId = toast.loading("Entering Dashboard...");
-
-            router.push("/dashboard");
-
-            // Poll until we are actually on /Dashboard
-            const checkPath = setInterval(() => {
-              if (window.location.pathname === "/dashboard") {
-                toast.success("Welcome to Dashboard", { id: toastId });
-                clearInterval(checkPath);
-              }}, 100);
-          }}
-          className="focus:outline-none !bg-transparent"
-        >
-          <Image
-            src={dashboardIcon}
-            alt="Dashboard"
-            width={20}
-            height={20}
-            className="h-4 w-4 md:h-12 md:w-12"
-          />
-        </button>
-      ) : (
-        <a href="https://papers.codechefvit.com" target="_blank" rel="noopener noreferrer">
-          <Image
-            src={paper}
-            alt="Papers"
-            width={20}
-            height={20}
-            className="h-4 w-4 md:h-12 md:w-12"
-          />
-        </a>
-      )}
-
-      
+      <div className="relative">
+        <NotificationButton />
+      </div>
     </header>
   );
 }
