@@ -50,29 +50,7 @@ export default function Login() {
         console.error("Login failed:", error);
       }
     } catch (error: unknown) {
-      //   catch(error:unknown){
-      //     // console.log("Request failed with status code: ",error.response.status);
-      //     // toast.error("An error occurred. Login failed.")
-      //     // console.error("Login failed:", error);
-      //   if (error instanceof ApiError) {
-      //     const statusCode = error.status;
 
-      //   if (error.status === 404) {
-      //     // Email not found
-      //     form.setError("email", { type: "manual", message: "*Please enter valid email address" });
-      //   } else if (statusCode === 409) {
-      //     // Wrong password
-      //     form.setError("password", { type: "manual", message: "*Please enter correct password" });
-      //   } else {
-      //     // Other errors
-      //     toast.error(error.response?.data?.message || "An error occurred");}
-      //     }
-      //    else {
-      //       // Not an axios error
-      //       toast.error("Unexpected error occurred");
-      //       console.error(error);
-      //     }
-      // }
       const err = error as { status?: number; message: string };
 
       if (err.message === "User not found") {
@@ -164,16 +142,6 @@ export default function Login() {
             </div>
           </div>
         </div>
-
-        {/*   <div className="absolute bottom-6 left-6 flex flex-col items-start z-20">
-        <p className="text-xs text-gray-400">Co-Hosted by</p>
-        <Image
-          src="/musclemind.svg"
-          alt="Musclemind Logo"
-          width={120}
-          height={40}
-        />
-      </div>  */}
       </div>
 
       {/* Right Section - Login Form */}
