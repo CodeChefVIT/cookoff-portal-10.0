@@ -37,7 +37,7 @@ export default function Dashboard() {
           </div>
 
           {/* Details */}
-          <div className="flex-1 min-w-[250px] lg:min-w-[200px] flex justify-center">
+          <div className="flex-1 min-w-[250px] lg:min-w-[200px] flex justify-center px-4">
             <DetailsCard />
           </div>
         </div>
