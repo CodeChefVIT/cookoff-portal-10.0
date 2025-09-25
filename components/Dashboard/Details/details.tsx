@@ -28,7 +28,7 @@ const DetailsCard: React.FC = () => {
         };
         console.log(typeof mapped.currentRound.toString());
 
-        setRound(mapped.currentRound.toString());
+        setRound(Number(mapped.currentRound));
         setDetails(mapped);
       } catch (err) {
         console.error("Failed to fetch details:", err);
@@ -84,7 +84,7 @@ const DetailsCard: React.FC = () => {
           </p>
           <div className="px-4 py-2 mt-2">
             <div className="text-xl font-brunoace font-normal text-green-500">
-              <RoundTimer round={details.currentRound} />
+              <RoundTimer />
             </div>
           </div>
         </div>

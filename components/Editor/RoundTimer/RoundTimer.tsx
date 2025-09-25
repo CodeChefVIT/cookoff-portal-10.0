@@ -17,7 +17,7 @@ interface TimerApiResponse {
 }
 
 export default function RoundTimer() {
-  let { round } = useKitchenStore();
+  const { round } = useKitchenStore();
 
   const [phase, setPhase] = useState<TimerApiResponse["phase"]>("completed");
   const [remaining, setRemaining] = useState<number>(0);
