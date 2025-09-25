@@ -9,7 +9,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import useKitchenStore from "store/zustant";
+import useKitchenStore, { TestCase } from "store/zustant";
 import { LANGUAGES } from "@/lib/languages";
 import { getKitchenData } from "../api/kitchen";
 
@@ -22,6 +22,8 @@ export default function UIPage() {
     setFullScreenEditor,
     setFullScreenTestCases,
     testCases,
+    testResults,
+    compilerDetails,
     setQuestions,
     setTestCases,
   } = useKitchenStore();
@@ -31,17 +33,35 @@ export default function UIPage() {
       const { questions, testcases } = await getKitchenData();
       setQuestions(questions);
       setTestCases(testcases);
+      console.log("testcases;", testcases);
     };
     fetchData();
   }, [setQuestions, setTestCases]);
-
   const [testCasesPanelSize, setTestCasesPanelSize] = useState(20);
 
-  const selectedTestcases = useMemo(
-    () =>
-      testCases.filter((tc) => tc && tc.question_id === selectedQuestionId),
-    [testCases, selectedQuestionId]
-  );
+  const selectedTestcases = useMemo(() => {
+    const resultsForQuestion = testResults.filter(
+      (tc) => tc && tc.question_id === selectedQuestionId
+    );
+    if (resultsForQuestion.length > 0) {
+      return resultsForQuestion;
+    }
+    return testCases
+      .filter((tc) => tc && tc.question_id === selectedQuestionId)
+      .map(
+        (tc) =>
+          ({
+            id: tc.id,
+            input: tc.input,
+            output: tc.output || "",
+            expected_output: tc.expected_output,
+            hidden: tc.hidden,
+            runtime: tc.runtime || 0,
+            memory: tc.memory || 0,
+            question_id: tc.question_id,
+          } as TestCase)
+      );
+  }, [testCases, testResults, selectedQuestionId]);
 
   const defaultCompilerDetails = {
     isCompileSuccess: false,
@@ -86,7 +106,7 @@ export default function UIPage() {
     return (
       <TestCases
         results={selectedTestcases}
-        compilerDetails={defaultCompilerDetails}
+        compilerDetails={compilerDetails || defaultCompilerDetails}
         panelSize={100}
       />
     );
@@ -132,7 +152,7 @@ export default function UIPage() {
               <div className="bg-[#131414]">
                 <TestCases
                   results={selectedTestcases}
-                  compilerDetails={defaultCompilerDetails}
+                  compilerDetails={compilerDetails || defaultCompilerDetails}
                   panelSize={testCasesPanelSize}
                 />
               </div>

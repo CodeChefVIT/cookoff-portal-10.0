@@ -12,6 +12,8 @@ export interface TestCase {
   runtime: number;
   memory: number;
   question_id: string;
+  stderr?: string;
+  statusDescription?: string;
 }
 export type QuestionCode = {
   questionId: string;

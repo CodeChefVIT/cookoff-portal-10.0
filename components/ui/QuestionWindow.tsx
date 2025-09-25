@@ -12,11 +12,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 const QuestionWindow: React.FC = () => {
   const router = useRouter();
-  const {
-    questions,
-    selectedQuestionId,
-    setSelectedQuestionId,
-  } = useKitchenStore();
+  const { questions, selectedQuestionId, setSelectedQuestionId } =
+    useKitchenStore();
 
   const [activeTab, setActiveTab] = useState<string>(selectedQuestionId);
   const [selectedQuestion, setSelectedQuestion] = useState<
@@ -57,10 +54,11 @@ const QuestionWindow: React.FC = () => {
       <div className="w-full max-w-4xl">
         {/* Tabs */}
         <div className="flex items-center space-x-1 sm:space-x-2 mb-[-1px] pl-4 ">
-          {questions.map((q) => (
+          {questions.map((q, key) => (
             <TabButton
               key={q.ID}
               id={q.ID}
+              newId={key}
               active={activeTab === q.ID}
               onClick={() => handleQuestionChange(q.ID)}
             />
@@ -79,9 +77,7 @@ const QuestionWindow: React.FC = () => {
               </span>
               <div className="prose prose-invert prose-sm sm:prose-base max-w-none text-gray-400 space-y-4">
                 <section>
-                  <h2 className="text-green-400 font-semibold mb-2">
-                    Problem
-                  </h2>
+                  <h2 className="text-green-400 font-semibold mb-2">Problem</h2>
 
                   <Markdown>{selectedQuestion.Description}</Markdown>
                 </section>

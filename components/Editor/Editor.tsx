@@ -10,10 +10,14 @@ import LanguageSelector from "./LanguageSelector/LanguageSelector";
 import RoundTimer from "./RoundTimer/RoundTimer";
 import Button from "../ui/Button";
 import useEditorState from "store/zustant";
+import * as navigation from "next/navigation";
 import { Language } from "@/lib/languages";
 import axios from "axios";
+import { getTestCasesAfterRun } from "../../app/api/kitchen";
 import { MdFullscreen } from "react-icons/md";
 import { MdFullscreenExit } from "react-icons/md";
+import { submitCode } from "@/api/kitchen";
+import toast from "react-hot-toast";
 type EditorProps = {
   languages: Language[];
   round?: string;
@@ -23,7 +27,6 @@ type EditorProps = {
 
 export default function Editor({
   languages,
-  round,
   fullScreen,
   setfullScreen,
 }: EditorProps) {
@@ -37,9 +40,11 @@ export default function Editor({
 
   const placeholder = `${selectedLanguage.commentSymbol} Write your ${selectedLanguage.name} solution here`;
 
+  const router = navigation.useRouter();
   const [code, setCode] = useState("");
   const [cursor, setCursor] = useState({ line: 1, ch: 1 });
   const [customInput, setCustomInput] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
   const editorRef = useRef<EditorView | null>(null);
 
   const handleChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -53,6 +58,116 @@ export default function Editor({
     const line = view.state.doc.lineAt(pos).number;
     const ch = pos - view.state.doc.line(line - 1).from + 1;
     setCursor({ line, ch });
+  };
+
+  const runCode = async () => {
+    if (!selectedQuestionId || !code.trim()) {
+      toast.error("Please select a question and write some code");
+      return;
+    }
+
+    setIsRunning(true);
+    const toastId = toast.loading("Running code...");
+
+    try {
+      console.log("Running code:", code);
+
+      const response = await getTestCasesAfterRun(
+        code,
+        selectedLanguage.id,
+        selectedQuestionId
+      );
+
+      console.log("Run code response:", response);
+
+      const transformedResults = response.result.map((result, index) => ({
+        id: result.token,
+        input: "",
+        output: result.stdout || result.stderr || result.message || "",
+        expected_output: "",
+        hidden: false,
+        runtime: parseFloat(result.time),
+        memory: result.memory,
+        question_id: selectedQuestionId,
+        stderr: result.stderr || undefined,
+        statusDescription: result.status.description || undefined,
+      }));
+
+      const {
+        setTestResults,
+        setCompilerDetails,
+        testCases: originalTestCases,
+      } = useEditorState.getState();
+
+      const finalResults = transformedResults.map((result, index) => {
+        const originalTestCase = originalTestCases[index];
+        return {
+          ...result,
+          input: originalTestCase?.input || "",
+          expected_output: originalTestCase?.expected_output || "",
+          hidden: originalTestCase?.hidden || false,
+        };
+      });
+
+      setTestResults(finalResults);
+
+      const hasErrors = response.result.some(
+        (r) => r.stderr || r.status.id !== 3
+      );
+
+      if (hasErrors) {
+        toast.error("Code execution completed with errors", { id: toastId });
+      } else {
+        toast.success("Code executed successfully", { id: toastId });
+      }
+
+      setCompilerDetails({
+        isCompileSuccess: !hasErrors,
+        message: hasErrors
+          ? "Code execution completed with errors"
+          : "Code execution successful",
+      });
+    } catch (error) {
+      console.error("Error running code:", error);
+      toast.error("Failed to run code. Please try again.", { id: toastId });
+
+      const { setCompilerDetails } = useEditorState.getState();
+      setCompilerDetails({
+        isCompileSuccess: false,
+        message: "Failed to run code. Please try again.",
+      });
+    } finally {
+      setIsRunning(false);
+    }
+  };
+
+  const submitCodeHandler = async () => {
+    if (!selectedQuestionId || !code.trim()) {
+      toast.error("Please select a question and write some code");
+      return;
+    }
+
+    const toastId = toast.loading("Submitting code...");
+
+    try {
+      console.log("Submitting code:", code);
+
+      const response = await submitCode(
+        code,
+        selectedLanguage.id,
+        selectedQuestionId
+      );
+
+      console.log("Submit code response:", response);
+
+      toast.success(
+        `Code submitted successfully! Submission ID: ${response.submission_id}`,
+        { id: toastId }
+      );
+    } catch (error) {
+      console.error("Error submitting code:", error);
+      toast.error("Failed to submit code. Please try again.", { id: toastId });
+    }
   };
 
   useEffect(() => {
@@ -69,59 +184,58 @@ export default function Editor({
         setCode(placeholder);
       }
 
-      try {
-        const res = await axios.get(
-          `/api/save-code?questionId=${selectedQuestionId}`
-        );
+      // try {
+      //   const res = await axios.get(
+      //     `/api/save-code?questionId=${selectedQuestionId}`
+      //   );
 
-        if (res.status === 200) {
-          const data = await res.data;
-          if (data?.code) {
-            setCode(data.code);
-            setCodeForQuestion(selectedQuestionId, data.code);
-          } else {
-            setCode("");
-          }
-        } else {
-          setCode("");
-        }
-      } catch (err: any) {
-        if (err.response?.status === 401) {
-          console.log("User not authenticated - skipping code fetch");
-          setCode("");
-        } else {
-          console.error("Error fetching saved code:", err);
-        }
-      }
+      //   if (res.status === 200) {
+      //     const data = await res.data;
+      //     if (data?.code) {
+      //       setCode(data.code);
+      //       setCodeForQuestion(selectedQuestionId, data.code);
+      //     } else {
+      //       setCode("");
+      //     }
+      //   } else {
+      //     setCode("");
+      //   }
+      // } catch (err: any) {
+      //   if (err.response?.status === 401) {
+      //     setCode("");
+      //   } else {
+      //     console.error("Error fetching saved code:", err);
+      //   }
+      // }
     };
 
     fetchSavedCode();
   }, [selectedQuestionId, codeByQuestion, setCodeForQuestion, placeholder]);
 
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      if (code.trim() === "" || code === placeholder) return;
+  // useEffect(() => {
+  //   const interval = setInterval(async () => {
+  //     if (code.trim() === "" || code === placeholder) return;
 
-      const payload = {
-        questionId: selectedQuestionId,
-        code,
-        language: selectedLanguage.name,
-        round,
-      };
+  //     const payload = {
+  //       questionId: selectedQuestionId,
+  //       code,
+  //       language: selectedLanguage.name,
+  //       round,
+  //     };
 
-      try {
-        await axios.post("/api/save-code", payload);
-      } catch (err: any) {
-        if (err.response?.status === 401) {
-          console.log("User not authenticated - skipping auto-save");
-        } else {
-          console.error("Error auto-saving code:", err);
-        }
-      }
-    }, 5000);
+  //     try {
+  //       await axios.post("/api/save-code", payload);
+  //     } catch (err: any) {
+  //       if (err.response?.status === 401) {
+  //         // console.log("User not authenticated - skipping auto-save");
+  //       } else {
+  //         console.error("Error auto-saving code:", err);
+  //       }
+  //     }
+  //   }, 5000);
 
-    return () => clearInterval(interval);
-  }, [code, selectedLanguage, round, selectedQuestionId, placeholder]);
+  //   return () => clearInterval(interval);
+  // }, [code, selectedLanguage, round, selectedQuestionId, placeholder]);
 
   return (
     <div
@@ -132,7 +246,7 @@ export default function Editor({
       }mx-auto flex flex-col bg-[#131414] shadow-lg overflow-hidden`}
     >
       <div className="flex items-center justify-between px-6 py-3 z-20 bg-[#1e1f1f] border-b border-gray-700">
-        <RoundTimer round={round} />
+        <RoundTimer />
         <div className="flex gap-10 items-center ">
           <LanguageSelector
             languages={languages}
@@ -193,25 +307,12 @@ export default function Editor({
           <Button
             variant="run"
             size="default"
-            onClick={() => console.log("Run code:", code)}
+            onClick={runCode}
+            disabled={isRunning}
           >
-            Run Code
+            {isRunning ? "Running..." : "Run Code"}
           </Button>
-          <Button
-            variant="green"
-            size="default"
-            onClick={async () => {
-              const payload = {
-                questionId: selectedQuestionId,
-                code,
-                language: selectedLanguage.name,
-                languageId: selectedLanguage.id,
-                round,
-              };
-              await axios.post("/api/save-code", payload);
-              console.log("Manually submitted code:", payload);
-            }}
-          >
+          <Button variant="green" size="default" onClick={submitCodeHandler}>
             Submit Code
           </Button>
         </div>
