@@ -5,6 +5,7 @@ import api from "@/services/index";
 import { useRouter } from "next/navigation";
 import RoundTimer from "@/components/Editor/RoundTimer/RoundTimer";
 import { Skeleton } from "@/components/ui/skeleton"
+import { toast } from "react-hot-toast";
 
 interface DetailsCardProps {
   currentRound: string;
@@ -126,7 +127,9 @@ if (loading) {
         {/* Enter Kitchen Button */}
         <div className="mt-7 mb-4">
         <button
-          onClick={() => router.push("/kitchen")}
+          onClick={() => {
+            toast.success("Entering Kitchen... ");
+            router.push("/kitchen")}}
           className="!border-2 !border-green-500 !text-[#c5bba7] font-nulshock !bg-neutral-900 !px-2 !py-2 text-sm rounded-md !hover:bg-green-500 hover:text-white transition flex items-center">
           ENTER KITCHEN
           <Image
