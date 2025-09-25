@@ -11,7 +11,6 @@ import useKitchenStore from "store/zustant";
 const inter = Inter({ subsets: ["latin"] });
 
 const QuestionWindow: React.FC = () => {
-  const router = useRouter();
   const { questions, selectedQuestionId, setSelectedQuestionId } =
     useKitchenStore();
 

@@ -1,23 +1,30 @@
 "use client";
 
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import NotificationButton from "../ui/NotificationButton";
 
 export default function Header() {
   const icon = "/icon.avif";
-  const paper ="/paper.png"
   const pathname = usePathname();
+  const router = useRouter();
   if (pathname === "/") return null;
 
   return (
-    <header className="relative flex items-center justify-between w-full px-4 py-2 md:px-12 border-b-2 border-b-[#B7AB98] select-none">
-      <Image
-        src={icon}
-        alt="CodechefVIT Logo"
-        width={20}
-        height={20}
-        className="h-4 w-4 md:h-12 md:w-12"
-      />
+    <header className="flex items-center justify-between w-full px-4 py-2 md:px-12 border-b-2 border-b-[#B7AB98] select-none">
+      <a
+        href="https://www.codechefvit.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <Image
+          src={icon}
+          alt="CodechefVIT Logo"
+          width={20}
+          height={20}
+          className="h-4 w-4 md:h-12 md:w-12"
+        />
+      </a>
 
       <h1 className="font-nulshock font-bold text-2xl md:text-4xl lg:text-5xl capitalize text-center text-[#B7AB98]">
         COOK {""}
@@ -28,19 +35,13 @@ export default function Header() {
             WebkitBackgroundClip: "text",
           }}
         >
-        OFF 10.0
+          OFF 10.0
         </span>
       </h1>
 
-      <Image
-        src={paper}
-        alt="Papers"
-        width={20}
-        height={20}
-        className="h-4 w-4 md:h-12 md:w-12"
-      />
-
-      
+      <div className="relative">
+        <NotificationButton />
+      </div>
     </header>
   );
 }

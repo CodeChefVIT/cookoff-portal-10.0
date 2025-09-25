@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { getRounds } from "@/services/dashboard"; 
+import { Skeleton } from "@/components/ui/skeleton"
 export interface RoundStats {
   round: number;
   status: "Closed" | "In Progress" | "Completed";
@@ -68,6 +69,7 @@ const ProgressCircle: React.FC<{ progress: number }> = ({ progress }) => {
 
 const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
   const { round, status, progress, completed, incomplete, score, locked } = stats;
+  const isLocked = status === "Closed";
 
   return (
     <div className="relative bg-[#111] text-[#B7AB98] rounded-xl p-5 mb-5 shadow-[-9.63px_8.67px_0_#1BA94C] w-[307.17px] min-h-[233.33px] font-[Nulshock,monospace]">
@@ -91,7 +93,7 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
               width={21}
               height={21}
             />
-            Completed: {locked ? 0 : completed}
+            Completed: {isLocked ? 0 : completed}
           </p>
           <p className="flex items-center gap-2">
             <Image
@@ -100,18 +102,18 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
               width={21}
               height={21}
             />
-            Incomplete: {locked ? 0 : incomplete}
+            Incomplete: {isLocked ? 0 : incomplete}
           </p>
         </div>
       </div>
 
       {/* Score aligned under */}
       <p className="text-[18.89px] mt-[45.62px] font-brunoace text-white">
-        Score: {locked ? 0 : score}
+        Score: {isLocked ? 0 : score}
       </p>
 
       {/* Blur Overlay for locked rounds */}
-      {locked && (
+      {isLocked && (
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex flex-col items-center justify-center rounded-xl">
           <Image
             src="/statistics/lock.svg"
@@ -134,7 +136,7 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
 const Statistics: React.FC = () => {
   const [rounds, setRounds] = useState<RoundStats[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [error, setError] = useState(false);
   useEffect(() => {
     const fetchRounds = async () => {
       try {
@@ -142,6 +144,7 @@ const Statistics: React.FC = () => {
         setRounds(roundsData);
       } catch (err) {
         console.error("Failed to fetch rounds:", err);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -150,7 +153,70 @@ const Statistics: React.FC = () => {
     fetchRounds();
   }, []);
 
-  if (loading) return <p className="text-center text-white mt-10">Loading rounds...</p>;
+  if (loading) {
+  return (
+    <div className="w-full h-full text-[#ccc] font-[Nulshock,monospace]">
+      <div className="relative w-[673px] h-[612px] mx-auto">
+        {/* Rectangle behind */}
+        <div className="absolute top-0 left-0 w-[673px] h-[56px] bg-[#1F2622] rounded-t-[10px]" />
+
+        {/* Text on top of rectangle */}
+      <p className="relative z-10 text-center font-bold text-4xl text-[#beb7a6] tracking-[3px] select-none leading-[56px]">
+        STATISTICS
+      </p>
+
+        {/* Grid Skeleton */}
+        <div className="mt-10 grid gap-y-6 gap-x-[49.2px] max-w-[960px] mx-auto grid-cols-1 sm:grid-cols-2 pb-[34px] ml-[10px]">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="relative bg-[#111] rounded-xl p-5 mb-5 shadow-[-9.63px_8.67px_0_#1BA94C] w-[307.17px] min-h-[233.33px]"
+            >
+              {/* Card Header */}
+              <div className="flex justify-between items-center mb-4">
+                <Skeleton className="h-8 w-32 rounded-md bg-neutral-700" />
+                <div className="flex items-center gap-1.5">
+                  <Skeleton className="w-[9.45px] h-[9.45px] rounded-full bg-neutral-700" />
+                  <Skeleton className="h-3 w-12 rounded-md bg-neutral-700" />
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="flex items-center gap-6 ml-[27.37px]">
+                {/* Progress Circle */}
+                <Skeleton className="h-[55px] w-[55px] rounded-full bg-neutral-700" />
+
+                <div className="text-white">
+                  <div className="mb-1 flex items-center gap-2">
+                    <Skeleton className="h-[21px] w-[21px] rounded-md bg-neutral-700" />
+                    <Skeleton className="h-4 w-28 rounded-md bg-neutral-700" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-[21px] w-[21px] rounded-md bg-neutral-700" />
+                    <Skeleton className="h-4 w-32 rounded-md bg-neutral-700" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Score */}
+              <div className="mt-[45.62px]">
+                <Skeleton className="h-5 w-28 rounded-md bg-neutral-700" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
+  if (error)
+    return (
+      <p className="text-center text-red-500 mt-10 font-bold">
+        Failed to fetch statistics.
+      </p>);
 
 return (
   <div className="w-full h-full text-[#ccc] font-[Nulshock,monospace]">
@@ -164,7 +230,7 @@ return (
       </p>
 
       {/* Grid below */}
-      <div className="mt-10 grid gap-y-6 gap-x-[49.2px] max-w-[960px] mx-auto grid-cols-[repeat(auto-fit,minmax(280px,1fr))] pb-[34px] ml-[10px]">
+      <div className="mt-10 grid gap-y-6 gap-x-[49.2px] max-w-[960px] mx-auto grid-cols-1 sm:grid-cols-2 pb-[34px] ml-[10px]">
         {rounds.map((r) => (
           <RoundCard key={r.round} stats={r} />
         ))}

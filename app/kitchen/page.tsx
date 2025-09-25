@@ -1,5 +1,5 @@
 "use client";
-
+import { useRef } from "react";
 import Editor from "@/components/Editor/Editor";
 import React, { useState, useMemo, useEffect } from "react";
 import QuestionWindow from "@/components/ui/QuestionWindow";
@@ -12,6 +12,9 @@ import {
 import useKitchenStore, { TestCase } from "store/zustant";
 import { LANGUAGES } from "@/lib/languages";
 import { getKitchenData } from "../api/kitchen";
+import Header from "@/components/Header/Header";
+import TabButton from "@/components/ui/TabButton";
+import { ImperativePanelHandle } from "react-resizable-panels";
 
 export default function UIPage() {
   const {
@@ -62,7 +65,6 @@ export default function UIPage() {
           } as TestCase)
       );
   }, [testCases, testResults, selectedQuestionId]);
-
   const defaultCompilerDetails = {
     isCompileSuccess: false,
     message: "Compilation Successful !!",
@@ -111,7 +113,6 @@ export default function UIPage() {
       />
     );
   }
-
   return (
     <div className="relative bg-[#070E0A] max-h-screen text-gray-200 overflow-hidden">
       <ResizablePanelGroup direction="horizontal" className="">
@@ -125,10 +126,10 @@ export default function UIPage() {
 
         <ResizableHandle withHandle />
 
-        <ResizablePanel defaultSize={50}>
+        <ResizablePanel defaultSize={70}>
           <ResizablePanelGroup
             direction="vertical"
-            className="translate-y-12"
+            className="translate-y-4"
             defaultValue={80}
           >
             <ResizablePanel defaultSize={75} className="pb-4 pl-4">

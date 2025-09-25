@@ -2,9 +2,11 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import api from "@/services/index";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import RoundTimer from "@/components/Editor/RoundTimer/RoundTimer";
 import useKitchenStore from "store/zustant";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "react-hot-toast";
 
 interface DetailsCardProps {
   currentRound: string;
@@ -16,7 +18,7 @@ const DetailsCard: React.FC = () => {
   const setRound = useKitchenStore((state) => state.setRound);
 
   const router = useRouter();
-
+  const pathname = usePathname();
   useEffect(() => {
     const fetchDetails = async () => {
       try {
@@ -42,8 +44,42 @@ const DetailsCard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md p-6 text-center">
-        Loading...
+      <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
+        {/* Header */}
+        <div className="bg-neutral-800 text-center py-2">
+          <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7]">
+            DETAILS
+          </h2>
+        </div>
+
+        {/* Body */}
+        <div className="mt-3 p-6 flex flex-col items-center text-center space-y-6">
+          {/* Current Round */}
+          <div>
+            <Skeleton className="h-5 w-32 mx-auto mb-2 rounded-md bg-neutral-700" />
+            <Skeleton className="h-7 w-28 mx-auto rounded-md bg-neutral-700" />
+          </div>
+
+          {/* Time Remaining */}
+          <div>
+            <Skeleton className="h-5 w-36 mx-auto mb-2 rounded-md bg-neutral-700" />
+            <div className="px-4 py-2 mt-2">
+              <Skeleton className="h-8 w-32 mx-auto rounded-md bg-neutral-700" />
+            </div>
+          </div>
+
+          {/* Tip Box */}
+          <div className="mt-3 bg-neutral-800 rounded-lg py-4 px-6 text-sm max-w-xs w-full">
+            <Skeleton className="h-5 w-12 mb-3 rounded-md bg-neutral-700" />
+            <Skeleton className="h-5 w-full rounded-md bg-neutral-700" />
+            <Skeleton className="h-5 w-3/4 mt-2 rounded-md bg-neutral-700" />
+          </div>
+
+          {/* Enter Kitchen Button */}
+          <div className="mt-7 mb-4 flex justify-center">
+            <Skeleton className="h-10 w-52 rounded-md bg-neutral-700" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -101,7 +137,21 @@ const DetailsCard: React.FC = () => {
         {/* Enter Kitchen Button */}
         <div className="mt-7 mb-4">
           <button
-            onClick={() => router.push("/kitchen")}
+            onClick={() => {
+              if (pathname === "/kitchen") return; // already in kitchen
+
+              const toastId = toast.loading("Entering Kitchen...");
+
+              router.push("/kitchen");
+
+              // Poll until we are actually on /kitchen
+              const checkPath = setInterval(() => {
+                if (window.location.pathname === "/kitchen") {
+                  toast.success("Welcome to Kitchen", { id: toastId });
+                  clearInterval(checkPath);
+                }
+              }, 100);
+            }}
             className="!border-2 !border-green-500 !text-[#c5bba7] font-nulshock !bg-neutral-900 !px-2 !py-2 text-sm rounded-md !hover:bg-green-500 hover:text-white transition flex items-center"
           >
             ENTER KITCHEN
