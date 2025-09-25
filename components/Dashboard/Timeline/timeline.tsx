@@ -1,56 +1,70 @@
-import { getTimerStatus } from "@/lib/controllers/timer.controller";
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-
-interface TimerStep {
-  label: string;
-  totalDuration: number;
-  elapsedTime: number;
-}
+import axios from "axios";
 
 interface TimelineStep {
   label: string;
   progress: number;
 }
 
-const defaultLabels = ["Start", "Round 0", "Round 1", "Round 2", "Round 3"];
+export default function Timeline() {
+  const defaultLabels = ["Start", "Round 0", "Round 1", "Round 2", "Round 3"];
 
-export default async function Timeline() {
-  const result = await getTimerStatus();
+  const [steps, setSteps] = useState<TimelineStep[]>(
+    defaultLabels.map((label) => ({ label, progress: 0 }))
+  );
 
-  // Initialize steps with 0 progress
-  let steps: TimelineStep[] = defaultLabels.map((label) => ({
-    label,
-    progress: 0,
-  }));
+  useEffect(() => {
+    const updateSteps = async () => {
+      try {
+        //current round
+      console.log("Fetching /dashboard...");
+      const dashboardData = await axios.get("/dashboard");
+      const currentRound = (dashboardData.data.data.current_round);
+      console.log("Current round:", currentRound);
 
-  if (result.success && result.data) {
-    const dataArray: TimerStep[] = Array.isArray(result.data)
-      ? result.data.map((t) => ({
-          label: t.phase,
-          totalDuration: t.totalDuration,
-          elapsedTime: t.totalDuration - t.remainingTime,
-        }))
-      : [
-          {
-            label: result.data.phase,
-            totalDuration: result.data.totalDuration,
-            elapsedTime: result.data.totalDuration - result.data.remainingTime,
-          },
-        ];
+        //time info
+        const { data: timeData } = await axios.get("/GetTime");
 
-    // Only overwrite matching steps with actual progress
-    dataArray.forEach((t, idx) => {
-      if (steps[idx]) {
-        steps[idx].progress =
-          t.totalDuration > 0
-            ? Math.max(
-                0, Math.min(100,((t.totalDuration - t.elapsedTime) / t.totalDuration) * 100)
-              )
-            : 0;
+        const start = new Date(timeData.round_start_time).getTime();
+        const end = new Date(timeData.round_end_time).getTime();
+        const server = new Date(timeData.server_time).getTime();
+
+        let currentRoundProgress = 0;
+        if (!isNaN(start) && !isNaN(end) && !isNaN(server) && end > start) {
+          const totalTime = end - start;
+          const elapsedTime = server - start;
+          currentRoundProgress = Math.max(
+            0,
+            Math.min(100, (elapsedTime / totalTime) * 100)
+          );
+        }
+
+        //update steps
+        setSteps(
+          defaultLabels.map((label, idx) => {
+            if (idx < currentRound) {
+              return { label, progress: 100 }; // completed rounds
+            } else if (idx === currentRound) {
+              return { label, progress: currentRoundProgress }; // current round
+            } else {
+              return { label, progress: 0 }; // future rounds
+            }
+          })
+        );
+      } catch (err) {
+        console.error("Failed to fetch details or time:", err);
       }
-    });
-  }
+    };
+
+    // first run
+    updateSteps();
+    // set interval
+    const interval = setInterval(updateSteps, 120 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const totalSteps = steps.length;
   const totalGreenPercent = steps
@@ -76,7 +90,7 @@ export default async function Timeline() {
             style={{ left: `${totalGreenPercent}%` }}
           >
             <div className="-top-5 -left-2 relative">
-                <Image src="/chef-hat.svg" alt="Chef Hat" width={56} height={56} />
+              <Image src="/chef-hat.svg" alt="Chef Hat" width={56} height={56} />
             </div>
           </div>
         </div>
