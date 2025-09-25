@@ -18,26 +18,26 @@ export default function Dashboard() {
       </div>
 
       {/* Page container */}
-      <div className="flex flex-col lg:flex-row lg:flex-wrap lg:justify-center gap-8 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-8 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Timeline section */}
-        <section className="h-[120px] w-full rounded-2xl flex items-center justify-center text-white text-lg">
+        <section className="h-[120px] w-full rounded-2xl flex items-center justify-center overflow-hidden">
           <Timeline />
         </section>
 
         {/* Main content */}
-        <div className="flex flex-col lg:flex-row lg:justify-center gap-8">
+        <div className="flex flex-col lg:flex-row w-full space-x-8 md:space-x-6 lg:space-x-8 justify-center gap-y-6">
           {/* Profile */}
-          <div className="w-full lg:w-auto flex justify-center">
+          <div className="flex-1 min-w-[250px] lg:min-w-[200px] flex justify-center">
             <ProfileCard />
           </div>
 
           {/* Statistics */}
-          <div className="w-full lg:w-[692px] rounded-2xl flex flex-col items-center justify-center text-white">
+          <div className="flex-1 min-w-[300px] lg:min-w-[650px] flex justify-center">
             <Statistics />
           </div>
 
           {/* Details */}
-          <div className="w-full lg:w-auto flex justify-center">
+          <div className="flex-1 min-w-[250px] lg:min-w-[200px] flex justify-center">
             <DetailsCard />
           </div>
         </div>

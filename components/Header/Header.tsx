@@ -13,7 +13,7 @@ export default function Header() {
   if (pathname === "/") return null;
 
   return (
-    <header className="relative flex items-center justify-between w-full px-4 py-2 md:px-12 border-b-2 border-b-[#B7AB98] select-none">
+    <header className="flex items-center justify-between w-full px-4 py-2 md:px-12 border-b-2 border-b-[#B7AB98] select-none">
       <a href="https://www.codechefvit.com" target="_blank" rel="noopener noreferrer">
       <Image
         src={icon}
