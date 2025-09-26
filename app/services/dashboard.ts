@@ -9,14 +9,15 @@ export async function getRounds(): Promise<RoundStats[]> {
   const rounds: RoundStats[] = [];
 
   for (let i = 0; i <= 3; i++) {
-    const completed = (data as any)[`questionsCompleted${i}`] ?? 0;
-    const incomplete = (data as any)[`questionsNotCompleted${i}`] ?? 0;
-    const score = (data as any)[`round${i}Score`] ?? 0;
+    const completed = data.questions_completed[i] ?? 0;
+    const incomplete = data.questions_not_completed[i] ?? 0;
+    const score = data.round_scores[i] ?? 0;
 
     let status: "Closed" | "In Progress" | "Completed" = "Closed";
-    if (i < data.current_round) status = "Completed";
-    else if (i === data.current_round) status = "In Progress";
-
+    if(data.current_round!=null){
+      if (i < data.current_round) status = "Completed";
+      else if (i === data.current_round) status = "In Progress";
+    }  
     rounds.push({
       round: i,
       status,
@@ -27,7 +28,7 @@ export async function getRounds(): Promise<RoundStats[]> {
         completed + incomplete > 0
           ? Math.round((completed / (completed + incomplete)) * 100)
           : 0,
-      locked: i > data.currentRound,
+      locked: data.current_round !== null ? i > data.current_round : true,
     });
   }
 
