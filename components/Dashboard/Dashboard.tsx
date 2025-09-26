@@ -7,16 +7,18 @@ import DetailsCard from "./Details/details";
 import api from "@/services";
 import { useState, useEffect } from "react";
 import { DashboardResponse } from "@/schemas/api/index";
+import useKitchenStore from "store/zustant";
 
 export default function Dashboard() {
   const [data, setData] = useState<DashboardResponse>();
   const [loading, setLoading] = useState<boolean>(true);
-
+  const {setRound} = useKitchenStore();
   useEffect(() => {
     const fetchDetails = async () => {
       try {
         const res = await api.get("/dashboard");
         setData(res.data.data);
+        setRound(res.data.data.current_round);
       } catch (err) {
         console.error("Failed to fetch details:", err);
       } finally {
