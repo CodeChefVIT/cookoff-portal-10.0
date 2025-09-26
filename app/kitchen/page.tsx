@@ -15,19 +15,19 @@ import { getKitchenData } from "../api/kitchen";
 import Header from "@/components/Header/Header";
 import TabButton from "@/components/ui/TabButton";
 import { ImperativePanelHandle } from "react-resizable-panels";
-import toast, { ToastBar } from "react-hot-toast";
 
 export default function Kitchen() {
   const {
     selectedQuestionId,
+    setSelectedQuestionId,
     fullScreenEditor,
     fullScreenTestCases,
     fullScreenQuestion,
     setFullScreenEditor,
-    setFullScreenTestCases,
     testCases,
     testResults,
     compilerDetails,
+    questions,
     setQuestions,
     setTestCases,
   } = useKitchenStore();
@@ -46,6 +46,8 @@ export default function Kitchen() {
     fetchData();
   }, [setQuestions, setTestCases]);
   const [testCasesPanelSize, setTestCasesPanelSize] = useState(20);
+  const [sidebarWidth, setSidebarWidth] = useState(50);
+  const panelRef = useRef<ImperativePanelHandle | null>(null);
 
     const selectedTestcases = useMemo(() => {
     const testCasesForQuestion = testResults.filter(
@@ -81,6 +83,13 @@ export default function Kitchen() {
   
   const languages = Object.values(LANGUAGES);
 
+  const handleSetQuestionID: React.Dispatch<React.SetStateAction<string>> = (
+    id
+  ) =>
+    setSelectedQuestionId(
+      typeof id === "function" ? id(selectedQuestionId) : id
+    );
+
   const handleSetFullScreenEditor: React.Dispatch<
     React.SetStateAction<boolean>
   > = (fullScreen) =>
@@ -89,14 +98,7 @@ export default function Kitchen() {
         ? fullScreen(fullScreenEditor)
         : fullScreen
     );
-  const handleSetFullScreenTestCases: React.Dispatch<
-    React.SetStateAction<boolean>
-  > = (fullScreen) =>
-    setFullScreenTestCases(
-      typeof fullScreen === "function"
-        ? fullScreen(fullScreenTestCases)
-        : fullScreen
-    );
+
 
   if (fullScreenQuestion) {
     return <QuestionWindow />;
@@ -123,13 +125,42 @@ export default function Kitchen() {
     );
   }
   return (
-    <div className="relative bg-[#070E0A] max-h-screen text-gray-200 overflow-hidden">
-      <ResizablePanelGroup direction="horizontal" className="">
-        <ResizablePanel defaultSize={50} maxSize={50}>
-          <div className="grid grid-cols-1 gap-6 lg:gap-10">
-            <div className="-mt-2 py-4 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
-              <QuestionWindow />
-            </div>
+    <div className="flex flex-col h-screen bg-[#070E0A] text-gray-200 overflow-hidden">
+      <Header />
+      <ResizablePanelGroup direction="horizontal" className="flex-grow">
+        <ResizablePanel
+          ref={panelRef}
+          defaultSize={50}
+          minSize={4}
+          maxSize={50}
+          onResize={(size) => setSidebarWidth(size)}
+        >
+          <div className="h-full overflow-hidden">
+            {sidebarWidth > 8 ? (
+              <div className="grid grid-cols-1 gap-6 lg:gap-10">
+                <div className="-mt-2 py-4 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
+                  <QuestionWindow />
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-20 pt-14">
+                {questions.map((q, index) => (
+                  <div key={q.ID} className="rotate-90">
+                    <TabButton
+                      id={q.ID}
+                      newId={index }
+                      active={selectedQuestionId === q.ID}
+                      onClick={() => {
+                        handleSetQuestionID(q.ID);
+                        if (panelRef.current) {
+                          panelRef.current.resize(50);
+                        }
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </ResizablePanel>
 
@@ -156,6 +187,7 @@ export default function Kitchen() {
 
             <ResizablePanel
               defaultSize={20}
+              maxSize={60}
               className="pt-4 pl-4"
               onResize={(size) => setTestCasesPanelSize(size)}
             >
