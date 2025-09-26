@@ -6,8 +6,6 @@ import { useRouter, usePathname } from "next/navigation";
 import useKitchenStore from "store/zustant";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "react-hot-toast";
-import { TruckElectric } from "lucide-react";
-import { stat } from "fs";
 import timer from "@/services/getTimer";
 
 interface DetailsCardProps {
@@ -131,8 +129,7 @@ const DetailsCard: React.FC = () => {
 
               const toastId = toast.loading("Checking round status...");
               try {
-                 await timer();
-
+                await timer();
                 toast.loading("Entering Kitchen...", { id: toastId });
                 router.push("/kitchen");
 

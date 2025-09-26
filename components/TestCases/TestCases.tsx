@@ -6,7 +6,6 @@ import { TestCase } from "store/zustant";
 import { useTestCases } from "./useTestCases";
 import SelectTestCases from "./SelectTestCases";
 import Input from "./Input";
-import toast from "react-hot-toast";
 
 interface CompilerResult {
   isCompileSuccess: boolean;
@@ -26,7 +25,7 @@ function getTestCaseScoreColor(count: number, total: number) {
   return "text-accent";
 }
 
-const TestCases = ({ results, compilerDetails, panelSize }: TestCasesProps) => {
+const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
   const [activeCaseIndex, setActiveCaseIndex] = useState(0);
   const { fullScreenTestCases, setFullScreenTestCases } = useKitchenStore();
   const {
@@ -50,7 +49,7 @@ const TestCases = ({ results, compilerDetails, panelSize }: TestCasesProps) => {
         <div className="flex justify-between items-center">
           <div
             className={`rounded-xl bg-testcasesBG px-4 py-4 text-3xl font-bold ${
-              outputExists 
+              outputExists
                 ? getTestCaseScoreColor(passedCount, totalCases)
                 : "text-gray-400"
             }`}
