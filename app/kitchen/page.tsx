@@ -15,6 +15,9 @@ import { getKitchenData } from "../api/kitchen";
 import Header from "@/components/Header/Header";
 import TabButton from "@/components/ui/TabButton";
 import { ImperativePanelHandle } from "react-resizable-panels";
+import timer from "@/services/getTimer";
+import toast from "react-hot-toast";
+import Loading from "@/components/Loading";
 
 export default function Kitchen() {
   const {
@@ -31,7 +34,26 @@ export default function Kitchen() {
     setQuestions,
     setTestCases,
   } = useKitchenStore();
-
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        await timer();
+        setLoading(false);
+      } catch (error) {
+        toast.error(
+          error && typeof error === "object" && "message" in error
+            ? (error as { message: string }).message
+            : "Round not started yet"
+        );
+        // Delay redirect by 2 seconds to show the toast
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 1000);
+      }
+    }
+    void fetchData();
+  }, []);
   // Rehydrate the store on client side to prevent hydration mismatches
   useEffect(() => {
     useKitchenStore.persist.rehydrate();
@@ -127,7 +149,9 @@ export default function Kitchen() {
       />
     );
   }
-
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div className="flex flex-col h-screen bg-[#070E0A] text-gray-200 overflow-hidden">
       <Header />
