@@ -136,7 +136,7 @@ export default function Kitchen() {
           onResize={(size) => setSidebarWidth(size)}
         >
           <div className="h-full overflow-hidden">
-            {sidebarWidth > 8 ? (
+            {sidebarWidth > 10 ? (
               <div className="grid grid-cols-1 gap-6 lg:gap-10">
                 <div className="-mt-2 py-4 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
                   <QuestionWindow />

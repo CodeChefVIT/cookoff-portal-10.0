@@ -52,7 +52,7 @@ const QuestionWindow: React.FC = () => {
     >
       <div className="w-full max-w-4xl">
         {/* Tabs */}
-        <div className="flex items-center space-x-1 sm:space-x-2 mb-[-1px] pl-4 ">
+        <div className="flex items-center space-x-1 sm:space-x-2 mb-[-1px] pl-4 overflow-x-auto scrollbar-hide">
           {questions.map((q, key) => (
             <TabButton
               key={q.ID}
