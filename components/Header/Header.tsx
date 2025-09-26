@@ -7,7 +7,6 @@ import NotificationButton from "../ui/NotificationButton";
 export default function Header() {
   const icon = "/icon.avif";
   const pathname = usePathname();
-  const router = useRouter();
   if (pathname === "/") return null;
 
   return (

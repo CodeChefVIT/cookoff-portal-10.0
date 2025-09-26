@@ -17,19 +17,20 @@ export default function Timeline() {
 
   useEffect(() => {
     const updateSteps = async () => {
+      let currentRoundProgress = 0;
       try {
         //current round
       const res = await api.get("/dashboard");
       const currentRound = Number(res.data.data.current_round);
 
         //time info
-        const { data: timeData } = await api.get("/GetTime");
+        try {const { data: timeData } = await api.get("/GetTime");
 
         const start = new Date(timeData.round_start_time).getTime();
         const end = new Date(timeData.round_end_time).getTime();
         const server = new Date(timeData.server_time).getTime();
 
-        let currentRoundProgress = 0;
+        
         if (!isNaN(start) && !isNaN(end) && !isNaN(server) && end > start) {
           const totalTime = end - start;
           const elapsedTime = server - start;
@@ -37,6 +38,10 @@ export default function Timeline() {
             0,
             Math.min(100, (elapsedTime / totalTime) * 100)
           );
+        }}
+
+        catch(timeErr: any){
+          currentRoundProgress=50;
         }
 
         //update steps
@@ -87,7 +92,7 @@ export default function Timeline() {
             className="absolute top-1/2 -translate-y-1/2"
             style={{ left: `${totalGreenPercent}%` }}
           >
-            <div className="-top-5 -left-2 relative">
+            <div className="-top-3 -left-5 relative">
               <Image src="/chef-hat.svg" alt="Chef Hat" width={56} height={56} />
             </div>
           </div>
