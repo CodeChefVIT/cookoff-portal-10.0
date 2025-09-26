@@ -50,10 +50,11 @@ const TestCases = ({ results, compilerDetails, panelSize }: TestCasesProps) => {
       <div>
         <div className="flex justify-between items-center">
           <div
-            className={`rounded-xl bg-testcasesBG px-4 py-4 text-3xl font-bold ${getTestCaseScoreColor(
-              passedCount,
-              totalCases
-            )}`}
+            className={`rounded-xl bg-testcasesBG px-4 py-4 text-3xl font-bold ${
+              outputExists 
+                ? getTestCaseScoreColor(passedCount, totalCases)
+                : "text-gray-400"
+            }`}
           >
             {outputExists
               ? `${passedCount}/${totalCases} Test Cases Passed !!`
@@ -77,6 +78,7 @@ const TestCases = ({ results, compilerDetails, panelSize }: TestCasesProps) => {
           hiddenPassedCount={hiddenPassedCount}
           setActiveCaseIndex={setActiveCaseIndex}
           getTestCaseScoreColor={getTestCaseScoreColor}
+          outputExists={outputExists}
         />
       </div>
 

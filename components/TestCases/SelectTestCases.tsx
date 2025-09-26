@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import Button from "../ui/Button";
-import { BsEyeSlash, BsCheckCircleFill, BsXCircleFill } from "react-icons/bs";
+import { BsEyeSlash, BsCheckCircleFill, BsXCircleFill, BsCircle } from "react-icons/bs";
 import { TestCase } from "store/zustant";
 
 interface SelectTestCasesProps {
@@ -9,6 +9,7 @@ interface SelectTestCasesProps {
   hiddenPassedCount: number;
   setActiveCaseIndex: (index: number) => void;
   getTestCaseScoreColor: (count: number, total: number) => string;
+  outputExists: boolean;
 }
 
 const SelectTestCases: React.FC<SelectTestCasesProps> = ({
@@ -17,26 +18,57 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
   hiddenPassedCount,
   setActiveCaseIndex,
   getTestCaseScoreColor,
+  outputExists,
 }) => {
   const testCaseStatus = useMemo(() => {
     return visibleCases.map((testCase) => {
+      // If no output exists globally, don't show any status
+      if (!outputExists) {
+        return {
+          id: testCase.id,
+          status: 'neutral',
+        };
+      }
+      
+      // If output exists, determine pass/fail status
+      const hasOutput = testCase.output && testCase.output.trim() !== "";
+      if (!hasOutput) {
+        return {
+          id: testCase.id,
+          status: 'neutral',
+        };
+      }
+      
       const isPassed =
         testCase.expected_output &&
         testCase.output &&
         testCase.expected_output.trim() === testCase.output.trim();
+        
       return {
         id: testCase.id,
-        isPassed,
+        status: isPassed ? 'passed' : 'failed',
       };
     });
-  }, [visibleCases]);
+  }, [visibleCases, outputExists]);
 
   return (
     <div className="flex items-center justify-between gap-3">
       <div>
         {visibleCases.map((testCase, idx) => {
           const status = testCaseStatus.find((s) => s.id === testCase.id);
-          const isPassed = status?.isPassed || false;
+          const testStatus = status?.status || 'neutral';
+
+          const renderIcon = () => {
+            switch (testStatus) {
+              case 'passed':
+                return <BsCheckCircleFill className={`mr-2 size-4 text-ring`} />;
+              case 'failed':
+                return <BsXCircleFill className={`mr-2 size-4 text-accent`} />;
+              case 'neutral':
+              default:
+                return <BsCircle className={`mr-2 size-4 text-gray-400`} />;
+            }
+          };
 
           return (
             <Button
@@ -45,11 +77,7 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
               className={`rounded-xl px-4 py-2 text-sm font-semibold bg-secondary hover:bg-border`}
               onClick={() => setActiveCaseIndex(idx)}
             >
-              {isPassed ? (
-                <BsCheckCircleFill className={`mr-2 size-4 text-ring`} />
-              ) : (
-                <BsXCircleFill className={`mr-2 size-4 text-accent`} />
-              )}
+              {renderIcon()}
               {`Case ${idx + 1}`}
             </Button>
           );
