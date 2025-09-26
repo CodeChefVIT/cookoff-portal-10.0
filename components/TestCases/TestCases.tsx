@@ -37,7 +37,6 @@ const TestCases = ({ results, compilerDetails, panelSize }: TestCasesProps) => {
     totalCases,
     outputExists,
   } = useTestCases(results);
-
   const activeCaseData = visibleCases[activeCaseIndex];
 
   return (

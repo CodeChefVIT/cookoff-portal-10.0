@@ -150,9 +150,9 @@ export default function Editor({
         const originalTestCase = originalTestCases[index];
         return {
           ...result,
-          input: originalTestCase?.input || "",
-          expected_output: originalTestCase?.expected_output || "",
-          hidden: originalTestCase?.hidden || false,
+          input: originalTestCase?.Input || "",
+          expected_output: originalTestCase?.ExpectedOutput || "",
+          hidden: originalTestCase?.Hidden || false,
         };
       });
 

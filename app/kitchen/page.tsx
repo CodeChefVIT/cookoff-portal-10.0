@@ -51,18 +51,18 @@ export default function Kitchen() {
       return testCasesForQuestion;
     }
     return testCases
-      .filter((tc) => tc && tc.question_id === selectedQuestionId)
+      .filter((tc) => tc && tc.QuestionID=== selectedQuestionId)
       .map(
         (tc) =>
           ({
-            id: tc.id,
-            input: tc.input,
-            output: tc.output || "",
-            expected_output: tc.expected_output,
-            hidden: tc.hidden,
-            runtime: tc.runtime || 0,
-            memory: tc.memory || 0,
-            question_id: tc.question_id,
+            id: tc.ID,
+            input: tc.Input,
+            output: tc.Output || "",
+            expected_output: tc.ExpectedOutput,
+            hidden: tc.Hidden,
+            runtime: tc.Runtime || 0,
+            memory: tc.Memory || 0,
+            question_id: tc.QuestionID,
           } as TestCase)
       );
   }, [testCases, testResults, selectedQuestionId]);
