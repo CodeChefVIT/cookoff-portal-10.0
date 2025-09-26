@@ -18,8 +18,6 @@ const TabButton: React.FC<TabButtonProps> = ({
   onClick,
   newId,
 }) => {
-  console.log(newId);
-
   return (
     <button
       onClick={onClick}

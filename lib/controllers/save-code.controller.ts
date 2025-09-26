@@ -152,16 +152,12 @@ export async function getCodeController(
     const col = await getCollection();
     let code: CodeState | null = null;
 
-    console.log("Querying with:", { id, userId, questionId });
-
     if (userId && questionId) {
       code = await col.findOne({
         userId,
         questionId,
       });
     }
-
-    console.log("Fetched code:", code);
 
     if (!code) {
       return { success: false, error: "Code not found", status: 404 };

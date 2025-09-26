@@ -127,15 +127,11 @@ export default function Editor({
     const toastId = toast.loading("Running code...");
 
     try {
-      console.log("Running code:", code);
-
       const response = await getTestCasesAfterRun(
         code,
         questionLanguage.id,
         selectedQuestionId
       );
-
-      console.log("Run code response:", response);
 
       const transformedResults = response.result.map((result, index) => {
         const hasError = result.stderr || result.status.id !== 3;
@@ -217,15 +213,11 @@ export default function Editor({
     const submissionToastId = toast.loading("Submitting code...");
 
     try {
-      console.log("Submitting code:", code);
-
       const response = await submitCode(
         code,
         questionLanguage.id,
         selectedQuestionId
       );
-
-      console.log("Submit code response:", response);
 
       toast.success(
         `Code submitted successfully! Getting results...`,
@@ -237,7 +229,6 @@ export default function Editor({
 
       try {
         const submissionResult = await getSubmissionResult(response.submission_id);
-        console.log("Submission result:", submissionResult);
 
         const { setTestResults, setCompilerDetails, testCases: originalTestCases } = useEditorState.getState();
 
@@ -260,7 +251,6 @@ export default function Editor({
           };
         });
 
-        console.log("Transformed results for submission:", transformedResults);
         setTestResults(transformedResults);
 
         const successMessage = `Submission completed: ${submissionResult.passed}/${submissionResult.passed + submissionResult.failed} test cases passed`;
@@ -363,7 +353,6 @@ export default function Editor({
         }
       } catch (err: unknown) {
         if (axios.isAxiosError(err) && err.response?.status === 401) {
-          console.log("User not authenticated - skipping code fetch");
           setCode(questionLanguage.template);
         } else {
           console.error("Error fetching saved code:", err);

@@ -28,7 +28,6 @@ const DetailsCard: React.FC = () => {
         const mapped: DetailsCardProps = {
           currentRound: data.current_round,
         };
-        console.log(typeof mapped.currentRound.toString());
 
         setRound(Number(mapped.currentRound));
         setDetails(mapped);

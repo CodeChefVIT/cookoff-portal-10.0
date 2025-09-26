@@ -30,7 +30,6 @@ export type Question = {
 export async function byRound(): Promise<Question[]> {
   try {
     const { data } = await api.get<ByRoundApiResponse>(`/question/round`);
-    console.log(data);
 
     return data.questions_testcases.map((q) => ({
       ...q.question,

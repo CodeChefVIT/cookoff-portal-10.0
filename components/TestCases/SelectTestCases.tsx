@@ -30,7 +30,32 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
         };
       }
       
-      // If output exists, determine pass/fail status
+      // Use statusDescription to determine the status
+      if (testCase.statusDescription) {
+        const statusDesc = testCase.statusDescription.toLowerCase();
+        
+        // Check for success indicators in status description
+        if (statusDesc.includes('successful') || statusDesc.includes('accepted')) {
+          return {
+            id: testCase.id,
+            status: 'passed',
+          };
+        }
+        
+        // Check for failure indicators in status description
+        if (statusDesc.includes('wrong answer') || 
+            statusDesc.includes('failed') || 
+            statusDesc.includes('time limit') ||
+            statusDesc.includes('runtime error') ||
+            statusDesc.includes('compilation error')) {
+          return {
+            id: testCase.id,
+            status: 'failed',
+          };
+        }
+      }
+      
+      // Fallback to output comparison if statusDescription is not available
       const hasOutput = testCase.output && testCase.output.trim() !== "";
       if (!hasOutput) {
         return {
@@ -61,12 +86,25 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
           const renderIcon = () => {
             switch (testStatus) {
               case 'passed':
-                return <BsCheckCircleFill className={`mr-2 size-4 text-ring`} />;
+                return <BsCheckCircleFill className={`mr-2 size-4 text-green-500`} />;
               case 'failed':
-                return <BsXCircleFill className={`mr-2 size-4 text-accent`} />;
+                return <BsXCircleFill className={`mr-2 size-4 text-red-500`} />;
               case 'neutral':
               default:
                 return <BsCircle className={`mr-2 size-4 text-gray-400`} />;
+            }
+          };
+
+          const getButtonStyles = () => {
+            const baseStyles = "rounded-xl px-4 py-2 text-sm font-semibold transition-colors";
+            switch (testStatus) {
+              case 'passed':
+                return `${baseStyles} bg-green-900/20 border border-green-500/30 hover:bg-green-900/30 text-green-100`;
+              case 'failed':
+                return `${baseStyles} bg-red-900/20 border border-red-500/30 hover:bg-red-900/30 text-red-100`;
+              case 'neutral':
+              default:
+                return `${baseStyles} bg-secondary hover:bg-border`;
             }
           };
 
@@ -74,7 +112,7 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
             <Button
               key={testCase.id}
               variant={"secondary"}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold bg-secondary hover:bg-border`}
+              className={getButtonStyles()}
               onClick={() => setActiveCaseIndex(idx)}
             >
               {renderIcon()}

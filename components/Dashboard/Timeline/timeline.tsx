@@ -19,10 +19,8 @@ export default function Timeline() {
     const updateSteps = async () => {
       try {
         //current round
-      console.log("Fetching /dashboard...");
       const res = await api.get("/dashboard");
       const currentRound = Number(res.data.data.current_round);
-      console.log("Current round:", currentRound);
 
         //time info
         const { data: timeData } = await api.get("/GetTime");

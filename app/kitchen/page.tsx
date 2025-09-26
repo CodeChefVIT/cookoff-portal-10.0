@@ -31,31 +31,33 @@ export default function Kitchen() {
     setQuestions,
     setTestCases,
   } = useKitchenStore();
+
+  // Rehydrate the store on client side to prevent hydration mismatches
+  useEffect(() => {
+    useKitchenStore.persist.rehydrate();
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       const { questions, testcases } = await getKitchenData();
       setQuestions(questions);
-      console.log("questions;", questions);
       setTestCases(testcases);
     };
     fetchData();
   }, [setQuestions, setTestCases]);
   const [testCasesPanelSize, setTestCasesPanelSize] = useState(20);
 
-  const selectedTestcases = useMemo(() => {
+    const selectedTestcases = useMemo(() => {
     const testCasesForQuestion = testResults.filter(
       (tc) => tc && tc.question_id === selectedQuestionId
     );
-    console.log("Kitchen: testResults", testResults);
-    console.log("Kitchen: selectedQuestionId", selectedQuestionId);
-    console.log("Kitchen: testCasesForQuestion", testCasesForQuestion);
     
     if (testCasesForQuestion.length > 0) {
-      console.log("Kitchen: Using testResults for display");
       return testCasesForQuestion;
     }
     
-    console.log("Kitchen: Using original testCases for display");
+    // Only show template test cases if no execution results exist
+    // This prevents showing "0/X Test Cases Passed" when no code has been run
     return testCases
       .filter((tc) => tc && tc.QuestionID=== selectedQuestionId)
       .map(
@@ -63,17 +65,18 @@ export default function Kitchen() {
           ({
             id: tc.ID,
             input: tc.Input,
+            output: "", // Empty output indicates no execution
             expected_output: tc.ExpectedOutput,
             hidden: tc.Hidden,
-            runtime: tc.Runtime || 0,
-            memory: tc.Memory || 0,
-            question_id: tc.QuestionID,
+            runtime: 0, // 0 indicates no execution
+            memory: 0, // 0 indicates no execution
+            question_id: selectedQuestionId,
           } as TestCase)
       );
   }, [testCases, testResults, selectedQuestionId]);
   const defaultCompilerDetails = {
     isCompileSuccess: false,
-    message: "Compilation Successful !!",
+    message: "No code executed yet",
   };
   
   const languages = Object.values(LANGUAGES);
