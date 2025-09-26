@@ -2,7 +2,6 @@ import React from "react";
 import InputOutputCard from "./InputOutputCard";
 import CompilerMessage from "./CompilerMessage";
 import { TestCase } from "store/zustant";
-import toast from "react-hot-toast";
 
 interface InputProps {
   compilerDetails: {
@@ -19,19 +18,20 @@ const Input: React.FC<InputProps> = ({
   outputExists,
 }) => {
   // Determine per-test case compiler status
-  const testCaseSuccess = activeCaseData ? (
-    !activeCaseData.stderr && 
-    !!activeCaseData.output && 
-    activeCaseData.output.trim() === activeCaseData.expected_output.trim()
-  ) : compilerDetails.isCompileSuccess;
-  const testCaseMessage = activeCaseData?.statusDescription || compilerDetails.message;
+  const testCaseSuccess = activeCaseData
+    ? !activeCaseData.stderr &&
+      !!activeCaseData.output &&
+      activeCaseData.output.trim() === activeCaseData.expected_output.trim()
+    : compilerDetails.isCompileSuccess;
+  const testCaseMessage =
+    activeCaseData?.statusDescription || compilerDetails.message;
 
   return (
     <div className="">
       {outputExists && (
-        <CompilerMessage 
-          message={testCaseMessage} 
-          isCompileSuccess={testCaseSuccess} 
+        <CompilerMessage
+          message={testCaseMessage}
+          isCompileSuccess={testCaseSuccess}
         />
       )}
       {activeCaseData && (

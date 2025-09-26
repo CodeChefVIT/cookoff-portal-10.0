@@ -6,8 +6,6 @@ import { useRouter, usePathname } from "next/navigation";
 import useKitchenStore from "store/zustant";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "react-hot-toast";
-import { TruckElectric } from "lucide-react";
-import { stat } from "fs";
 
 interface DetailsCardProps {
   currentRound: string;
@@ -113,8 +111,6 @@ const DetailsCard: React.FC = () => {
           </p>
         </div>
 
-
-
         {/* Tip Box */}
         <div className="mt-3 bg-neutral-800 rounded-lg py-4 px-6 text-sm text-gray-300 italic max-w-xs">
           <p className="font-bold not-italic text-white font-inter mb-1">
@@ -134,7 +130,7 @@ const DetailsCard: React.FC = () => {
               try {
                 // const res = await api.get("/GetTime");
                 const res = {
-                  status: 200
+                  status: 200,
                 };
 
                 if (res.status === 200) {
@@ -153,8 +149,7 @@ const DetailsCard: React.FC = () => {
                   toast.error("Round not started yet!", { id: toastId });
                 }
               }
-            }
-            }
+            }}
             className="!border-2 !border-green-500 !text-[#c5bba7] font-nulshock !bg-neutral-900 !px-2 !py-2 text-sm rounded-md !hover:bg-green-500 hover:text-white transition flex items-center"
           >
             ENTER KITCHEN

@@ -130,7 +130,7 @@ export async function getCodeController(
   status: number;
 }> {
   try {
-    const { id, questionId } = request;
+    const { questionId } = request;
 
     let userId: string;
     try {
@@ -200,7 +200,10 @@ export async function updateCodeController(
     }
 
     const col = await getCollection();
-    const existing = await col.findOne({ _id: id, userId } as Filter<CodeState>);
+    const existing = await col.findOne({
+      _id: id,
+      userId,
+    } as Filter<CodeState>);
     if (!existing) {
       return { success: false, error: "Code not found", status: 404 };
     }
@@ -252,7 +255,10 @@ export async function deleteCodeController(
     }
 
     const col = await getCollection();
-    const result = await col.deleteOne({ _id: id, userId } as Filter<CodeState>);
+    const result = await col.deleteOne({
+      _id: id,
+      userId,
+    } as Filter<CodeState>);
 
     if (!result.deletedCount) {
       return { success: false, error: "Code not found", status: 404 };

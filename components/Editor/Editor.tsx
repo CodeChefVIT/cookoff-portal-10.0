@@ -2,7 +2,6 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
-import { FaToggleOn, FaToggleOff } from "react-icons/fa";
 import { oneDark } from "@codemirror/theme-one-dark";
 import type { EditorView } from "@codemirror/view";
 import type { ViewUpdate } from "@codemirror/view";
@@ -10,10 +9,12 @@ import LanguageSelector from "./LanguageSelector/LanguageSelector";
 import RoundTimer from "./RoundTimer/RoundTimer";
 import Button from "../ui/Button";
 import useEditorState from "store/zustant";
-import * as navigation from "next/navigation";
 import { Language } from "@/lib/languages";
 import axios from "axios";
-import { getTestCasesAfterRun, getSubmissionResult } from "../../app/api/kitchen";
+import {
+  getTestCasesAfterRun,
+  getSubmissionResult,
+} from "../../app/api/kitchen";
 import { MdFullscreen } from "react-icons/md";
 import { MdFullscreenExit } from "react-icons/md";
 import { submitCode } from "@/api/kitchen";
@@ -41,14 +42,12 @@ export default function Editor({
   } = useEditorState();
 
   // Get the language for the current question
-  const questionLanguage = selectedQuestionId ? getLanguageForQuestion(selectedQuestionId) : selectedLanguage;
-
-  const placeholder = `${questionLanguage.commentSymbol} Write your ${questionLanguage.name} solution here`;
-
-  const router = navigation.useRouter();
+  const questionLanguage = selectedQuestionId
+    ? getLanguageForQuestion(selectedQuestionId)
+    : selectedLanguage;
   const [code, setCode] = useState("");
   const [cursor, setCursor] = useState({ line: 1, ch: 1 });
-  const [customInput, setCustomInput] = useState(false);
+  const [, setCustomInput] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [editorReady, setEditorReady] = useState(false);
   const editorRef = useRef<EditorView | null>(null);
@@ -71,11 +70,15 @@ export default function Editor({
 
     // Set cursor position after a brief delay to ensure editor is updated
     const setCursorPosition = () => {
-      if (editorRef.current && editorRef.current.dispatch && language.cursorPosition) {
+      if (
+        editorRef.current &&
+        editorRef.current.dispatch &&
+        language.cursorPosition
+      ) {
         try {
           const { line, ch } = language.cursorPosition;
           const doc = editorRef.current.state.doc;
-          
+
           // Ensure line number is within bounds
           const lineNumber = Math.min(Math.max(1, line), doc.lines);
           const lineObj = doc.line(lineNumber);
@@ -94,11 +97,11 @@ export default function Editor({
         setTimeout(setCursorPosition, 100);
       }
     };
-    
+
     setTimeout(setCursorPosition, 200);
   };
 
-    const handleChange = (value: string, viewUpdate: ViewUpdate) => {
+  const handleChange = (value: string, viewUpdate: ViewUpdate) => {
     setCode(value);
     if (selectedQuestionId) {
       setCodeForQuestion(selectedQuestionId, value);
@@ -136,7 +139,7 @@ export default function Editor({
       const transformedResults = response.result.map((result, index) => {
         const hasError = result.stderr || result.status.id !== 3;
         const isSuccess = result.status.id === 3 && !result.stderr;
-        
+
         return {
           id: result.token,
           input: "",
@@ -147,11 +150,15 @@ export default function Editor({
           memory: result.memory,
           question_id: selectedQuestionId,
           stderr: result.stderr || undefined,
-          statusDescription: isSuccess 
+          statusDescription: isSuccess
             ? `Test case ${index + 1}: Execution successful`
-            : hasError 
-              ? `Test case ${index + 1}: ${result.status.description || 'Execution failed'}`
-              : `Test case ${index + 1}: ${result.status.description || 'Unknown status'}`,
+            : hasError
+            ? `Test case ${index + 1}: ${
+                result.status.description || "Execution failed"
+              }`
+            : `Test case ${index + 1}: ${
+                result.status.description || "Unknown status"
+              }`,
         };
       });
 
@@ -176,13 +183,20 @@ export default function Editor({
       const hasErrors = response.result.some(
         (r) => r.stderr || r.status.id !== 3
       );
-      const successCount = response.result.filter(r => r.status.id === 3 && !r.stderr).length;
+      const successCount = response.result.filter(
+        (r) => r.status.id === 3 && !r.stderr
+      ).length;
       const totalCount = response.result.length;
 
       if (hasErrors) {
-        toast.error(`Code execution completed: ${successCount}/${totalCount} test cases passed`, { id: toastId });
+        toast.error(
+          `Code execution completed: ${successCount}/${totalCount} test cases passed`,
+          { id: toastId }
+        );
       } else {
-        toast.success(`All ${totalCount} test cases passed successfully`, { id: toastId });
+        toast.success(`All ${totalCount} test cases passed successfully`, {
+          id: toastId,
+        });
       }
 
       // Set overall compiler details with summary
@@ -219,42 +233,59 @@ export default function Editor({
         selectedQuestionId
       );
 
-      toast.success(
-        `Code submitted successfully! Getting results...`,
-        { id: submissionToastId }
-      );
+      toast.success(`Code submitted successfully! Getting results...`, {
+        id: submissionToastId,
+      });
 
       // Now fetch the submission results
       const resultToastId = toast.loading("Fetching submission results...");
 
       try {
-        const submissionResult = await getSubmissionResult(response.submission_id);
+        const submissionResult = await getSubmissionResult(
+          response.submission_id
+        );
 
-        const { setTestResults, setCompilerDetails, testCases: originalTestCases } = useEditorState.getState();
+        const {
+          setTestResults,
+          setCompilerDetails,
+          testCases: originalTestCases,
+        } = useEditorState.getState();
 
         // Transform submission results to match the existing TestCase format
-        const transformedResults = submissionResult.testcases.map((testcase, index) => {
-          const originalTestCase = originalTestCases[index];
-          return {
-            id: testcase.id,
-            input: originalTestCase?.Input || "",
-            output: testcase.status === "Accepted" 
-              ? testcase.expected_output 
-              : `Status: ${testcase.status}\nDescription: ${testcase.description}`, // Show status info for failed cases
-            expected_output: testcase.expected_output,
-            hidden: originalTestCase?.Hidden || false,
-            runtime: testcase.runtime,
-            memory: testcase.memory,
-            question_id: selectedQuestionId,
-            stderr: testcase.status !== "Accepted" ? testcase.description : undefined,
-            statusDescription: `Test case ${index + 1}: ${testcase.description}`,
-          };
-        });
+        const transformedResults = submissionResult.testcases.map(
+          (testcase, index) => {
+            const originalTestCase = originalTestCases[index];
+            return {
+              id: testcase.id,
+              input: originalTestCase?.Input || "",
+              output:
+                testcase.status === "Accepted"
+                  ? testcase.expected_output
+                  : `Status: ${testcase.status}\nDescription: ${testcase.description}`, // Show status info for failed cases
+              expected_output: testcase.expected_output,
+              hidden: originalTestCase?.Hidden || false,
+              runtime: testcase.runtime,
+              memory: testcase.memory,
+              question_id: selectedQuestionId,
+              stderr:
+                testcase.status !== "Accepted"
+                  ? testcase.description
+                  : undefined,
+              statusDescription: `Test case ${index + 1}: ${
+                testcase.description
+              }`,
+            };
+          }
+        );
 
         setTestResults(transformedResults);
 
-        const successMessage = `Submission completed: ${submissionResult.passed}/${submissionResult.passed + submissionResult.failed} test cases passed`;
-        
+        const successMessage = `Submission completed: ${
+          submissionResult.passed
+        }/${
+          submissionResult.passed + submissionResult.failed
+        } test cases passed`;
+
         if (submissionResult.failed > 0) {
           toast.error(successMessage, { id: resultToastId });
         } else {
@@ -266,15 +297,17 @@ export default function Editor({
           isCompileSuccess: submissionResult.failed === 0,
           message: successMessage,
         });
-
       } catch (resultError) {
         console.error("Error fetching submission result:", resultError);
-        toast.error("Submission successful, but failed to fetch results", { id: resultToastId });
+        toast.error("Submission successful, but failed to fetch results", {
+          id: resultToastId,
+        });
       }
-
     } catch (error) {
       console.error("Error submitting code:", error);
-      toast.error("Failed to submit code. Please try again.", { id: submissionToastId });
+      toast.error("Failed to submit code. Please try again.", {
+        id: submissionToastId,
+      });
     }
   };
 
@@ -305,15 +338,22 @@ export default function Editor({
             setCode(questionLanguage.template);
             // Set cursor position for new template
             setTimeout(() => {
-              if (editorRef.current && editorRef.current.dispatch && questionLanguage.cursorPosition) {
+              if (
+                editorRef.current &&
+                editorRef.current.dispatch &&
+                questionLanguage.cursorPosition
+              ) {
                 try {
                   const { line, ch } = questionLanguage.cursorPosition;
                   const doc = editorRef.current.state.doc;
-                  
+
                   // Ensure line number is within bounds
                   const lineNumber = Math.min(Math.max(1, line), doc.lines);
                   const lineObj = doc.line(lineNumber);
-                  const pos = Math.min(lineObj.from + Math.max(0, ch), lineObj.to);
+                  const pos = Math.min(
+                    lineObj.from + Math.max(0, ch),
+                    lineObj.to
+                  );
 
                   editorRef.current.dispatch({
                     selection: { anchor: pos, head: pos },
@@ -330,15 +370,22 @@ export default function Editor({
           setCode(questionLanguage.template);
           // Set cursor position for new template
           setTimeout(() => {
-            if (editorRef.current && editorRef.current.dispatch && questionLanguage.cursorPosition) {
+            if (
+              editorRef.current &&
+              editorRef.current.dispatch &&
+              questionLanguage.cursorPosition
+            ) {
               try {
                 const { line, ch } = questionLanguage.cursorPosition;
                 const doc = editorRef.current.state.doc;
-                
+
                 // Ensure line number is within bounds
                 const lineNumber = Math.min(Math.max(1, line), doc.lines);
                 const lineObj = doc.line(lineNumber);
-                const pos = Math.min(lineObj.from + Math.max(0, ch), lineObj.to);
+                const pos = Math.min(
+                  lineObj.from + Math.max(0, ch),
+                  lineObj.to
+                );
 
                 editorRef.current.dispatch({
                   selection: { anchor: pos, head: pos },
@@ -391,7 +438,12 @@ export default function Editor({
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [code, questionLanguage.name, questionLanguage.template, selectedQuestionId]);
+  }, [
+    code,
+    questionLanguage.name,
+    questionLanguage.template,
+    selectedQuestionId,
+  ]);
 
   // Update code when question changes to show the correct template for the language
   useEffect(() => {
@@ -436,11 +488,7 @@ export default function Editor({
         </div>
       </div>
 
-      <div
-        className={`flex-1 overflow-hidden ${
-          fullScreen ? "h-[95vh]" : ""
-        }`}
-      >
+      <div className={`flex-1 overflow-hidden ${fullScreen ? "h-[95vh]" : ""}`}>
         <CodeMirror
           ref={editorRef}
           value={code || questionLanguage.template}
