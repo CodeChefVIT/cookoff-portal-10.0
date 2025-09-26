@@ -464,7 +464,7 @@ export default function Editor({
         fullScreen
           ? "h-[95vh] w-screen -top-0 left-0 fixed z-50 "
           : "h-full w-[50vw]"
-      }mx-auto flex flex-col bg-[#131414] shadow-lg overflow-hidden`}
+      }mx-auto flex flex-col bg-[#131414] shadow-lg overflow-x-hidden`}
     >
       <div className="flex items-center justify-between px-6 py-3 z-20 bg-[#1e1f1f] border-b border-gray-700">
         <RoundTimer />
@@ -488,7 +488,9 @@ export default function Editor({
         </div>
       </div>
 
-      <div className={`flex-1 overflow-hidden ${fullScreen ? "h-[95vh]" : ""}`}>
+      <div
+        className={`flex-1 overflow-x-hidden ${fullScreen ? "h-[95vh]" : ""}`}
+      >
         <CodeMirror
           ref={editorRef}
           value={code || questionLanguage.template}
