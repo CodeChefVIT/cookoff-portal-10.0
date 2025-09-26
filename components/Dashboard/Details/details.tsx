@@ -16,7 +16,7 @@ interface DetailsCardProps {
 const DetailsCard: React.FC = () => {
   const [details, setDetails] = useState<DetailsCardProps | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const router = useRouter();
   const pathname = usePathname();
   useEffect(() => {
@@ -30,6 +30,30 @@ const DetailsCard: React.FC = () => {
         };
 
         setDetails(mapped);
+
+        try {
+          const timeRes = await api.get("/gettime");
+          const timeData = timeRes.data;
+
+          const end = new Date(timeData.round_end_time).getTime();
+          const server = new Date(timeData.server_time).getTime();
+
+          const remaining = Math.max(0, end - server);
+          setTimeRemaining(remaining);
+
+          // countdown tick
+          const interval = setInterval(() => {
+            setTimeRemaining((prev) =>
+              prev !== null ? Math.max(0, prev - 1000) : null
+            );
+          }, 1000);
+
+          return () => clearInterval(interval);
+        } catch (err) {
+          console.error("Failed to fetch /gettime:", err);
+          setTimeRemaining(null);
+        }
+
       } catch (err) {
         console.error("Failed to fetch details:", err);
       } finally {
@@ -39,6 +63,14 @@ const DetailsCard: React.FC = () => {
 
     fetchDetails();
   }, []);
+
+  const formatTime = (ms: number | null) => { 
+    if (ms === null) return "--:--"; 
+    const totalSeconds = Math.floor(ms / 1000); 
+    const minutes = Math.floor(totalSeconds / 60); 
+    const seconds = totalSeconds % 60; 
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`; 
+  };
 
 if (loading) {
   return (
@@ -115,7 +147,9 @@ if (loading) {
         <div>
           <p className="text-lg font-inter font-normal text-white">Time Remaining</p>
           <div className="px-4 py-2 mt-2">
-            <div className="text-xl font-brunoace font-normal text-green-500"><RoundTimer round={details.currentRound} /></div>
+            <div className="text-xl font-brunoace font-normal text-green-500">
+              {formatTime(timeRemaining)}
+            </div>
           </div>
         </div>
 
@@ -129,6 +163,12 @@ if (loading) {
         <button
           onClick={() => {
             if (pathname === "/kitchen") return; // already in kitchen
+
+            if (timeRemaining === 0) { 
+              //can add !timeRemaining || to the condition if we want that when its null then also kitchen shouldn't be accessed
+              toast.error("Sorry Chef, no rounds in progress");
+              return;
+            }
 
             const toastId = toast.loading("Entering Kitchen...");
 
