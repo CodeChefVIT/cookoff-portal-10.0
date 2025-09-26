@@ -14,13 +14,13 @@ const api = axios.create({
 let isRefreshing = false;
 let failedQueue: {
   resolve: (value?: unknown) => void;
-  reject: (error: unknown) => void;
+  reject: (error: any) => void;
   config: CustomAxiosRequestConfig;
 }[] = [];
 
 let sessionExpiredToastShown = false;
 
-const processQueue = (error: unknown, tokenRefreshed = false) => {
+const processQueue = (error: any, tokenRefreshed = false) => {
   failedQueue.forEach(({ resolve, reject, config }) => {
     if (error) {
       reject(error);

@@ -9,6 +9,7 @@ import { toast } from "react-hot-toast";
 import { TruckElectric } from "lucide-react";
 import { stat } from "fs";
 import timer from "@/services/getTimer";
+import { ApiError } from "next/dist/server/api-utils";
 
 interface DetailsCardProps {
   currentRound: string;
@@ -131,7 +132,16 @@ const DetailsCard: React.FC = () => {
 
               const toastId = toast.loading("Checking round status...");
               try {
-                 await timer();
+                try {
+                  await timer();
+                } catch (err) {
+                  if (
+                    (err as ApiError) &&
+                    (err as ApiError).statusCode === 409
+                  ) {
+                    toast.error("Round not started yet!", { id: toastId });
+                  }
+                }
 
                 toast.loading("Entering Kitchen...", { id: toastId });
                 router.push("/kitchen");

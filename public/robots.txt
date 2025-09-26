@@ -1,8 +1,0 @@
-User-agent: *
-Allow: /
-
-# Host
-Host: https://cookoff.codechefvit.com
-
-# Sitemaps
-Sitemap: https://cookoff.codechefvit.com/sitemap.xml
