@@ -4,12 +4,11 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import NotificationButton from "../ui/NotificationButton";
 import toast from "react-hot-toast";
+import { Home } from "lucide-react";
 
 export default function Header() {
 
   const icon = "/icon.avif";
-
-  const dashboardIcon = "/dashboard.svg";
   const pathname = usePathname();
     const router = useRouter();
 
@@ -64,13 +63,7 @@ export default function Header() {
             onClick={handleDashboardClick}
             className="focus:outline-none !bg-transparent"
           >
-            <Image
-              src={dashboardIcon}
-              alt="Dashboard"
-              width={20}
-              height={20}
-              className="h-4 w-4 md:h-12 md:w-12"
-            />
+            <Home className="h-5 w-5 md:h-6 md:w-6 text-[#B7AB98]"/>
           </button>
         )}
       </div>
