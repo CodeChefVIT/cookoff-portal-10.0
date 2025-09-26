@@ -1,7 +1,6 @@
 "use client";
 
 import { Question } from "@/api/question";
-import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { Inter } from "next/font/google";
 import TabButton from "./TabButton";
@@ -51,8 +50,8 @@ const QuestionWindow: React.FC = () => {
       className={`bg-[#070E0A] text-gray-300 min-h-screen flex items-center justify-center ${inter.className}`}
     >
       <div className="w-full max-w-4xl">
-        {/* Tabs */}
-        <div className="flex items-center space-x-1 sm:space-x-2 mb-[-1px] pl-4 overflow-x-auto scrollbar-hide">
+        {/* Tabs - Hidden on mobile since we have question selector in mobile layout */}
+        <div className="hidden md:flex items-center space-x-1 sm:space-x-2 mb-[-1px] pl-4 overflow-x-auto scrollbar-hide">
           {questions.map((q, key) => (
             <TabButton
               key={q.ID}
