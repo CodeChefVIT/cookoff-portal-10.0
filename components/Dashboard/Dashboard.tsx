@@ -4,7 +4,6 @@ import Statistics from "./Statistics/statistics";
 import Timeline from "./Timeline/timeline";
 import ProfileCard from "./Profile/profile";
 import DetailsCard from "./Details/details";
-import TimerErrorToast from "../TimerErrorToast";
 import api from "@/services";
 import { useState, useEffect } from "react";
 import { DashboardResponse } from "@/schemas/api/index";
@@ -29,7 +28,6 @@ export default function Dashboard() {
   }, []);
   return (
     <div className="relative min-h-screen">
-      <TimerErrorToast />
       {/* Background */}
       <div className="fixed inset-0 -z-10 bg-black">
         <Image
