@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import api from "@/services/index";
 import { useRouter, usePathname } from "next/navigation";
-import RoundTimer from "@/components/Editor/RoundTimer/RoundTimer";
 import useKitchenStore from "store/zustant";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "react-hot-toast";
