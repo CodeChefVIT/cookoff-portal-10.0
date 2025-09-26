@@ -136,37 +136,27 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
   );
 };
 
-const Statistics = ({ data }: { data: DashboardResponse | undefined }) => {
+const Statistics = ({
+  data,
+  loading,
+}: {
+  data: DashboardResponse | undefined;
+  loading: boolean;
+}) => {
   const [rounds, setRounds] = useState<RoundStats[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
   useEffect(() => {
-    const fetchRounds = async () => {
-      try {
-        if (data) {
-          const roundsData = getRounds({ data });
-          setRounds(roundsData);
-        }
-      } catch (err) {
-        console.error("Failed to fetch rounds:", err);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRounds();
+    if (data) {
+      const roundDetails = getRounds({ data });
+      setRounds(roundDetails);
+    }
   }, [data]);
 
   if (loading) {
     return (
       <div className="w-full h-full text-[#ccc] font-[Nulshock,monospace]">
         <div className="relative w-[673px] h-[612px] mx-auto">
-          {/* Rectangle behind */}
-          <div className="absolute top-0 left-0 w-[673px] h-[56px] bg-[#1F2622] rounded-t-[10px]" />
-
           {/* Text on top of rectangle */}
-          <p className="relative z-10 text-center font-bold text-4xl text-[#beb7a6] tracking-[3px] select-none leading-[56px]">
+          <p className="relative z-10 text-center font-bold text-3xl text-[#beb7a6] tracking-[3px] select-none leading-14 bg-[#1F2622] rounded-t-[10px]">
             STATISTICS
           </p>
 
@@ -215,21 +205,10 @@ const Statistics = ({ data }: { data: DashboardResponse | undefined }) => {
     );
   }
 
-  if (error)
-    return (
-      <p className="text-center text-red-500 mt-10 font-bold">
-        Failed to fetch statistics.
-      </p>
-    );
-
   return (
     <div className="w-full h-full text-[#ccc] font-[Nulshock,monospace]">
       <div className="relative w-[673px] h-[612px] mx-auto">
-        {/* Rectangle behind */}
-        <div className="absolute top-0 left-0 w-[673px] h-[56px] bg-[#1F2622] rounded-t-[10px]" />
-
-        {/* Text on top of rectangle */}
-        <p className="relative z-10 text-center font-bold text-4xl text-[#beb7a6] tracking-[3px] select-none leading-[56px]">
+        <p className="relative z-10 text-center font-bold text-3xl bg-[#1F2622] rounded-t-[10px] text-[#beb7a6] tracking-[3px] select-none leading-14">
           STATISTICS
         </p>
 
