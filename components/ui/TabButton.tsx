@@ -9,19 +9,26 @@ interface TabButtonProps {
   id: string;
   active: boolean;
   onClick: () => void;
+  newId: number;
 }
 
-const TabButton: React.FC<TabButtonProps> = ({ id, active, onClick }) => {
+const TabButton: React.FC<TabButtonProps> = ({
+  id,
+  active,
+  onClick,
+  newId,
+}) => {
   return (
     <button
       onClick={onClick}
       className={`
-        relative w-[100px] h-[35px] flex items-center justify-center p-0 group
-        transition-transform duration-200 ease-out
-        bg-transparent hover:bg-transparent active:bg-transparent
-        border-none shadow-none outline-none
-        ${active ? "scale-110 z-10" : ""}
-      `}
+    relative w-[100px] h-[35px] flex items-center justify-center p-0 group
+    flex-shrink-0
+    transition-transform duration-200 ease-out
+    bg-transparent hover:bg-transparent active:bg-transparent
+    border-none shadow-none outline-none
+    ${active ? "scale-110 z-10" : ""}
+  `}
       style={{ background: "none" }}
     >
       <div
@@ -41,7 +48,7 @@ const TabButton: React.FC<TabButtonProps> = ({ id, active, onClick }) => {
         className={`relative z-10 font-bold text-xl ${quicksand.className}`}
         style={{ color: "#000000ff", userSelect: "none" }}
       >
-        {id}
+        {newId + 1}
       </span>
     </button>
   );

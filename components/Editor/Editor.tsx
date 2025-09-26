@@ -10,10 +10,14 @@ import LanguageSelector from "./LanguageSelector/LanguageSelector";
 import RoundTimer from "./RoundTimer/RoundTimer";
 import Button from "../ui/Button";
 import useEditorState from "store/zustant";
+import * as navigation from "next/navigation";
 import { Language } from "@/lib/languages";
 import axios from "axios";
+import { getTestCasesAfterRun, getSubmissionResult } from "../../app/api/kitchen";
 import { MdFullscreen } from "react-icons/md";
 import { MdFullscreenExit } from "react-icons/md";
+import { submitCode } from "@/api/kitchen";
+import toast from "react-hot-toast";
 type EditorProps = {
   languages: Language[];
   round?: string;
@@ -23,7 +27,6 @@ type EditorProps = {
 
 export default function Editor({
   languages,
-  round,
   fullScreen,
   setfullScreen,
 }: EditorProps) {
@@ -33,15 +36,30 @@ export default function Editor({
     selectedQuestionId,
     codeByQuestion,
     setCodeForQuestion,
+    setLanguageForQuestion,
+    getLanguageForQuestion,
   } = useEditorState();
 
+  // Get the language for the current question
+  const questionLanguage = selectedQuestionId ? getLanguageForQuestion(selectedQuestionId) : selectedLanguage;
+
+  const placeholder = `${questionLanguage.commentSymbol} Write your ${questionLanguage.name} solution here`;
+
+  const router = navigation.useRouter();
   const [code, setCode] = useState("");
   const [cursor, setCursor] = useState({ line: 1, ch: 1 });
   const [customInput, setCustomInput] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
+  const [editorReady, setEditorReady] = useState(false);
   const editorRef = useRef<EditorView | null>(null);
 
   const handleLanguageChange = (language: Language) => {
-    setSelectedLanguage(language);
+    // Set language for current question instead of globally
+    if (selectedQuestionId) {
+      setLanguageForQuestion(selectedQuestionId, language);
+    } else {
+      setSelectedLanguage(language);
+    }
 
     // Use template instead of placeholder
     const newCode = language.template;
@@ -52,26 +70,44 @@ export default function Editor({
     }
 
     // Set cursor position after a brief delay to ensure editor is updated
-    setTimeout(() => {
-      if (editorRef.current && language.cursorPosition) {
-        const { line, ch } = language.cursorPosition;
-        const doc = editorRef.current.state.doc;
-        const lineObj = doc.line(Math.min(line, doc.lines));
-        const pos = Math.min(lineObj.from + ch, lineObj.to);
+    const setCursorPosition = () => {
+      if (editorRef.current && editorRef.current.dispatch && language.cursorPosition) {
+        try {
+          const { line, ch } = language.cursorPosition;
+          const doc = editorRef.current.state.doc;
+          
+          // Ensure line number is within bounds
+          const lineNumber = Math.min(Math.max(1, line), doc.lines);
+          const lineObj = doc.line(lineNumber);
+          const pos = Math.min(lineObj.from + Math.max(0, ch), lineObj.to);
 
-        editorRef.current.dispatch({
-          selection: { anchor: pos, head: pos },
-          scrollIntoView: true,
-        });
-        editorRef.current.focus();
+          editorRef.current.dispatch({
+            selection: { anchor: pos, head: pos },
+            scrollIntoView: true,
+          });
+          editorRef.current.focus();
+        } catch (error) {
+          console.warn("Failed to set cursor position:", error);
+        }
+      } else if (language.cursorPosition) {
+        // If editor isn't ready yet, try again in a moment
+        setTimeout(setCursorPosition, 100);
       }
-    }, 100);
+    };
+    
+    setTimeout(setCursorPosition, 200);
   };
 
-  const handleChange = (value: string, viewUpdate: ViewUpdate) => {
+    const handleChange = (value: string, viewUpdate: ViewUpdate) => {
     setCode(value);
     if (selectedQuestionId) {
       setCodeForQuestion(selectedQuestionId, value);
+    }
+
+    // Store the EditorView reference for later use
+    editorRef.current = viewUpdate.view;
+    if (!editorReady) {
+      setEditorReady(true);
     }
 
     const view = viewUpdate.view;
@@ -79,6 +115,167 @@ export default function Editor({
     const line = view.state.doc.lineAt(pos).number;
     const ch = pos - view.state.doc.line(line - 1).from + 1;
     setCursor({ line, ch });
+  };
+
+  const runCode = async () => {
+    if (!selectedQuestionId || !code.trim()) {
+      toast.error("Please select a question and write some code");
+      return;
+    }
+
+    setIsRunning(true);
+    const toastId = toast.loading("Running code...");
+
+    try {
+      const response = await getTestCasesAfterRun(
+        code,
+        questionLanguage.id,
+        selectedQuestionId
+      );
+
+      const transformedResults = response.result.map((result, index) => {
+        const hasError = result.stderr || result.status.id !== 3;
+        const isSuccess = result.status.id === 3 && !result.stderr;
+        
+        return {
+          id: result.token,
+          input: "",
+          output: result.stdout || result.stderr || result.message || "",
+          expected_output: "",
+          hidden: false,
+          runtime: parseFloat(result.time),
+          memory: result.memory,
+          question_id: selectedQuestionId,
+          stderr: result.stderr || undefined,
+          statusDescription: isSuccess 
+            ? `Test case ${index + 1}: Execution successful`
+            : hasError 
+              ? `Test case ${index + 1}: ${result.status.description || 'Execution failed'}`
+              : `Test case ${index + 1}: ${result.status.description || 'Unknown status'}`,
+        };
+      });
+
+      const {
+        setTestResults,
+        setCompilerDetails,
+        testCases: originalTestCases,
+      } = useEditorState.getState();
+
+      const finalResults = transformedResults.map((result, index) => {
+        const originalTestCase = originalTestCases[index];
+        return {
+          ...result,
+          input: originalTestCase?.Input || "",
+          expected_output: originalTestCase?.ExpectedOutput || "",
+          hidden: originalTestCase?.Hidden || false,
+        };
+      });
+
+      setTestResults(finalResults);
+
+      const hasErrors = response.result.some(
+        (r) => r.stderr || r.status.id !== 3
+      );
+      const successCount = response.result.filter(r => r.status.id === 3 && !r.stderr).length;
+      const totalCount = response.result.length;
+
+      if (hasErrors) {
+        toast.error(`Code execution completed: ${successCount}/${totalCount} test cases passed`, { id: toastId });
+      } else {
+        toast.success(`All ${totalCount} test cases passed successfully`, { id: toastId });
+      }
+
+      // Set overall compiler details with summary
+      setCompilerDetails({
+        isCompileSuccess: !hasErrors,
+        message: `Execution completed: ${successCount}/${totalCount} test cases passed`,
+      });
+    } catch (error) {
+      console.error("Error running code:", error);
+      toast.error("Failed to run code. Please try again.", { id: toastId });
+
+      const { setCompilerDetails } = useEditorState.getState();
+      setCompilerDetails({
+        isCompileSuccess: false,
+        message: "Failed to run code. Please try again.",
+      });
+    } finally {
+      setIsRunning(false);
+    }
+  };
+
+  const submitCodeHandler = async () => {
+    if (!selectedQuestionId || !code.trim()) {
+      toast.error("Please select a question and write some code");
+      return;
+    }
+
+    const submissionToastId = toast.loading("Submitting code...");
+
+    try {
+      const response = await submitCode(
+        code,
+        questionLanguage.id,
+        selectedQuestionId
+      );
+
+      toast.success(
+        `Code submitted successfully! Getting results...`,
+        { id: submissionToastId }
+      );
+
+      // Now fetch the submission results
+      const resultToastId = toast.loading("Fetching submission results...");
+
+      try {
+        const submissionResult = await getSubmissionResult(response.submission_id);
+
+        const { setTestResults, setCompilerDetails, testCases: originalTestCases } = useEditorState.getState();
+
+        // Transform submission results to match the existing TestCase format
+        const transformedResults = submissionResult.testcases.map((testcase, index) => {
+          const originalTestCase = originalTestCases[index];
+          return {
+            id: testcase.id,
+            input: originalTestCase?.Input || "",
+            output: testcase.status === "Accepted" 
+              ? testcase.expected_output 
+              : `Status: ${testcase.status}\nDescription: ${testcase.description}`, // Show status info for failed cases
+            expected_output: testcase.expected_output,
+            hidden: originalTestCase?.Hidden || false,
+            runtime: testcase.runtime,
+            memory: testcase.memory,
+            question_id: selectedQuestionId,
+            stderr: testcase.status !== "Accepted" ? testcase.description : undefined,
+            statusDescription: `Test case ${index + 1}: ${testcase.description}`,
+          };
+        });
+
+        setTestResults(transformedResults);
+
+        const successMessage = `Submission completed: ${submissionResult.passed}/${submissionResult.passed + submissionResult.failed} test cases passed`;
+        
+        if (submissionResult.failed > 0) {
+          toast.error(successMessage, { id: resultToastId });
+        } else {
+          toast.success(successMessage, { id: resultToastId });
+        }
+
+        // Set overall compiler details with submission summary
+        setCompilerDetails({
+          isCompileSuccess: submissionResult.failed === 0,
+          message: successMessage,
+        });
+
+      } catch (resultError) {
+        console.error("Error fetching submission result:", resultError);
+        toast.error("Submission successful, but failed to fetch results", { id: resultToastId });
+      }
+
+    } catch (error) {
+      console.error("Error submitting code:", error);
+      toast.error("Failed to submit code. Please try again.", { id: submissionToastId });
+    }
   };
 
   useEffect(() => {
@@ -92,74 +289,71 @@ export default function Editor({
         setCode(cachedState.code);
         return;
       } else {
-        setCode(selectedLanguage.template);
+        setCode(questionLanguage.template);
       }
 
       try {
         const res = await axios.get(
           `/api/save-code?questionId=${selectedQuestionId}`
         );
-
         if (res.status === 200) {
           const data = await res.data;
           if (data?.code) {
             setCode(data.code);
             setCodeForQuestion(selectedQuestionId, data.code);
           } else {
-            setCode(selectedLanguage.template);
+            setCode(questionLanguage.template);
             // Set cursor position for new template
             setTimeout(() => {
-              if (editorRef.current && selectedLanguage.cursorPosition) {
-                const { line, ch } = selectedLanguage.cursorPosition;
+              if (editorRef.current && editorRef.current.dispatch && questionLanguage.cursorPosition) {
+                try {
+                  const { line, ch } = questionLanguage.cursorPosition;
+                  const doc = editorRef.current.state.doc;
+                  
+                  // Ensure line number is within bounds
+                  const lineNumber = Math.min(Math.max(1, line), doc.lines);
+                  const lineObj = doc.line(lineNumber);
+                  const pos = Math.min(lineObj.from + Math.max(0, ch), lineObj.to);
+
+                  editorRef.current.dispatch({
+                    selection: { anchor: pos, head: pos },
+                    scrollIntoView: true,
+                  });
+                  editorRef.current.focus();
+                } catch (error) {
+                  console.warn("Failed to set cursor position:", error);
+                }
+              }
+            }, 200);
+          }
+        } else {
+          setCode(questionLanguage.template);
+          // Set cursor position for new template
+          setTimeout(() => {
+            if (editorRef.current && editorRef.current.dispatch && questionLanguage.cursorPosition) {
+              try {
+                const { line, ch } = questionLanguage.cursorPosition;
                 const doc = editorRef.current.state.doc;
-                const lineObj = doc.line(Math.min(line, doc.lines));
-                const pos = Math.min(lineObj.from + ch, lineObj.to);
+                
+                // Ensure line number is within bounds
+                const lineNumber = Math.min(Math.max(1, line), doc.lines);
+                const lineObj = doc.line(lineNumber);
+                const pos = Math.min(lineObj.from + Math.max(0, ch), lineObj.to);
 
                 editorRef.current.dispatch({
                   selection: { anchor: pos, head: pos },
                   scrollIntoView: true,
                 });
                 editorRef.current.focus();
+              } catch (error) {
+                console.warn("Failed to set cursor position:", error);
               }
-            }, 100);
-          }
-        } else {
-          setCode(selectedLanguage.template);
-          // Set cursor position for new template
-          setTimeout(() => {
-            if (editorRef.current && selectedLanguage.cursorPosition) {
-              const { line, ch } = selectedLanguage.cursorPosition;
-              const doc = editorRef.current.state.doc;
-              const lineObj = doc.line(Math.min(line, doc.lines));
-              const pos = Math.min(lineObj.from + ch, lineObj.to);
-
-              editorRef.current.dispatch({
-                selection: { anchor: pos, head: pos },
-                scrollIntoView: true,
-              });
-              editorRef.current.focus();
             }
-          }, 100);
+          }, 200);
         }
-      } catch (err: any) {
-        if (err.response?.status === 401) {
-          console.log("User not authenticated - skipping code fetch");
-          setCode(selectedLanguage.template);
-          // Set cursor position for new template
-          setTimeout(() => {
-            if (editorRef.current && selectedLanguage.cursorPosition) {
-              const { line, ch } = selectedLanguage.cursorPosition;
-              const doc = editorRef.current.state.doc;
-              const lineObj = doc.line(Math.min(line, doc.lines));
-              const pos = Math.min(lineObj.from + ch, lineObj.to);
-
-              editorRef.current.dispatch({
-                selection: { anchor: pos, head: pos },
-                scrollIntoView: true,
-              });
-              editorRef.current.focus();
-            }
-          }, 100);
+      } catch (err: unknown) {
+        if (axios.isAxiosError(err) && err.response?.status === 401) {
+          setCode(questionLanguage.template);
         } else {
           console.error("Error fetching saved code:", err);
         }
@@ -171,25 +365,25 @@ export default function Editor({
     selectedQuestionId,
     codeByQuestion,
     setCodeForQuestion,
-    selectedLanguage,
+    questionLanguage.template,
+    questionLanguage.cursorPosition,
   ]);
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      if (code.trim() === "" || code === selectedLanguage.template) return;
+      if (code.trim() === "" || code === questionLanguage.template) return;
 
       const payload = {
         questionId: selectedQuestionId,
         code,
-        language: selectedLanguage.name,
-        round,
+        language: questionLanguage.name,
       };
 
       try {
         await axios.post("/api/save-code", payload);
-      } catch (err: any) {
-        if (err.response?.status === 401) {
-          console.log("User not authenticated - skipping auto-save");
+      } catch (err: unknown) {
+        if (axios.isAxiosError(err) && err.response?.status === 401) {
+          // console.log("User not authenticated - skipping auto-save");
         } else {
           console.error("Error auto-saving code:", err);
         }
@@ -197,7 +391,20 @@ export default function Editor({
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [code, selectedLanguage, round, selectedQuestionId]);
+  }, [code, questionLanguage.name, questionLanguage.template, selectedQuestionId]);
+
+  // Update code when question changes to show the correct template for the language
+  useEffect(() => {
+    if (selectedQuestionId) {
+      const cachedCode = codeByQuestion.find(
+        (state) => state.questionId === selectedQuestionId
+      );
+      if (!cachedCode) {
+        // No cached code for this question, use the template for this question's language
+        setCode(questionLanguage.template);
+      }
+    }
+  }, [selectedQuestionId, questionLanguage.template, codeByQuestion]);
 
   return (
     <div
@@ -208,11 +415,11 @@ export default function Editor({
       }mx-auto flex flex-col bg-[#131414] shadow-lg overflow-hidden`}
     >
       <div className="flex items-center justify-between px-6 py-3 z-20 bg-[#1e1f1f] border-b border-gray-700">
-        <RoundTimer round={round} />
+        <RoundTimer />
         <div className="flex gap-10 items-center ">
           <LanguageSelector
             languages={languages}
-            selectedLanguage={selectedLanguage}
+            selectedLanguage={questionLanguage}
             onLanguageChange={handleLanguageChange}
           />
           {fullScreen ? (
@@ -231,15 +438,15 @@ export default function Editor({
 
       <div
         className={`flex-1 overflow-hidden ${
-          fullScreen ? "h-[95vh]" : "min-h-[200px]"
+          fullScreen ? "h-[95vh]" : ""
         }`}
       >
         <CodeMirror
           ref={editorRef}
-          value={code || selectedLanguage.template}
+          value={code || questionLanguage.template}
           height="100%"
           theme={oneDark}
-          extensions={[selectedLanguage.extension]}
+          extensions={[questionLanguage.extension]}
           onChange={handleChange}
         />
       </div>
@@ -248,46 +455,33 @@ export default function Editor({
         Line: {cursor.line} &nbsp;|&nbsp; Col: {cursor.ch}
       </div>
 
-      <div className="flex items-center justify-between px-6 py-3 bg-[#181919] z-100">
+      <div className="flex items-center justify-between px-6 py-3 bg-[#181919] z-10">
         <div className="flex items-center gap-2">
           <button
             aria-label="Toggle Custom Input"
             onClick={() => setCustomInput((prev) => !prev)}
             className="focus:outline-none !bg-transparent !shadow-none border-0 p-0 m-0"
           >
-            <span className="text-gray-300 text-xl flex items-center gap-3">
+            {/* <span className="text-gray-300 text-xl flex items-center gap-3">
               {customInput ? (
                 <FaToggleOn size={39} color="#22c55e" />
               ) : (
                 <FaToggleOff size={39} color="#64748b" />
               )}{" "}
               Custom Input
-            </span>
+            </span> */}
           </button>
         </div>
         <div className="flex gap-4">
           <Button
             variant="run"
             size="default"
-            onClick={() => console.log("Run code:", code)}
+            onClick={runCode}
+            disabled={isRunning}
           >
-            Run Code
+            {isRunning ? "Running..." : "Run Code"}
           </Button>
-          <Button
-            variant="green"
-            size="default"
-            onClick={async () => {
-              const payload = {
-                questionId: selectedQuestionId,
-                code,
-                language: selectedLanguage.name,
-                languageId: selectedLanguage.id,
-                round,
-              };
-              await axios.post("/api/save-code", payload);
-              console.log("Manually submitted code:", payload);
-            }}
-          >
+          <Button variant="green" size="default" onClick={submitCodeHandler}>
             Submit Code
           </Button>
         </div>

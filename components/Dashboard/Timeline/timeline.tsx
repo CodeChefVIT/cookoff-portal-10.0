@@ -20,10 +20,8 @@ export default function Timeline() {
       let currentRoundProgress = 0;
       try {
         //current round
-      console.log("Fetching /dashboard...");
       const res = await api.get("/dashboard");
       const currentRound = Number(res.data.data.current_round);
-      console.log("Current round:", currentRound);
 
         //time info
         try {const { data: timeData } = await api.get("/GetTime");

@@ -2,7 +2,7 @@
 
 import React, { RefObject, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
-
+import useKitchenStore from "store/zustant";
 export interface RoundTimerProps {
   round?: string;
 }
@@ -16,7 +16,9 @@ interface TimerApiResponse {
   isActive: boolean;
 }
 
-export default function RoundTimer({ round = "round 0" }: RoundTimerProps) {
+export default function RoundTimer() {
+  const { round } = useKitchenStore();
+
   const [phase, setPhase] = useState<TimerApiResponse["phase"]>("completed");
   const [remaining, setRemaining] = useState<number>(0);
   const [countdownValue, setCountdownValue] = useState<
@@ -109,7 +111,7 @@ export default function RoundTimer({ round = "round 0" }: RoundTimerProps) {
   return (
     <div className="relative flex items-center h-[45px] border border-[#B7AB98] rounded-lg gap-2 font-bruno-ace w-fit select-none">
       <div className="flex-shrink-0 h-full bg-[#1BA94C] flex items-center justify-center rounded-l-lg px-3">
-        <span className="text-[22px] text-black capitalize">{round}</span>
+        <span className="text-[22px] text-black capitalize">{`Round ${round}`}</span>
       </div>
 
       <div className="flex-1 h-full flex items-center justify-center w-fit rounded-r-lg px-3 min-w-[130px]">

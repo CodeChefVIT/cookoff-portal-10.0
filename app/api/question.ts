@@ -1,60 +1,50 @@
 import { handleAPIError } from "@/lib/error";
 import api from "@/services";
 
-// app/api/question.ts
-
 export interface TestcaseFromAPI {
-  id: string;
-  input: string;
-  output?: string;
-  expected_output: string;
-  hidden: boolean;
-  runtime: number;
-  memory: number;
-  question_id: string;
+  ID: string;
+  Input: string;
+  ExpectedOutput: string;
+  Hidden: boolean;
+  Runtime: number;
+  Memory: number;
+  QuestionID: string;
 }
 
-// 👇 derived type without testcases
 export type Question = {
-  id: string;
-  description: string;
-  title: string;
-  qType: string;
-  isBountyActive: boolean;
-  inputFormat: string[];
-  points: number;
-  round: number;
-  constraints: string[];
-  outputFormat: string[];
-  sampleTestInput: string[];
-  sampleTestOutput: string[];
-  explanation: string[];
+  ID: string;
+  Description: string;
+  Title: string;
+  Qtype: string;
+  Isbountyactive: boolean;
+  InputFormat: string[];
+  Points: number;
+  Round: number;
+  Constraints: string[];
+  OutputFormat: string[];
+  SampleTestInput: string[];
+  SampleTestOutput: string[];
+  Explanation: string[];
+  testcases?: TestcaseFromAPI[];
 };
-// your API function
-export async function byRound(): Promise<QuestionWithTestcases[]> {
-  const res = await fetch("/api/round"); // example
-  if (!res.ok) throw new Error("Failed to fetch");
-  return res.json();
-}
+export async function byRound(): Promise<Question[]> {
+  try {
+    const { data } = await api.get<ByRoundApiResponse>(`/question/round`);
 
-export interface TestcaseFromAPI {
-  id: string;
-  input: string;
-  output?: string;
-  expected_output: string;
-  hidden: boolean;
-  runtime: number;
-  memory: number;
-  question_id: string;
-}
-
-export interface QuestionWithTestcases {
-  question: Question;
-  testcases: TestcaseFromAPI[];
+    return data.questions_testcases.map((q) => ({
+      ...q.question,
+      testcases: q.testcases,
+    }));
+  } catch (e) {
+    throw handleAPIError(e);
+  }
 }
 
 interface ByRoundApiResponse {
   status: string;
   round: number;
-  questions_testcases: QuestionWithTestcases[];
+  questions_testcases: {
+    question: Omit<Question, "testcases">;
+    testcases: TestcaseFromAPI[];
+  }[];
 }

@@ -1,23 +1,42 @@
 import React from "react";
 import InputOutputCard from "./InputOutputCard";
 import CompilerMessage from "./CompilerMessage";
-import { TestcaseFromAPI } from "@/api/question";
+import { TestCase } from "store/zustant";
+import toast from "react-hot-toast";
 
-interface TestCasesLargeProps {
+interface InputProps {
   compilerDetails: {
     isCompileSuccess: boolean;
     message: string;
   };
-  activeCaseData: TestcaseFromAPI;
+  activeCaseData: TestCase;
+  outputExists: boolean;
 }
 
-const TestCasesLarge: React.FC<TestCasesLargeProps> = ({ compilerDetails, activeCaseData }) => {
+const Input: React.FC<InputProps> = ({
+  compilerDetails,
+  activeCaseData,
+  outputExists,
+}) => {
+  // Determine per-test case compiler status
+  const testCaseSuccess = activeCaseData ? (
+    !activeCaseData.stderr && 
+    !!activeCaseData.output && 
+    activeCaseData.output.trim() === activeCaseData.expected_output.trim()
+  ) : compilerDetails.isCompileSuccess;
+  const testCaseMessage = activeCaseData?.statusDescription || compilerDetails.message;
+
   return (
     <div className="">
-      <CompilerMessage isCompileSuccess={compilerDetails.isCompileSuccess} />
+      {outputExists && (
+        <CompilerMessage 
+          message={testCaseMessage} 
+          isCompileSuccess={testCaseSuccess} 
+        />
+      )}
       {activeCaseData && (
         <>
-          {activeCaseData.expected_output ? (
+          {activeCaseData.output ? (
             <div className="flex justify-between font-inter">
               <InputOutputCard
                 title={"Input"}
@@ -31,7 +50,11 @@ const TestCasesLarge: React.FC<TestCasesLargeProps> = ({ compilerDetails, active
               />
               <InputOutputCard
                 title={"Your Output"}
-                data={activeCaseData.output ? activeCaseData.output : "no output given"}
+                data={
+                  activeCaseData.output
+                    ? activeCaseData.output
+                    : "no output given"
+                }
                 className={"w-[31%]"}
               />
             </div>
@@ -43,8 +66,12 @@ const TestCasesLarge: React.FC<TestCasesLargeProps> = ({ compilerDetails, active
                 className={"w-[48%]"}
               />
               <InputOutputCard
-                title={"Your Output"}
-                data={activeCaseData.output ? activeCaseData.output : "no output given"}
+                title={"Expected Output"}
+                data={
+                  activeCaseData.expected_output
+                    ? activeCaseData.expected_output
+                    : "no expected output given"
+                }
                 className={"w-[48%]"}
               />
             </div>
@@ -55,4 +82,4 @@ const TestCasesLarge: React.FC<TestCasesLargeProps> = ({ compilerDetails, active
   );
 };
 
-export default TestCasesLarge;
+export default Input;

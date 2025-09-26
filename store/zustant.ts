@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { Language, LANGUAGES, getLanguageByName } from "@/lib/languages";
+import { Question, TestcaseFromAPI } from "@/api/question";
 
 export interface TestCase {
   id: string;
@@ -11,10 +12,17 @@ export interface TestCase {
   runtime: number;
   memory: number;
   question_id: string;
+  stderr?: string;
+  statusDescription?: string;
 }
 export type QuestionCode = {
   questionId: string;
   code: string;
+};
+
+export type QuestionLanguage = {
+  questionId: string;
+  language: Language;
 };
 
 export interface CompilerResult {
@@ -25,7 +33,11 @@ export interface CompilerResult {
 interface KitchenState {
   selectedQuestionId: string;
   selectedLanguage: Language;
+  round: number;
   codeByQuestion: QuestionCode[];
+  languageByQuestion: QuestionLanguage[];
+  questions: Question[];
+  testCases: TestcaseFromAPI[];
 
   fullScreenRight: boolean;
   fullScreenEditor: boolean;
@@ -39,7 +51,12 @@ interface KitchenState {
 
   setSelectedQuestionId: (id: string) => void;
   setSelectedLanguage: (language: Language) => void;
+  setLanguageForQuestion: (questionId: string, language: Language) => void;
+  getLanguageForQuestion: (questionId: string) => Language;
+  setRound: (id: number) => void;
   setCodeForQuestion: (questionId: string, code: string) => void;
+  setQuestions: (questions: Question[]) => void;
+  setTestCases: (testCases: TestcaseFromAPI[]) => void;
   setFullScreenRight: (fullScreen: boolean) => void;
   setFullScreenEditor: (fullScreen: boolean) => void;
   setFullScreenTestCases: (fullScreen: boolean) => void;
@@ -54,6 +71,7 @@ interface KitchenState {
 const initialState = {
   selectedQuestionId: "1",
   selectedLanguage: LANGUAGES.Python,
+  round: 0,
   fullScreenRight: false,
   fullScreenEditor: false,
   fullScreenTestCases: false,
@@ -63,6 +81,9 @@ const initialState = {
   compilerDetails: null,
   activeCaseIndex: 0,
   codeByQuestion: [],
+  languageByQuestion: [],
+  questions: [],
+  testCases: [],
 };
 
 const useKitchenStore = create<KitchenState>()(
@@ -74,6 +95,33 @@ const useKitchenStore = create<KitchenState>()(
         setSelectedQuestionId: (id) => set({ selectedQuestionId: id }),
 
         setSelectedLanguage: (language) => set({ selectedLanguage: language }),
+
+        setLanguageForQuestion: (questionId, language) =>
+          set((state) => {
+            const existing = state.languageByQuestion.find(
+              (q) => q.questionId === questionId
+            );
+            if (existing) {
+              return {
+                languageByQuestion: state.languageByQuestion.map((q) =>
+                  q.questionId === questionId ? { ...q, language } : q
+                ),
+              };
+            }
+            return {
+              languageByQuestion: [...state.languageByQuestion, { questionId, language }],
+            };
+          }),
+
+        getLanguageForQuestion: (questionId) => {
+          const state = get();
+          const found = state.languageByQuestion.find(
+            (q) => q.questionId === questionId
+          );
+          return found ? found.language : LANGUAGES.Python; // Default to Python
+        },
+
+        setRound: (round) => set({ round: round }),
 
         setCodeForQuestion: (questionId, code) =>
           set((state) => {
@@ -92,9 +140,14 @@ const useKitchenStore = create<KitchenState>()(
             };
           }),
 
-        setFullScreenRight: (fullScreen) => set({ fullScreenRight: fullScreen }),
+        setQuestions: (questions) => set({ questions }),
+        setTestCases: (testCases) => set({ testCases }),
 
-        setFullScreenEditor: (fullScreen) => set({ fullScreenEditor: fullScreen }),
+        setFullScreenRight: (fullScreen) =>
+          set({ fullScreenRight: fullScreen }),
+
+        setFullScreenEditor: (fullScreen) =>
+          set({ fullScreenEditor: fullScreen }),
 
         setFullScreenTestCases: (fullScreen) =>
           set({ fullScreenTestCases: fullScreen }),
@@ -117,6 +170,7 @@ const useKitchenStore = create<KitchenState>()(
         partialize: (state) => ({
           selectedLanguage: state.selectedLanguage,
           codeByQuestion: state.codeByQuestion,
+          languageByQuestion: state.languageByQuestion,
         }),
         storage: {
           getItem: (name) => {
@@ -129,6 +183,10 @@ const useKitchenStore = create<KitchenState>()(
               state: {
                 ...state,
                 selectedLanguage: language || LANGUAGES.Python,
+                languageByQuestion: (state.languageByQuestion || []).map((q: {questionId: string, language: {name: string}}) => ({
+                  questionId: q.questionId,
+                  language: getLanguageByName(q.language.name) || LANGUAGES.Python,
+                })),
               },
             };
           },
@@ -138,6 +196,10 @@ const useKitchenStore = create<KitchenState>()(
               state: {
                 selectedLanguage: { name: state.selectedLanguage.name },
                 codeByQuestion: state.codeByQuestion,
+                languageByQuestion: state.languageByQuestion?.map((q: QuestionLanguage) => ({
+                  questionId: q.questionId,
+                  language: { name: q.language.name },
+                })) || [],
               },
               version,
             });

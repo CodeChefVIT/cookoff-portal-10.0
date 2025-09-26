@@ -1,4 +1,5 @@
 import React from "react";
+import toast from "react-hot-toast";
 
 interface CompilerMessageProps {
   isCompileSuccess: boolean;
@@ -8,7 +9,7 @@ interface CompilerMessageProps {
 function CompilerMessage({ isCompileSuccess, message }: CompilerMessageProps) {
   return (
     <div className="flex flex-col">
-      <h1 className="mb-2">Compiler Message</h1>
+      <h1 className="mb-2">Result:</h1>
       <div
         className={`bg-secondary font-bold py-2 px-4 rounded-md ${
           isCompileSuccess ? "text-green-500" : "text-accent"
