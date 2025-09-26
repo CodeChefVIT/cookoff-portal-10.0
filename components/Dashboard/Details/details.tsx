@@ -112,17 +112,7 @@ const DetailsCard: React.FC = () => {
           </p>
         </div>
 
-        {/* Time Remaining */}
-        <div>
-          <p className="text-lg font-inter font-normal text-white">
-            Time Remaining
-          </p>
-          <div className="px-4 py-2 mt-2">
-            <div className="text-xl font-brunoace font-normal text-green-500">
-              <RoundTimer />
-            </div>
-          </div>
-        </div>
+
 
         {/* Tip Box */}
         <div className="mt-3 bg-neutral-800 rounded-lg py-4 px-6 text-sm text-gray-300 italic max-w-xs">
