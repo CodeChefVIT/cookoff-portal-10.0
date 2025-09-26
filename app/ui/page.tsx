@@ -6,7 +6,6 @@ import Button from "@/components/ui/Button";
 import TabButton from "@/components/ui/TabButton";
 import Modal from "@/components/Modal/Modal";
 import QuestionWindow from "@/components/ui/QuestionWindow";
-import TestCases from "@/components/TestCases/TestCases";
 import Header from "@/components/Header/Header";
 import Login from "@/components/Login";
 import Dashboard from "@/components/Dashboard/Dashboard";
@@ -18,27 +17,29 @@ import RoundTimer from "@/components/Editor/RoundTimer/RoundTimer";
 import InputOutputCard from "@/components/TestCases/InputOutputCard";
 import CompilerMessage from "@/components/TestCases/CompilerMessage";
 import { Question } from "@/schemas/api/index";
+import { Language, LANGUAGES } from "@/lib/languages";
 
 export default function UIPage() {
-  const [selectedLanguage, setSelectedLanguage] = useState("C++");
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>(LANGUAGES.Cpp);
   const [showModal, setShowModal] = useState<
     "default" | "green" | "red" | "yellow" | null
   >(null);
-  const [questionID, setQuestionID] = useState<string>("1");
+  const [fullScreen, setFullScreen] = useState<boolean>(false);
 
-  const languages = [
-    "C++",
-    "C",
-    "C#",
-    "Java",
-    "Python3",
-    "PHP",
-    "Rust",
-    "Racket",
-    "Ruby",
+  const languages: Language[] = [
+    LANGUAGES.Cpp,
+    LANGUAGES.C,
+    LANGUAGES.CSharp,
+    LANGUAGES.Java,
+    LANGUAGES.Python,
+    LANGUAGES.PHP,
+    LANGUAGES.Rust,
+    LANGUAGES.Go,
+    LANGUAGES.JavaScript,
+    LANGUAGES.TypeScript,
   ];
 
-  const [questions, setQuestions] = useState<Question[]>([
+  const questions: Question[] = [
     {
       id: "1",
       title: "PROBLEM 1: TWO SUM",
@@ -81,7 +82,7 @@ export default function UIPage() {
         "121 reads as 121 from left to right and from right to left.",
       ],
     },
-  ]);
+  ];
 
   type TestCase = {
     id: number;
@@ -189,9 +190,9 @@ export default function UIPage() {
             Tab Buttons
           </h3>
           <div className="flex gap-4 p-6 bg-[#131414] rounded-lg">
-            <TabButton id={"1"} active={true} onClick={() => {}} />
-            <TabButton id={"2"} active={false} onClick={() => {}} />
-            <TabButton id={"3"} active={false} onClick={() => {}} />
+            <TabButton id={"1"} active={true} onClick={() => {}} newId={1} />
+            <TabButton id={"2"} active={false} onClick={() => {}} newId={2} />
+            <TabButton id={"3"} active={false} onClick={() => {}} newId={3} />
           </div>
         </div>
       </section>
@@ -272,7 +273,7 @@ export default function UIPage() {
             Round Timer
           </h3>
           <div className="p-6 bg-[#131414] rounded-lg">
-            <RoundTimer round="Round 1" />
+            <RoundTimer />
           </div>
         </div>
 
@@ -284,9 +285,8 @@ export default function UIPage() {
           <div className="bg-[#131414] rounded-lg">
             <Editor
               languages={languages}
-              selectedLanguage={selectedLanguage}
-              onLanguageChange={setSelectedLanguage}
-              round="Round 1"
+              fullScreen={fullScreen}
+              setfullScreen={setFullScreen}
             />
           </div>
         </div>
@@ -298,12 +298,7 @@ export default function UIPage() {
           Question Window
         </h2>
         <div className="bg-[#131414] rounded-lg">
-          <QuestionWindow
-            questions={questions}
-            setQuestions={setQuestions}
-            questionID={questionID}
-            setQuestionID={setQuestionID}
-          />
+          <QuestionWindow />
         </div>
       </section>
 
@@ -372,12 +367,7 @@ export default function UIPage() {
           </h3>
           <div className="flex justify-center p-6 bg-[#131414] rounded-lg">
             <div className="w-80">
-              <ProfileCard
-                name="John Doe"
-                email="john.doe@example.com"
-                totalScore={850}
-                maxScore={1000}
-              />
+              <ProfileCard />
             </div>
           </div>
         </div>
@@ -389,7 +379,7 @@ export default function UIPage() {
           </h3>
           <div className="flex justify-center p-6 bg-[#131414] rounded-lg">
             <div className="w-80">
-              <DetailsCard currentRound="Round 2" timeRemaining="01:23:45" />
+              <DetailsCard />
             </div>
           </div>
         </div>
@@ -442,12 +432,7 @@ export default function UIPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
           {/* Left - Question window */}
           <div className="bg-[#131414] p-4 sm:p-6 rounded-lg">
-            <QuestionWindow
-              questions={questions}
-              setQuestions={setQuestions}
-              questionID={questionID}
-              setQuestionID={setQuestionID}
-            />
+            <QuestionWindow />
           </div>
 
           {/* Right - Editor and Test cases */}
@@ -455,9 +440,8 @@ export default function UIPage() {
             <div className="bg-[#131414] rounded-lg">
               <Editor
                 languages={languages}
-                selectedLanguage={selectedLanguage}
-                onLanguageChange={setSelectedLanguage}
-                round="Round 1"
+                fullScreen={fullScreen}
+                setfullScreen={setFullScreen}
               />
             </div>
 
