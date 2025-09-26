@@ -1,5 +1,3 @@
-import { type loginFormSchema } from "../schemas/forms/login";
-import { type z } from "zod";
 import api from ".";
 import { handleAPIError } from "@/lib/error";
 import { GetTimeResponse } from "@/api/timer/getTime/route";
@@ -12,7 +10,7 @@ export default async function timer() {
     const error = e as AxiosError;
 
     if (e instanceof Error && error.response?.status === 409) {
-       window.location.href = "/"; 
+      window.location.href = "/";
     }
     throw handleAPIError(e);
   }

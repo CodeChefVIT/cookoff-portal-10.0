@@ -1,7 +1,6 @@
 "use client";
 
 import React, { RefObject, useEffect, useMemo, useRef, useState } from "react";
-import axios from "axios";
 import useKitchenStore from "store/zustant";
 import timer from "@/services/getTimer";
 
@@ -9,15 +8,9 @@ export interface RoundTimerProps {
   round?: string;
 }
 
-interface GetTimeResponse {
-  round_end_time: string;
-  round_start_time: string;
-  server_time: string;
-}
-
 export default function RoundTimer() {
   const { round } = useKitchenStore();
-  
+
   const [remaining, setRemaining] = useState<number>(0);
 
   const tickIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -29,17 +22,17 @@ export default function RoundTimer() {
       const data = await timer();
       const serverTime = new Date(data.server_time).getTime();
       const endTime = new Date(data.round_end_time).getTime();
-      
+
       // Calculate remaining time in seconds
       const remainingMs = Math.max(0, endTime - serverTime);
       const remainingSeconds = Math.floor(remainingMs / 1000);
-      
+
       setRemaining(remainingSeconds);
-      
+
       return remainingSeconds;
     } catch (error) {
       console.error("Failed to get round time:", error);
-    
+
       setRemaining(0);
       return 0;
     }
