@@ -38,7 +38,6 @@ const TestCases = ({ results, compilerDetails, panelSize }: TestCasesProps) => {
     outputExists,
   } = useTestCases(results);
   const activeCaseData = visibleCases[activeCaseIndex];
-
   return (
     <div
       className={`${

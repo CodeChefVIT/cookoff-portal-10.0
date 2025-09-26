@@ -1,4 +1,5 @@
 import React from "react";
+import toast from "react-hot-toast";
 
 interface CompilerMessageProps {
   isCompileSuccess: boolean;

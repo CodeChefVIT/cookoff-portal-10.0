@@ -173,7 +173,7 @@ export default function Editor({
       );
 
       if (hasErrors) {
-        toast.error("Code execution completed with errors", { id: toastId });
+        toast.success("Code execution completed with errors", { id: toastId });
       } else {
         toast.success("Code executed successfully", { id: toastId });
       }

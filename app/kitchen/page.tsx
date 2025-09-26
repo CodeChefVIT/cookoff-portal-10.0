@@ -15,7 +15,7 @@ import { getKitchenData } from "../api/kitchen";
 import Header from "@/components/Header/Header";
 import TabButton from "@/components/ui/TabButton";
 import { ImperativePanelHandle } from "react-resizable-panels";
-import toast from "react-hot-toast";
+import toast, { ToastBar } from "react-hot-toast";
 
 export default function Kitchen() {
   const {
@@ -31,7 +31,6 @@ export default function Kitchen() {
     setQuestions,
     setTestCases,
   } = useKitchenStore();
-
   useEffect(() => {
     const fetchData = async () => {
       const { questions, testcases } = await getKitchenData();

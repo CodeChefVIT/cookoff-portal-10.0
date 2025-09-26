@@ -2,6 +2,7 @@ import React from "react";
 import InputOutputCard from "./InputOutputCard";
 import CompilerMessage from "./CompilerMessage";
 import { TestCase } from "store/zustant";
+import toast from "react-hot-toast";
 
 interface InputProps {
   compilerDetails: {
@@ -20,7 +21,7 @@ const Input: React.FC<InputProps> = ({
   return (
     <div className="">
       {outputExists && (
-        <CompilerMessage isCompileSuccess={compilerDetails.isCompileSuccess} />
+        <CompilerMessage message={compilerDetails.message} isCompileSuccess={compilerDetails.isCompileSuccess} />
       )}
       {activeCaseData && (
         <>
