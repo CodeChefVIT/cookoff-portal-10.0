@@ -5,7 +5,7 @@ export interface GetTimeResponse {
   round_start_time: string;
   server_time: string;
 }
-
+// testing route
 export async function GET() {
   try {
     // Get current server time

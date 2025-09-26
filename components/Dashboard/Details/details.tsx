@@ -6,6 +6,9 @@ import { useRouter, usePathname } from "next/navigation";
 import useKitchenStore from "store/zustant";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "react-hot-toast";
+import { TruckElectric } from "lucide-react";
+import { stat } from "fs";
+import timer from "@/services/getTimer";
 
 interface DetailsCardProps {
   currentRound: string;
@@ -128,22 +131,17 @@ const DetailsCard: React.FC = () => {
 
               const toastId = toast.loading("Checking round status...");
               try {
-                // const res = await api.get("/GetTime");
-                const res = {
-                  status: 200,
-                };
+                 await timer();
+                toast.loading("Entering Kitchen...", { id: toastId });
+                router.push("/kitchen");
 
-                if (res.status === 200) {
-                  toast.loading("Entering Kitchen...", { id: toastId });
-                  router.push("/kitchen");
+                const checkPath = setInterval(() => {
+                  if (window.location.pathname === "/kitchen") {
+                    toast.success("Welcome to Kitchen", { id: toastId });
+                    clearInterval(checkPath);
+                  }
+                }, 100);
 
-                  const checkPath = setInterval(() => {
-                    if (window.location.pathname === "/kitchen") {
-                      toast.success("Welcome to Kitchen", { id: toastId });
-                      clearInterval(checkPath);
-                    }
-                  }, 100);
-                }
               } catch (err: unknown) {
                 if (err instanceof Error) {
                   toast.error("Round not started yet!", { id: toastId });

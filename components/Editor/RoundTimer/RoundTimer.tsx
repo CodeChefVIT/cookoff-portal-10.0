@@ -3,6 +3,7 @@
 import React, { RefObject, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import useKitchenStore from "store/zustant";
+import timer from "@/services/getTimer";
 
 export interface RoundTimerProps {
   round?: string;
@@ -25,12 +26,7 @@ export default function RoundTimer() {
   // Function to get time data and calculate remaining time
   const getRoundTime = async () => {
     try {
-      const res = await axios.get<GetTimeResponse>("/api/timer/getTime", {
-        params: { _ts: Date.now() },
-        headers: { "Cache-Control": "no-cache" },
-      });
-      
-      const data = res.data;
+      const data = await timer();
       const serverTime = new Date(data.server_time).getTime();
       const endTime = new Date(data.round_end_time).getTime();
       
@@ -43,6 +39,7 @@ export default function RoundTimer() {
       return remainingSeconds;
     } catch (error) {
       console.error("Failed to get round time:", error);
+    
       setRemaining(0);
       return 0;
     }
