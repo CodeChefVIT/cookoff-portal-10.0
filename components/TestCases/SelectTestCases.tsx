@@ -124,13 +124,19 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
       {hiddenCases.length > 0 && (
         <div className=" flex cursor-pointer items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-sm hover:scale-105 hover:bg-border">
           <BsEyeSlash
-            className={`opacity-80 ${getTestCaseScoreColor(
-              hiddenPassedCount,
-              hiddenCases.length
-            )}`}
+            className={`opacity-80 ${
+              outputExists 
+                ? getTestCaseScoreColor(hiddenPassedCount, hiddenCases.length)
+                : "text-gray-400"
+            }`}
           />
           <span className="opacity-80">Hidden</span>
-          <span className="opacity-80">{`${hiddenPassedCount}/${hiddenCases.length}`}</span>
+          <span className="opacity-80">
+            {outputExists 
+              ? `${hiddenPassedCount}/${hiddenCases.length}`
+              : `${hiddenCases.length}`
+            }
+          </span>
         </div>
       )}
     </div>
