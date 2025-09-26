@@ -9,9 +9,17 @@ interface TabButtonProps {
   id: string;
   active: boolean;
   onClick: () => void;
+  newId: number;
 }
 
-const TabButton: React.FC<TabButtonProps> = ({ id, active, onClick }) => {
+const TabButton: React.FC<TabButtonProps> = ({
+  id,
+  active,
+  onClick,
+  newId,
+}) => {
+  console.log(newId);
+
   return (
     <button
       onClick={onClick}
@@ -41,7 +49,7 @@ const TabButton: React.FC<TabButtonProps> = ({ id, active, onClick }) => {
         className={`relative z-10 font-bold text-xl ${quicksand.className}`}
         style={{ color: "#000000ff", userSelect: "none" }}
       >
-        {id}
+        {newId + 1}
       </span>
     </button>
   );

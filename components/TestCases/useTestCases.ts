@@ -1,20 +1,32 @@
 import { useMemo } from "react";
-import { TestcaseFromAPI } from "@/api/question";
+import { TestCase } from "store/zustant";
 
-export function useTestCases(results: TestcaseFromAPI[]) {
+export function useTestCases(results: TestCase[]) {
   const visibleCases = useMemo(
     () => results.filter((r) => !r.hidden),
     [results]
   );
+
   const hiddenCases = useMemo(() => results.filter((r) => r.hidden), [results]);
 
   const passedCount = useMemo(() => {
-    return results.filter((r) => r.expected_output === r.output).length;
+    return results.filter((r) => {
+      if (!r.expected_output || !r.output) return false;
+      return r.expected_output.trim() === r.output.trim();
+    }).length;
   }, [results]);
 
   const hiddenPassedCount = useMemo(() => {
-    return hiddenCases.filter((r) => r.expected_output === r.output).length;
+    return hiddenCases.filter((r) => {
+      if (!r.expected_output || !r.output) return false;
+      return r.expected_output.trim() === r.output.trim();
+    }).length;
   }, [hiddenCases]);
+
+  const outputExists = useMemo(
+    () => results.some((r) => r.output && r.output.trim() !== ""),
+    [results]
+  );
 
   const totalCases = results.length;
 
@@ -24,5 +36,6 @@ export function useTestCases(results: TestcaseFromAPI[]) {
     passedCount,
     hiddenPassedCount,
     totalCases,
+    outputExists,
   };
 }

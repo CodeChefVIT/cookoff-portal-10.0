@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { Language, LANGUAGES, getLanguageByName } from "@/lib/languages";
+import { Question, TestcaseFromAPI } from "@/api/question";
 
 export interface TestCase {
   id: string;
@@ -11,6 +12,8 @@ export interface TestCase {
   runtime: number;
   memory: number;
   question_id: string;
+  stderr?: string;
+  statusDescription?: string;
 }
 export type QuestionCode = {
   questionId: string;
@@ -25,7 +28,10 @@ export interface CompilerResult {
 interface KitchenState {
   selectedQuestionId: string;
   selectedLanguage: Language;
+  round: number;
   codeByQuestion: QuestionCode[];
+  questions: Question[];
+  testCases: TestcaseFromAPI[];
 
   fullScreenRight: boolean;
   fullScreenEditor: boolean;
@@ -39,7 +45,10 @@ interface KitchenState {
 
   setSelectedQuestionId: (id: string) => void;
   setSelectedLanguage: (language: Language) => void;
+  setRound: (id: number) => void;
   setCodeForQuestion: (questionId: string, code: string) => void;
+  setQuestions: (questions: Question[]) => void;
+  setTestCases: (testCases: TestcaseFromAPI[]) => void;
   setFullScreenRight: (fullScreen: boolean) => void;
   setFullScreenEditor: (fullScreen: boolean) => void;
   setFullScreenTestCases: (fullScreen: boolean) => void;
@@ -54,6 +63,7 @@ interface KitchenState {
 const initialState = {
   selectedQuestionId: "1",
   selectedLanguage: LANGUAGES.Python,
+  round: 0,
   fullScreenRight: false,
   fullScreenEditor: false,
   fullScreenTestCases: false,
@@ -63,6 +73,8 @@ const initialState = {
   compilerDetails: null,
   activeCaseIndex: 0,
   codeByQuestion: [],
+  questions: [],
+  testCases: [],
 };
 
 const useKitchenStore = create<KitchenState>()(
@@ -74,6 +86,8 @@ const useKitchenStore = create<KitchenState>()(
         setSelectedQuestionId: (id) => set({ selectedQuestionId: id }),
 
         setSelectedLanguage: (language) => set({ selectedLanguage: language }),
+
+        setRound: (round) => set({ round: round }),
 
         setCodeForQuestion: (questionId, code) =>
           set((state) => {
@@ -92,9 +106,14 @@ const useKitchenStore = create<KitchenState>()(
             };
           }),
 
-        setFullScreenRight: (fullScreen) => set({ fullScreenRight: fullScreen }),
+        setQuestions: (questions) => set({ questions }),
+        setTestCases: (testCases) => set({ testCases }),
 
-        setFullScreenEditor: (fullScreen) => set({ fullScreenEditor: fullScreen }),
+        setFullScreenRight: (fullScreen) =>
+          set({ fullScreenRight: fullScreen }),
+
+        setFullScreenEditor: (fullScreen) =>
+          set({ fullScreenEditor: fullScreen }),
 
         setFullScreenTestCases: (fullScreen) =>
           set({ fullScreenTestCases: fullScreen }),
