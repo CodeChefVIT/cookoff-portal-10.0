@@ -6,12 +6,11 @@ import NotificationButton from "../ui/NotificationButton";
 import toast from "react-hot-toast";
 
 export default function Header() {
-
   const icon = "/icon.avif";
 
   const dashboardIcon = "/dashboard.svg";
   const pathname = usePathname();
-    const router = useRouter();
+  const router = useRouter();
 
   if (pathname === "/") return null;
   const handleDashboardClick = () => {
@@ -29,7 +28,7 @@ export default function Header() {
     }, 100);
   };
   return (
-    <header className="relative flex items-center justify-between w-full px-4 py-1/2 md:px-12 border-b-2 border-b-[#B7AB98] select-none">
+    <header className="relative flex items-center justify-between w-full px-8 py-4  border-b-2 border-b-[#B7AB98] select-none">
       <a
         href="https://www.codechefvit.com"
         target="_blank"
@@ -38,8 +37,8 @@ export default function Header() {
         <Image
           src={icon}
           alt="CodechefVIT Logo"
-          width={20}
-          height={20}
+          width={1000}
+          height={1000}
           className="h-4 w-4 md:h-12 md:w-12"
         />
       </a>
