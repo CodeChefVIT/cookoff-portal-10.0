@@ -1,8 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { getRounds } from "@/services/dashboard"; 
-import { Skeleton } from "@/components/ui/skeleton"
+import { getRounds } from "@/services/dashboard";
+import { Skeleton } from "@/components/ui/skeleton";
+import { DashboardResponse } from "@/schemas/api/index";
 export interface RoundStats {
   round: number;
   status: "Closed" | "In Progress" | "Completed";
@@ -22,7 +23,7 @@ const statusColors: Record<string, string> = {
 const ProgressCircle: React.FC<{ progress: number }> = ({ progress }) => {
   const size = 55.37;
   const stroke = 6.86;
-  const radius=size/2;
+  const radius = size / 2;
   const normalizedRadius = radius - stroke / 2;
   const circumference = normalizedRadius * 2 * Math.PI;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
@@ -50,7 +51,7 @@ const ProgressCircle: React.FC<{ progress: number }> = ({ progress }) => {
         r={normalizedRadius}
         cx={radius}
         cy={radius}
-        transform={`rotate(-90 ${radius} ${radius})`} 
+        transform={`rotate(-90 ${radius} ${radius})`}
       />
       {/* percentage text */}
       <text
@@ -66,9 +67,9 @@ const ProgressCircle: React.FC<{ progress: number }> = ({ progress }) => {
   );
 };
 
-
 const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
-  const { round, status, progress, completed, incomplete, score, locked } = stats;
+  const { round, status, progress, completed, incomplete, score, locked } =
+    stats;
   const isLocked = status === "Closed";
 
   return (
@@ -77,8 +78,12 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
       <div className="flex justify-between items-center mb-4">
         <p className="font-bold text-[29.54px] tracking-[2px]">ROUND {round}</p>
         <div className="flex items-center gap-1.5">
-          <span className={`rounded-full w-[9.45px] h-[9.45px] ${statusColors[status]}`} />
-          <p className="text-[9.45px] font-inter select-none text-white">{status}</p>
+          <span
+            className={`rounded-full w-[9.45px] h-[9.45px] ${statusColors[status]}`}
+          />
+          <p className="text-[9.45px] font-inter select-none text-white">
+            {status}
+          </p>
         </div>
       </div>
 
@@ -131,116 +136,91 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
   );
 };
 
-
-
-const Statistics: React.FC = () => {
+const Statistics = ({
+  data,
+  loading,
+}: {
+  data: DashboardResponse | undefined;
+  loading: boolean;
+}) => {
   const [rounds, setRounds] = useState<RoundStats[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
   useEffect(() => {
-    const fetchRounds = async () => {
-      try {
-        const roundsData = await getRounds();
-        setRounds(roundsData);
-      } catch (err) {
-        console.error("Failed to fetch rounds:", err);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRounds();
-  }, []);
+    if (data) {
+      const roundDetails = getRounds({ data });
+      setRounds(roundDetails);
+    }
+  }, [data]);
 
   if (loading) {
+    return (
+      <div className="w-full h-full text-[#ccc] font-[Nulshock,monospace]">
+        <div className="relative w-[673px] h-[612px] mx-auto">
+          {/* Text on top of rectangle */}
+          <p className="relative z-10 text-center font-bold text-3xl text-[#beb7a6] tracking-[3px] select-none leading-14 bg-[#1F2622] rounded-t-[10px]">
+            STATISTICS
+          </p>
+
+          {/* Grid Skeleton */}
+          <div className="mt-10 grid gap-y-6 gap-x-[49.2px] max-w-[960px] mx-auto grid-cols-1 sm:grid-cols-2 pb-[34px] ml-[10px]">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="relative bg-[#111] rounded-xl p-5 mb-5 shadow-[-9.63px_8.67px_0_#1BA94C] w-[307.17px] min-h-[233.33px]"
+              >
+                {/* Card Header */}
+                <div className="flex justify-between items-center mb-4">
+                  <Skeleton className="h-8 w-32 rounded-md bg-neutral-700" />
+                  <div className="flex items-center gap-1.5">
+                    <Skeleton className="w-[9.45px] h-[9.45px] rounded-full bg-neutral-700" />
+                    <Skeleton className="h-3 w-12 rounded-md bg-neutral-700" />
+                  </div>
+                </div>
+
+                {/* Body */}
+                <div className="flex items-center gap-6 ml-[27.37px]">
+                  {/* Progress Circle */}
+                  <Skeleton className="h-[55px] w-[55px] rounded-full bg-neutral-700" />
+
+                  <div className="text-white">
+                    <div className="mb-1 flex items-center gap-2">
+                      <Skeleton className="h-[21px] w-[21px] rounded-md bg-neutral-700" />
+                      <Skeleton className="h-4 w-28 rounded-md bg-neutral-700" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-[21px] w-[21px] rounded-md bg-neutral-700" />
+                      <Skeleton className="h-4 w-32 rounded-md bg-neutral-700" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Score */}
+                <div className="mt-[45.62px]">
+                  <Skeleton className="h-5 w-28 rounded-md bg-neutral-700" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-full text-[#ccc] font-[Nulshock,monospace]">
       <div className="relative w-[673px] h-[612px] mx-auto">
-        {/* Rectangle behind */}
-        <div className="absolute top-0 left-0 w-[673px] h-[56px] bg-[#1F2622] rounded-t-[10px]" />
+        <p className="relative z-10 text-center font-bold text-3xl bg-[#1F2622] rounded-t-[10px] text-[#beb7a6] tracking-[3px] select-none leading-14">
+          STATISTICS
+        </p>
 
-        {/* Text on top of rectangle */}
-      <p className="relative z-10 text-center font-bold text-4xl text-[#beb7a6] tracking-[3px] select-none leading-[56px]">
-        STATISTICS
-      </p>
-
-        {/* Grid Skeleton */}
+        {/* Grid below */}
         <div className="mt-10 grid gap-y-6 gap-x-[49.2px] max-w-[960px] mx-auto grid-cols-1 sm:grid-cols-2 pb-[34px] ml-[10px]">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="relative bg-[#111] rounded-xl p-5 mb-5 shadow-[-9.63px_8.67px_0_#1BA94C] w-[307.17px] min-h-[233.33px]"
-            >
-              {/* Card Header */}
-              <div className="flex justify-between items-center mb-4">
-                <Skeleton className="h-8 w-32 rounded-md bg-neutral-700" />
-                <div className="flex items-center gap-1.5">
-                  <Skeleton className="w-[9.45px] h-[9.45px] rounded-full bg-neutral-700" />
-                  <Skeleton className="h-3 w-12 rounded-md bg-neutral-700" />
-                </div>
-              </div>
-
-              {/* Body */}
-              <div className="flex items-center gap-6 ml-[27.37px]">
-                {/* Progress Circle */}
-                <Skeleton className="h-[55px] w-[55px] rounded-full bg-neutral-700" />
-
-                <div className="text-white">
-                  <div className="mb-1 flex items-center gap-2">
-                    <Skeleton className="h-[21px] w-[21px] rounded-md bg-neutral-700" />
-                    <Skeleton className="h-4 w-28 rounded-md bg-neutral-700" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Skeleton className="h-[21px] w-[21px] rounded-md bg-neutral-700" />
-                    <Skeleton className="h-4 w-32 rounded-md bg-neutral-700" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Score */}
-              <div className="mt-[45.62px]">
-                <Skeleton className="h-5 w-28 rounded-md bg-neutral-700" />
-              </div>
-            </div>
+          {rounds.map((r) => (
+            <RoundCard key={r.round} stats={r} />
           ))}
         </div>
       </div>
     </div>
   );
-}
-
-
-
-  if (error)
-    return (
-      <p className="text-center text-red-500 mt-10 font-bold">
-        Failed to fetch statistics.
-      </p>);
-
-return (
-  <div className="w-full h-full text-[#ccc] font-[Nulshock,monospace]">
-    <div className="relative w-[673px] h-[612px] mx-auto">
-      {/* Rectangle behind */}
-      <div className="absolute top-0 left-0 w-[673px] h-[56px] bg-[#1F2622] rounded-t-[10px]" />
-      
-      {/* Text on top of rectangle */}
-      <p className="relative z-10 text-center font-bold text-4xl text-[#beb7a6] tracking-[3px] select-none leading-[56px]">
-        STATISTICS
-      </p>
-
-      {/* Grid below */}
-      <div className="mt-10 grid gap-y-6 gap-x-[49.2px] max-w-[960px] mx-auto grid-cols-1 sm:grid-cols-2 pb-[34px] ml-[10px]">
-        {rounds.map((r) => (
-          <RoundCard key={r.round} stats={r} />
-        ))}
-      </div>
-    </div>
-  </div>
-);
-
-
-
 };
 
 export default Statistics;

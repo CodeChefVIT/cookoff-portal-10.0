@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
 export interface GetTimeResponse {
   round_end_time: string;
@@ -8,32 +8,21 @@ export interface GetTimeResponse {
 
 export async function GET() {
   try {
-    // Get current server time
-    const serverTime = new Date();
-    
-    // Mock data - replace with actual database queries
-    // This should come from your database based on current round
-    const roundStartTime = new Date("2025-09-26T13:34:41Z");
-    const roundEndTime = new Date("2025-09-29T23:00:00+05:30");
-    
+    // Mock data for now - replace with actual timer logic
+    const now = new Date();
+    const roundStart = new Date(now.getTime() - 30 * 60 * 1000); // 30 minutes ago
+    const roundEnd = new Date(now.getTime() + 30 * 60 * 1000); // 30 minutes from now
+
     const response: GetTimeResponse = {
-      round_end_time: roundEndTime.toISOString(),
-      round_start_time: roundStartTime.toISOString(),
-      server_time: serverTime.toISOString(),
+      round_end_time: roundEnd.toISOString(),
+      round_start_time: roundStart.toISOString(),
+      server_time: now.toISOString(),
     };
 
-    return NextResponse.json(response, { 
-      status: 200,
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
-      }
-    });
-  } catch (error) {
-    console.error("Timer API error:", error);
+    return NextResponse.json(response);
+  } catch {
     return NextResponse.json(
-      { error: "Failed to get timer data" },
+      { error: 'Failed to get timer data' },
       { status: 500 }
     );
   }

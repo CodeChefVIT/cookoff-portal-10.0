@@ -132,7 +132,6 @@
   font-family: "Roboto", Inter, sans-serif;
 }
 
-
 html {
   scroll-behavior: smooth;
 }
@@ -183,37 +182,58 @@ button:active {
   background-position: right;
 }
 
-
-.font-nulshock{
-  font-family: "Nulshock",monospace;
+.font-nulshock {
+  font-family: "Nulshock", monospace;
 }
 
-
-
-.font-brunoace{
-  font-family: "Bruno Ace",monospace;
+.font-brunoace {
+  font-family: "Bruno Ace", monospace;
 }
 
-@font-face{
+@font-face {
   font-family: "Inter";
   src: url("/fonts/Inter.ttf") format("truetype");
   font-weight: 400;
   font-style: "regular";
 }
-.font-inter{
-  font-family: "Inter",monospace;
+.font-inter {
+  font-family: "Inter", monospace;
 }
 
-@font-face{
+@font-face {
   font-family: "Nunito";
   src: url("/fonts/Nunito.ttf") format("truetype");
   font-weight: 400;
   font-style: "regular";
 }
-.font-Nunito{
+
+.font-Nunito {
   font-family: "Nunito";
 }
 
 .stroke {
   -webkit-text-stroke: 3.95px black;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #444 #1a1a1a;
 }

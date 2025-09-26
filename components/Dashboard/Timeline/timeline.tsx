@@ -1,7 +1,7 @@
 "use client";
-import api from "@/services/index";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import getTimer from "@/services/getTimer";
 
 interface TimelineStep {
   label: string;
@@ -10,28 +10,25 @@ interface TimelineStep {
 
 const DEFAULT_LABELS = ["Start", "Round 0", "Round 1", "Round 2", "Round 3"];
 
-export default function Timeline() {
-
+export default function Timeline({
+  current_round,
+}: {
+  current_round: number | undefined;
+}) {
   const [steps, setSteps] = useState<TimelineStep[]>(
-    DEFAULT_LABELS.map((label: string) => ({ label, progress: 0 }))
+    DEFAULT_LABELS.map((label) => ({ label, progress: 0 }))
   );
 
   useEffect(() => {
     const updateSteps = async () => {
       let currentRoundProgress = 0;
+
       try {
-        //current round
-      const res = await api.get("/dashboard");
-      const currentRound = Number(res.data.data.current_round);
+        const timerData = await getTimer();
+        const start = new Date(timerData.round_start_time).getTime();
+        const end = new Date(timerData.round_end_time).getTime();
+        const server = new Date(timerData.server_time).getTime();
 
-        //time info
-        try {const { data: timeData } = await api.get("/GetTime");
-
-        const start = new Date(timeData.round_start_time).getTime();
-        const end = new Date(timeData.round_end_time).getTime();
-        const server = new Date(timeData.server_time).getTime();
-
-        
         if (!isNaN(start) && !isNaN(end) && !isNaN(server) && end > start) {
           const totalTime = end - start;
           const elapsedTime = server - start;
@@ -39,37 +36,27 @@ export default function Timeline() {
             0,
             Math.min(100, (elapsedTime / totalTime) * 100)
           );
-        }}
-
-        catch(timeErr: unknown){
-          console.error('Timeline error:', timeErr);
-          currentRoundProgress=50;
         }
-
-        //update steps
-        setSteps(
-          DEFAULT_LABELS.map((label: string, idx: number) => {
-            if (idx < currentRound) {
-              return { label, progress: 100 }; // completed rounds
-            } else if (idx === currentRound) {
-              return { label, progress: currentRoundProgress }; // current round
-            } else {
-              return { label, progress: 0 }; // future rounds
-            }
-          })
-        );
-      } catch (err) {
-        console.error("Failed to fetch details or time:", err);
+      } catch {
+        currentRoundProgress = 0;
       }
+
+      setSteps(
+        DEFAULT_LABELS.map((label, idx) => {
+          if (current_round && idx < current_round)
+            return { label, progress: 100 };
+          if (idx === current_round)
+            return { label, progress: currentRoundProgress };
+          return { label, progress: 0 };
+        })
+      );
     };
 
-    // first run
     updateSteps();
-    // set interval
-    const interval = setInterval(updateSteps, 120 * 1000);
+    const interval = setInterval(updateSteps, 120_000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [current_round]);
 
   const totalSteps = steps.length;
   const totalGreenPercent = steps
@@ -95,7 +82,12 @@ export default function Timeline() {
             style={{ left: `${totalGreenPercent}%` }}
           >
             <div className="-top-3 -left-5 relative">
-              <Image src="/chef-hat.svg" alt="Chef Hat" width={56} height={56} />
+              <Image
+                src="/chef-hat.svg"
+                alt="Chef Hat"
+                width={56}
+                height={56}
+              />
             </div>
           </div>
         </div>

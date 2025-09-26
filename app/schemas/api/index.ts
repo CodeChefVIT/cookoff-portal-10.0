@@ -68,22 +68,10 @@ export interface QuestionWindowProps {
 }
 
 export interface DashboardResponse {
-  status: "success";
-  data: {
-    userName: string;
-    email: string;
-    currentRound: number;
-    questionsCompleted0: number;
-    questionsCompleted1: number;
-    questionsCompleted2: number;
-    questionsCompleted3: number;
-    questionsNotCompleted0: number;
-    questionsNotCompleted1: number;
-    questionsNotCompleted2: number;
-    questionsNotCompleted3: number;
-    round0Score: number;
-    round1Score: number;
-    round2Score: number;
-    round3Score: number;
-  };
+  username: string;
+  email: string;
+  questions_completed: number[];
+  questions_not_completed: number[];
+  round_scores: number[];
+  current_round: number;
 }

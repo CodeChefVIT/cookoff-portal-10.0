@@ -3,20 +3,23 @@ export interface SaveCodeRequest {
   language: string;
   code: string;
   round?: string;
+  email: string;
 }
 
 export interface UpdateCodeRequest {
   id: string;
   code: string;
+  email: string;
 }
 
 export interface DeleteCodeRequest {
   id: string;
+  email: string;
 }
 
 export interface CodeState {
   _id: string;
-  userId: string;
+  email: string;
   questionId: string;
   language: string;
   code: string;
@@ -28,7 +31,7 @@ export interface CodeState {
 export interface CodeResponse {
   message: string;
   codeId: string;
-  userId: string;
+  email: string;
   questionId: string;
   language: string;
   code: string;
