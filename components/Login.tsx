@@ -43,6 +43,7 @@ export default function Login() {
       const res = await login(values);
       if (res.status === "success") {
         toast.success("Login successful. Welcome, Chef!");
+        localStorage.setItem("email", values.email);  
         router.push("/dashboard");
       } else {
         const { error } = res;

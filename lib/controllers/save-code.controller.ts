@@ -7,12 +7,6 @@ import {
 } from "@/lib/types/save-code";
 import { getMongoClient } from "@/lib/db";
 import type { Filter, UpdateFilter } from "mongodb";
-import jwt from "jsonwebtoken";
-
-interface JwtPayload {
-  user_id?: string;
-  userId?: string;
-}
 
 async function getCollection() {
   const client = await getMongoClient();
@@ -24,7 +18,7 @@ function buildCodeResponse(code: CodeState): CodeResponse {
   return {
     message: "Code fetched successfully",
     codeId: code._id,
-    userId: code.userId,
+    email: code.email,
     questionId: code.questionId,
     language: code.language,
     code: code.code,
@@ -35,8 +29,7 @@ function buildCodeResponse(code: CodeState): CodeResponse {
 }
 
 export async function saveCodeController(
-  request: SaveCodeRequest,
-  token: string
+  request: SaveCodeRequest
 ): Promise<{
   success: boolean;
   data?: CodeResponse;
@@ -44,23 +37,24 @@ export async function saveCodeController(
   status: number;
 }> {
   try {
-    const { questionId, language, code, round } = request;
+    const { questionId, language, code, round, email } = request;
 
-    let userId: string;
-    try {
-      const payload = jwt.decode(token) as JwtPayload;
-      const id = payload?.user_id || payload?.userId;
-      if (!id) {
-        return {
-          success: false,
-          error: "Invalid token: missing userId",
-          status: 401,
-        };
-      }
-      userId = id;
-    } catch (err) {
-      console.error("Error decoding JWT:", err);
-      return { success: false, error: "Invalid token", status: 401 };
+    if (!email) {
+      return {
+        success: false,
+        error: "Email is required",
+        status: 400,
+      };
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return {
+        success: false,
+        error: "Invalid email format",
+        status: 400,
+      };
     }
 
     if (!questionId) {
@@ -83,10 +77,10 @@ export async function saveCodeController(
     const now = Date.now();
 
     const result = await col.updateOne(
-      { userId, questionId },
+      { email, questionId },
       {
         $set: {
-          userId,
+          email,
           questionId,
           language,
           code,
@@ -101,7 +95,7 @@ export async function saveCodeController(
       { upsert: true }
     );
 
-    const saved = await col.findOne({ userId, questionId });
+    const saved = await col.findOne({ email, questionId });
     if (!saved) {
       return { success: false, error: "Failed to save code", status: 500 };
     }
@@ -121,8 +115,8 @@ export async function getCodeController(
   request: {
     id?: string;
     questionId?: string;
-  },
-  token: string
+    email?: string;
+  }
 ): Promise<{
   success: boolean;
   data?: CodeResponse;
@@ -130,37 +124,53 @@ export async function getCodeController(
   status: number;
 }> {
   try {
-    const { questionId } = request;
+    const { questionId, email } = request;
 
-    let userId: string;
-    try {
-      const payload = jwt.decode(token) as JwtPayload;
-      const uId = payload?.user_id || payload?.userId;
-      if (!uId) {
-        return {
-          success: false,
-          error: "Invalid token: missing userId",
-          status: 401,
-        };
-      }
-      userId = uId;
-    } catch (err) {
-      console.error("Error decoding JWT:", err);
-      return { success: false, error: "Invalid token", status: 401 };
+    if (!email) {
+      return {
+        success: false,
+        error: "Email is required",
+        status: 400,
+      };
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return {
+        success: false,
+        error: "Invalid email format",
+        status: 400,
+      };
     }
 
     const col = await getCollection();
     let code: CodeState | null = null;
 
-    if (userId && questionId) {
+    if (email && questionId) {
       code = await col.findOne({
-        userId,
+        email,
         questionId,
       });
     }
 
     if (!code) {
-      return { success: false, error: "Code not found", status: 404 };
+      // Return empty code response instead of 404 when no code exists yet
+      return { 
+        success: true, 
+        data: {
+          message: "No code found for this question",
+          codeId: "",
+          email,
+          questionId: questionId || "",
+          language: "",
+          code: "",
+          round: "",
+          createdAt: 0,
+          updatedAt: 0,
+        }, 
+        status: 200 
+      };
     }
 
     return { success: true, data: buildCodeResponse(code), status: 200 };
@@ -171,8 +181,7 @@ export async function getCodeController(
 }
 
 export async function updateCodeController(
-  request: UpdateCodeRequest,
-  token: string
+  request: UpdateCodeRequest
 ): Promise<{
   success: boolean;
   data?: CodeResponse;
@@ -180,29 +189,30 @@ export async function updateCodeController(
   status: number;
 }> {
   try {
-    const { id, code } = request;
+    const { id, code, email } = request;
 
-    let userId: string;
-    try {
-      const payload = jwt.decode(token) as JwtPayload;
-      const uId = payload?.user_id || payload?.userId;
-      if (!uId) {
-        return {
-          success: false,
-          error: "Invalid token: missing userId",
-          status: 401,
-        };
-      }
-      userId = uId;
-    } catch (err) {
-      console.error("Error decoding JWT:", err);
-      return { success: false, error: "Invalid token", status: 401 };
+    if (!email) {
+      return {
+        success: false,
+        error: "Email is required",
+        status: 400,
+      };
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return {
+        success: false,
+        error: "Invalid email format",
+        status: 400,
+      };
     }
 
     const col = await getCollection();
     const existing = await col.findOne({
       _id: id,
-      userId,
+      email,
     } as Filter<CodeState>);
     if (!existing) {
       return { success: false, error: "Code not found", status: 404 };
@@ -231,33 +241,33 @@ export async function updateCodeController(
 }
 
 export async function deleteCodeController(
-  request: DeleteCodeRequest,
-  token: string
+  request: DeleteCodeRequest
 ): Promise<{ success: boolean; error?: string; status: number }> {
   try {
-    const { id } = request;
+    const { id, email } = request;
 
-    let userId: string;
-    try {
-      const payload = jwt.decode(token) as JwtPayload;
-      const uId = payload?.user_id || payload?.userId;
-      if (!uId) {
-        return {
-          success: false,
-          error: "Invalid token: missing userId",
-          status: 401,
-        };
-      }
-      userId = uId;
-    } catch (err) {
-      console.error("Error decoding JWT:", err);
-      return { success: false, error: "Invalid token", status: 401 };
+    if (!email) {
+      return {
+        success: false,
+        error: "Email is required",
+        status: 400,
+      };
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return {
+        success: false,
+        error: "Invalid email format",
+        status: 400,
+      };
     }
 
     const col = await getCollection();
     const result = await col.deleteOne({
       _id: id,
-      userId,
+      email,
     } as Filter<CodeState>);
 
     if (!result.deletedCount) {

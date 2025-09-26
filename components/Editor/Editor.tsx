@@ -19,6 +19,7 @@ import { MdFullscreen } from "react-icons/md";
 import { MdFullscreenExit } from "react-icons/md";
 import { submitCode } from "@/api/kitchen";
 import toast from "react-hot-toast";
+import { email } from "zod";
 type EditorProps = {
   languages: Language[];
   round?: string;
@@ -325,8 +326,9 @@ export default function Editor({
       }
 
       try {
+        const email = localStorage.getItem("email");
         const res = await axios.get(
-          `/api/save-code?questionId=${selectedQuestionId}`
+          `/api/save-code?questionId=${selectedQuestionId}&email=${email}`
         );
         if (res.status === 200) {
           const data = await res.data;
@@ -423,6 +425,7 @@ export default function Editor({
         questionId: selectedQuestionId,
         code,
         language: questionLanguage.name,
+        email: localStorage.getItem("email")
       };
 
       try {
