@@ -40,9 +40,8 @@ export default function Timeline() {
               Math.min(100, (elapsedTime / totalTime) * 100)
             );
           }
-        } catch (timeErr: unknown) {
-          console.error("Timeline error:", timeErr);
-          currentRoundProgress = 50;
+        } catch {
+          currentRoundProgress = 0;
         }
 
         //update steps

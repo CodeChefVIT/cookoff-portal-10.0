@@ -7,7 +7,6 @@ import useKitchenStore from "store/zustant";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "react-hot-toast";
 import timer from "@/services/getTimer";
-import { ApiError } from "next/dist/server/api-utils";
 
 interface DetailsCardProps {
   currentRound: string;
@@ -132,13 +131,8 @@ const DetailsCard: React.FC = () => {
               try {
                 try {
                   await timer();
-                } catch (err) {
-                  if (
-                    (err as ApiError) &&
-                    (err as ApiError).statusCode === 409
-                  ) {
-                    toast.error("Round not started yet!", { id: toastId });
-                  }
+                } catch {
+                  toast.error("Round not started yet!", { id: toastId });
                 }
 
                 toast.loading("Entering Kitchen...", { id: toastId });

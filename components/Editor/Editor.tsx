@@ -47,7 +47,6 @@ export default function Editor({
     : selectedLanguage;
   const [code, setCode] = useState("");
   const [cursor, setCursor] = useState({ line: 1, ch: 1 });
-  const [, setCustomInput] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [editorReady, setEditorReady] = useState(false);
   const editorRef = useRef<EditorView | null>(null);

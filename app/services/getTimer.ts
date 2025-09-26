@@ -1,6 +1,5 @@
 import api from ".";
 import { handleAPIError } from "@/lib/error";
-import { AxiosError } from "axios";
 
 export interface GetTimeResponse {
   round_end_time: string;
