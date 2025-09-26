@@ -313,7 +313,7 @@ export default function Editor({
 
   useEffect(() => {
     const fetchSavedCode = async () => {
-      if (!selectedQuestionId) return;
+      if (!selectedQuestionId || selectedQuestionId === "1") return;
 
       const cachedState = codeByQuestion.find(
         (state) => state.questionId === selectedQuestionId
