@@ -12,12 +12,7 @@ interface TabButtonProps {
   newId: number;
 }
 
-const TabButton: React.FC<TabButtonProps> = ({
-  id,
-  active,
-  onClick,
-  newId,
-}) => {
+const TabButton: React.FC<TabButtonProps> = ({ active, onClick, newId }) => {
   return (
     <button
       onClick={onClick}

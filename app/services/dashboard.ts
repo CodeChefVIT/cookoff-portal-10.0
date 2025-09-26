@@ -1,9 +1,7 @@
 import api from "./index";
 import { RoundStats } from "@/components/Dashboard/Statistics/statistics";
-import { DashboardResponse } from "../schemas/api/index";
 
 export async function getRounds(): Promise<RoundStats[]> {
-
   const res = await api.get("/dashboard");
   const data = res.data.data;
   const rounds: RoundStats[] = [];
@@ -14,10 +12,10 @@ export async function getRounds(): Promise<RoundStats[]> {
     const score = data.round_scores[i] ?? 0;
 
     let status: "Closed" | "In Progress" | "Completed" = "Closed";
-    if(data.current_round!=null){
+    if (data.current_round != null) {
       if (i < data.current_round) status = "Completed";
       else if (i === data.current_round) status = "In Progress";
-    }  
+    }
     rounds.push({
       round: i,
       status,

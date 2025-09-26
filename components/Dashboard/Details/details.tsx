@@ -6,8 +6,6 @@ import { useRouter, usePathname } from "next/navigation";
 import useKitchenStore from "store/zustant";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "react-hot-toast";
-import { TruckElectric } from "lucide-react";
-import { stat } from "fs";
 import timer from "@/services/getTimer";
 import { ApiError } from "next/dist/server/api-utils";
 

@@ -1,5 +1,3 @@
-import { type loginFormSchema } from "../schemas/forms/login";
-import { type z } from "zod";
 import api from ".";
 import { handleAPIError } from "@/lib/error";
 import { AxiosError } from "axios";
@@ -15,7 +13,6 @@ export default async function timer() {
     const { data } = await api.get<GetTimeResponse>("/getTime");
     return data;
   } catch (e) {
-    
     throw handleAPIError(e);
   }
 }

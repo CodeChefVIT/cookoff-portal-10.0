@@ -1,107 +1,70 @@
 "use client";
 
 import React, { RefObject, useEffect, useMemo, useRef, useState } from "react";
-import axios from "axios";
 import useKitchenStore from "store/zustant";
+import timer from "@/services/getTimer";
+
 export interface RoundTimerProps {
   round?: string;
-}
-
-interface TimerApiResponse {
-  message: string;
-  phase: "countdown" | "active" | "paused" | "completed";
-  remainingTime: number;
-  countdownValue?: 3 | 2 | 1 | 0;
-  totalDuration: number;
-  isActive: boolean;
 }
 
 export default function RoundTimer() {
   const { round } = useKitchenStore();
 
-  const [phase, setPhase] = useState<TimerApiResponse["phase"]>("completed");
   const [remaining, setRemaining] = useState<number>(0);
-  const [countdownValue, setCountdownValue] = useState<
-    3 | 2 | 1 | 0 | undefined
-  >(undefined);
-  const [showGo, setShowGo] = useState(false);
 
   const tickIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const syncIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    let isCancelled = false;
+  // Function to get time data and calculate remaining time
+  const getRoundTime = async () => {
+    try {
+      const data = await timer();
+      const serverTime = new Date(data.server_time).getTime();
+      const endTime = new Date(data.round_end_time).getTime();
 
-    async function syncOnce() {
-      try {
-        const res = await axios.get<TimerApiResponse>("/api/countdown", {
-          params: { _ts: Date.now() },
-          headers: { "Cache-Control": "no-cache" },
-        });
-        if (isCancelled) return;
-        const data = res.data;
-        setPhase(data.phase);
-        setRemaining(data.remainingTime);
-        setCountdownValue(data.countdownValue);
-      } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.status === 404) {
-          setPhase("completed");
-          setRemaining(0);
-          setCountdownValue(undefined);
-        }
-      }
+      // Calculate remaining time in seconds
+      const remainingMs = Math.max(0, endTime - serverTime);
+      const remainingSeconds = Math.floor(remainingMs / 1000);
+
+      setRemaining(remainingSeconds);
+
+      return remainingSeconds;
+    } catch (error) {
+      console.error("Failed to get round time:", error);
+
+      setRemaining(0);
+      return 0;
     }
+  };
 
-    syncOnce();
-
-    return () => {
-      isCancelled = true;
-    };
+  // Initial sync when component mounts
+  useEffect(() => {
+    getRoundTime();
   }, []);
 
+  // Set up sync every 120 seconds and tick every second
   useEffect(() => {
-    clearIntervalSafe(pollIntervalRef);
-    const startPolling = (intervalMs: number) => {
-      pollIntervalRef.current = setInterval(async () => {
-        try {
-          const res = await axios.get<TimerApiResponse>("/api/countdown", {
-            params: { _ts: Date.now() },
-            headers: { "Cache-Control": "no-cache" },
-          });
-          const data = res.data;
-          if (phase === "countdown" && data.phase === "active") {
-            setShowGo(true);
-            setTimeout(() => setShowGo(false), 300);
-          }
-          setPhase(data.phase);
-          setRemaining(data.remainingTime);
-          setCountdownValue(data.countdownValue);
-          if (data.phase !== phase) clearIntervalSafe(pollIntervalRef);
-        } catch (error) {
-          if (axios.isAxiosError(error) && error.response?.status === 404) {
-            setPhase("completed");
-            setRemaining(0);
-            setCountdownValue(undefined);
-          }
-        }
-      }, intervalMs);
-    };
+    // Sync with server every 120 seconds
+    syncIntervalRef.current = setInterval(() => {
+      getRoundTime();
+    }, 120000); // 120 seconds = 120000ms
 
-    if (phase === "countdown") startPolling(300);
-    else if (phase === "active") startPolling(1000);
-    else if (phase === "paused") startPolling(1000);
-    else if (phase === "completed") startPolling(2000);
-    return () => clearIntervalSafe(pollIntervalRef);
-  }, [phase]);
-
-  useEffect(() => {
-    clearIntervalSafe(tickIntervalRef);
-    if (phase !== "active") return;
+    // Start client-side countdown
     tickIntervalRef.current = setInterval(() => {
-      setRemaining((prev) => (prev > 0 ? prev - 1 : 0));
+      setRemaining((prev) => {
+        if (prev <= 0) {
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
-    return () => clearIntervalSafe(tickIntervalRef);
-  }, [phase]);
+
+    return () => {
+      clearIntervalSafe(syncIntervalRef);
+      clearIntervalSafe(tickIntervalRef);
+    };
+  }, []);
 
   const formatted = useMemo(
     () => formatHMS(Math.max(0, Math.ceil(remaining))),
@@ -115,19 +78,9 @@ export default function RoundTimer() {
       </div>
 
       <div className="flex-1 h-full flex items-center justify-center w-fit rounded-r-lg px-3 min-w-[130px]">
-        {showGo ? (
-          <span className="text-[22px] text-[#1BA94C] tracking-widest text-center">
-            GO!
-          </span>
-        ) : phase === "countdown" && countdownValue !== undefined ? (
-          <span className="text-[22px] text-[#1BA94C] tracking-widest text-center">
-            {countdownValue}
-          </span>
-        ) : (
-          <span className="text-[20px] text-[#1BA94C] tracking-widest text-center">
-            {formatted}
-          </span>
-        )}
+        <span className="text-[20px] text-[#1BA94C] tracking-widest text-center">
+          {formatted}
+        </span>
       </div>
     </div>
   );
