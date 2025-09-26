@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 export default function Header() {
 
   const icon = "/icon.avif";
+
   const dashboardIcon = "/dashboard.svg";
   const pathname = usePathname();
     const router = useRouter();
