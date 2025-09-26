@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
+import api from '@/services';
 
 interface SignupFormData {
   email: string;
@@ -76,7 +77,7 @@ export default function SignupPage() {
         shut_up: "soham-op"
       };
 
-      const response = await axios.post('https://kabutar.codechefvit.com/signup', payload, {
+      const response = await api.post('/signup', payload, {
         headers: {
           'Content-Type': 'application/json'
         }
