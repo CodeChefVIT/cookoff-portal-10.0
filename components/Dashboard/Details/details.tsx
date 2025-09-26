@@ -15,7 +15,6 @@ const DetailsCard = ({
   current_round: number | undefined;
   loading: boolean;
 }) => {
-  const setRound = useKitchenStore((state) => state.setRound);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -62,7 +61,7 @@ const DetailsCard = ({
     );
   }
 
-  if (!current_round) {
+  if (current_round == undefined) {
     return (
       <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md p-6 text-center">
         Failed to load details
