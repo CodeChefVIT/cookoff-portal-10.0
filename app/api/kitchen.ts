@@ -89,3 +89,37 @@ export async function submitCode(
     throw error;
   }
 }
+
+interface TestCaseResult {
+  id: string;
+  runtime: number;
+  memory: number;
+  status: string;
+  description: string;
+  expected_output: string;
+}
+
+interface SubmissionResult {
+  id: string;
+  question_id: string;
+  passed: number;
+  failed: number;
+  runtime: number;
+  memory: number;
+  submission_time: string;
+  description: string;
+  testcases: TestCaseResult[];
+}
+
+export async function getSubmissionResult(
+  submission_id: string
+): Promise<SubmissionResult> {
+  try {
+    const response = await api.get<SubmissionResult>(`/result/${submission_id}`);
+    console.log("Submission result:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting submission result:", error);
+    throw error;
+  }
+}

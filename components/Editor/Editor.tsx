@@ -13,7 +13,7 @@ import useEditorState from "store/zustant";
 import * as navigation from "next/navigation";
 import { Language } from "@/lib/languages";
 import axios from "axios";
-import { getTestCasesAfterRun } from "../../app/api/kitchen";
+import { getTestCasesAfterRun, getSubmissionResult } from "../../app/api/kitchen";
 import { MdFullscreen } from "react-icons/md";
 import { MdFullscreenExit } from "react-icons/md";
 import { submitCode } from "@/api/kitchen";
@@ -214,7 +214,7 @@ export default function Editor({
       return;
     }
 
-    const toastId = toast.loading("Submitting code...");
+    const submissionToastId = toast.loading("Submitting code...");
 
     try {
       console.log("Submitting code:", code);
@@ -228,12 +228,63 @@ export default function Editor({
       console.log("Submit code response:", response);
 
       toast.success(
-        `Code submitted successfully! Submission ID: ${response.submission_id}`,
-        { id: toastId }
+        `Code submitted successfully! Getting results...`,
+        { id: submissionToastId }
       );
+
+      // Now fetch the submission results
+      const resultToastId = toast.loading("Fetching submission results...");
+
+      try {
+        const submissionResult = await getSubmissionResult(response.submission_id);
+        console.log("Submission result:", submissionResult);
+
+        const { setTestResults, setCompilerDetails, testCases: originalTestCases } = useEditorState.getState();
+
+        // Transform submission results to match the existing TestCase format
+        const transformedResults = submissionResult.testcases.map((testcase, index) => {
+          const originalTestCase = originalTestCases[index];
+          return {
+            id: testcase.id,
+            input: originalTestCase?.Input || "",
+            output: testcase.status === "Accepted" 
+              ? testcase.expected_output 
+              : `Status: ${testcase.status}\nDescription: ${testcase.description}`, // Show status info for failed cases
+            expected_output: testcase.expected_output,
+            hidden: originalTestCase?.Hidden || false,
+            runtime: testcase.runtime,
+            memory: testcase.memory,
+            question_id: selectedQuestionId,
+            stderr: testcase.status !== "Accepted" ? testcase.description : undefined,
+            statusDescription: `Test case ${index + 1}: ${testcase.description}`,
+          };
+        });
+
+        console.log("Transformed results for submission:", transformedResults);
+        setTestResults(transformedResults);
+
+        const successMessage = `Submission completed: ${submissionResult.passed}/${submissionResult.passed + submissionResult.failed} test cases passed`;
+        
+        if (submissionResult.failed > 0) {
+          toast.error(successMessage, { id: resultToastId });
+        } else {
+          toast.success(successMessage, { id: resultToastId });
+        }
+
+        // Set overall compiler details with submission summary
+        setCompilerDetails({
+          isCompileSuccess: submissionResult.failed === 0,
+          message: successMessage,
+        });
+
+      } catch (resultError) {
+        console.error("Error fetching submission result:", resultError);
+        toast.error("Submission successful, but failed to fetch results", { id: resultToastId });
+      }
+
     } catch (error) {
       console.error("Error submitting code:", error);
-      toast.error("Failed to submit code. Please try again.", { id: toastId });
+      toast.error("Failed to submit code. Please try again.", { id: submissionToastId });
     }
   };
 

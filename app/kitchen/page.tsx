@@ -46,9 +46,16 @@ export default function Kitchen() {
     const testCasesForQuestion = testResults.filter(
       (tc) => tc && tc.question_id === selectedQuestionId
     );
+    console.log("Kitchen: testResults", testResults);
+    console.log("Kitchen: selectedQuestionId", selectedQuestionId);
+    console.log("Kitchen: testCasesForQuestion", testCasesForQuestion);
+    
     if (testCasesForQuestion.length > 0) {
+      console.log("Kitchen: Using testResults for display");
       return testCasesForQuestion;
     }
+    
+    console.log("Kitchen: Using original testCases for display");
     return testCases
       .filter((tc) => tc && tc.QuestionID=== selectedQuestionId)
       .map(
