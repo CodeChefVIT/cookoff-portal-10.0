@@ -56,14 +56,14 @@ export default function Header() {
         </span>
       </h1>
 
-      <div className="flex items-center gap-4 ml-auto">
+      <div className="flex items-center gap-0 ml-auto">
         <NotificationButton />
         {pathname === "/kitchen" && (
           <button
             onClick={handleDashboardClick}
-            className="focus:outline-none !bg-transparent"
+            className="focus:outline-none !bg-transparent transition-colors group"
           >
-            <Home className="h-5 w-5 md:h-6 md:w-6 text-[#B7AB98]"/>
+            <Home className="h-6 w-6 md:h-8 md:w-8 text-[#B7AB98] group-hover:text-[#32CA67] transition-colors"/>
           </button>
         )}
       </div>

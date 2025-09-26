@@ -86,9 +86,9 @@ export default function NotificationButton() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={handleToggleDropdown}
-        className="relative p-2 rounded-full hover:bg-[#1c1c1c] transition"
+        className="relative p-2 rounded-full !bg-transparent transition-colors group"
       >
-        <FaBell className="text-2xl md:text-3xl text-gray-300" />
+        <FaBell className="text-2xl md:text-3xl text-[#B7AB98] group-hover:text-[#32CA67] transition-colors" />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 border-2 border-[#0b0b0b] rounded-full">
             {unreadCount}
