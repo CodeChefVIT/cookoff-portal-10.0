@@ -8,11 +8,12 @@ interface TimelineStep {
   progress: number;
 }
 
+const DEFAULT_LABELS = ["Start", "Round 0", "Round 1", "Round 2", "Round 3"];
+
 export default function Timeline() {
-  const defaultLabels = ["Start", "Round 0", "Round 1", "Round 2", "Round 3"];
 
   const [steps, setSteps] = useState<TimelineStep[]>(
-    defaultLabels.map((label) => ({ label, progress: 0 }))
+    DEFAULT_LABELS.map((label: string) => ({ label, progress: 0 }))
   );
 
   useEffect(() => {
@@ -40,13 +41,14 @@ export default function Timeline() {
           );
         }}
 
-        catch(timeErr: any){
+        catch(timeErr: unknown){
+          console.error('Timeline error:', timeErr);
           currentRoundProgress=50;
         }
 
         //update steps
         setSteps(
-          defaultLabels.map((label, idx) => {
+          DEFAULT_LABELS.map((label: string, idx: number) => {
             if (idx < currentRound) {
               return { label, progress: 100 }; // completed rounds
             } else if (idx === currentRound) {
