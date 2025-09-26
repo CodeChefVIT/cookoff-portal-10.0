@@ -12,14 +12,22 @@ import {
 } from "@/lib/controllers/save-code.controller";
 
 export async function POST(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
   const body: SaveCodeRequest = await request.json();
 
-  const token = request.cookies.get("refresh_token")?.value;
-  if (!token) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  // Get email from query params if not in body
+  if (!body.email) {
+    const emailParam = searchParams.get("email");
+    if (emailParam) {
+      body.email = emailParam;
+    }
   }
 
-  const result = await saveCodeController(body, token);
+  if (!body.email) {
+    return NextResponse.json({ message: "Email is required" }, { status: 400 });
+  }
+
+  const result = await saveCodeController(body);
 
   if (!result.success) {
     return NextResponse.json(
@@ -39,26 +47,24 @@ export async function GET(request: NextRequest) {
 
   const codeId = searchParams.get("id");
   const questionId = searchParams.get("questionId");
+  const email = searchParams.get("email");
 
-  if (!codeId && !questionId) {
+  if (!questionId) {
     return NextResponse.json(
-      { message: "id or questionId is required" },
+      { message: "questionId is required" },
       { status: 400 }
     );
   }
 
-  const token = request.cookies.get("refresh_token")?.value;
-  if (!token) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  if (!email) {
+    return NextResponse.json({ message: "Email is required" }, { status: 400 });
   }
 
-  const result = await getCodeController(
-    {
-      id: codeId ?? undefined,
-      questionId: questionId ?? undefined,
-    },
-    token
-  );
+  const result = await getCodeController({
+    id: codeId ?? undefined,
+    questionId: questionId ?? undefined,
+    email,
+  });
 
   if (!result.success) {
     return NextResponse.json(
@@ -71,14 +77,22 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
   const body: UpdateCodeRequest = await request.json();
 
-  const token = request.cookies.get("refresh_token")?.value;
-  if (!token) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  // Get email from query params if not in body
+  if (!body.email) {
+    const emailParam = searchParams.get("email");
+    if (emailParam) {
+      body.email = emailParam;
+    }
   }
 
-  const result = await updateCodeController(body, token);
+  if (!body.email) {
+    return NextResponse.json({ message: "Email is required" }, { status: 400 });
+  }
+
+  const result = await updateCodeController(body);
 
   if (!result.success) {
     return NextResponse.json(
@@ -94,14 +108,22 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
   const body: DeleteCodeRequest = await request.json();
 
-  const token = request.cookies.get("refresh_token")?.value;
-  if (!token) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  // Get email from query params if not in body
+  if (!body.email) {
+    const emailParam = searchParams.get("email");
+    if (emailParam) {
+      body.email = emailParam;
+    }
   }
 
-  const result = await deleteCodeController(body, token);
+  if (!body.email) {
+    return NextResponse.json({ message: "Email is required" }, { status: 400 });
+  }
+
+  const result = await deleteCodeController(body);
 
   if (!result.success) {
     return NextResponse.json(
