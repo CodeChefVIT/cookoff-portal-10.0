@@ -8,38 +8,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "react-hot-toast";
 import timer from "@/services/getTimer";
 
-interface DetailsCardProps {
-  currentRound: string;
-}
-
-const DetailsCard: React.FC = () => {
-  const [details, setDetails] = useState<DetailsCardProps | null>(null);
-  const [loading, setLoading] = useState(true);
+const DetailsCard = ({
+  current_round,
+  loading,
+}: {
+  current_round: number | undefined;
+  loading: boolean;
+}) => {
   const setRound = useKitchenStore((state) => state.setRound);
 
   const router = useRouter();
   const pathname = usePathname();
-  useEffect(() => {
-    const fetchDetails = async () => {
-      try {
-        const res = await api.get("/dashboard");
-        const data = res.data.data;
-
-        const mapped: DetailsCardProps = {
-          currentRound: data.current_round,
-        };
-
-        setRound(Number(mapped.currentRound));
-        setDetails(mapped);
-      } catch (err) {
-        console.error("Failed to fetch details:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDetails();
-  }, [setRound]);
 
   if (loading) {
     return (
@@ -83,7 +62,7 @@ const DetailsCard: React.FC = () => {
     );
   }
 
-  if (!details) {
+  if (!current_round) {
     return (
       <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md p-6 text-center">
         Failed to load details
@@ -108,7 +87,7 @@ const DetailsCard: React.FC = () => {
             Current Round
           </p>
           <p className="text-2xl font-normal font-brunoace text-green-500">
-            {details.currentRound}
+            {current_round}
           </p>
         </div>
 

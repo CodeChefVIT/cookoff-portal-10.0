@@ -3,62 +3,33 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import api from "@/services/index";
 import { useRouter } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton";
+import { DashboardResponse } from "@/schemas/api/index";
 
-interface ProfileCardProps {
-  name: string;
-  email: string;
-  totalScore: number;
-  maxScore: number;
-}
 
-const ProfileCard: React.FC = () => {
-  const [profile, setProfile] = useState<ProfileCardProps | null>(null);
-  const [loading, setLoading] = useState(true);
-
-const router = useRouter();
+const ProfileCard = ({ data, loading }: { data: DashboardResponse | undefined, loading: boolean }) => {
+  const router = useRouter();
 
   const handleLogout = async () => {
     try {
-      await api.post("/logout"); // call logout endpoint
-      router.push("/");           // navigate to home page
+      await api.post("/logout");
+      router.push("/");
     } catch (err) {
       console.error("Logout failed:", err);
     }
   };
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        
-        const res = await api.get("/dashboard");
-        const data = res.data.data;
-        const mapped: ProfileCardProps = {
-          name: data.username,
-          email: data.email,
-          totalScore:data.round_scores[1]+data.round_scores[2]+data.round_scores[3],
-          maxScore: 180, // TODO: max score???
-        };
+  const max_score = 180;
 
-        setProfile(mapped);
-      } catch (err) {
-        console.error("Failed to fetch profile:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-
-   if (loading) {
+  if (loading) {
     return (
       <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
         {/* Header strip */}
-      <div className="bg-neutral-800 text-center py-2">
-        <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7]">PROFILE</h2>
-      </div>
+        <div className="bg-neutral-800 text-center py-2">
+          <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7]">
+            PROFILE
+          </h2>
+        </div>
 
         {/* Body */}
         <div className="p-4">
@@ -98,8 +69,7 @@ const router = useRouter();
     );
   }
 
-
-  if (!profile) {
+  if (!data) {
     return (
       <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md p-6 text-center">
         Failed to load profile
@@ -107,16 +77,19 @@ const router = useRouter();
     );
   }
 
-
-
-  
-  const progress = (profile.totalScore / profile.maxScore) * 100;
+  const total_score = data.round_scores.reduce(
+    (accumulator, currentValue) => accumulator + currentValue,
+    0
+  );
+  const progress = (total_score / max_score) * 100;
 
   return (
     <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
       {/* Header strip */}
       <div className="bg-neutral-800 text-center py-2">
-        <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7]">PROFILE</h2>
+        <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7]">
+          PROFILE
+        </h2>
       </div>
 
       {/* Body */}
@@ -131,58 +104,66 @@ const router = useRouter();
             draggable={false}
             unselectable="on"
             priority
-           />
+          />
         </div>
 
         {/* Info */}
         <div className="mt-4 mb-2">
-          <p className="justify-start text-sm font-normal font-inter text-[#c5bba7]">Name</p>
-          <p className="justify-start text-white text-lg font-normal font-inter">{profile.name}</p>
+          <p className="justify-start text-sm font-normal font-inter text-[#c5bba7]">
+            Name
+          </p>
+          <p className="justify-start text-white text-lg font-normal font-inter">
+            {data.username}
+          </p>
         </div>
 
         <div className="mt-2 mb-4">
-          <p className="justify-start text-sm font-normal font-inter text-[#c5bba7]">Email</p>
-          <p className="justify-start text-white text-lg font-normal font-inter truncate">{profile.email}</p>
+          <p className="justify-start text-sm font-normal font-inter text-[#c5bba7]">
+            Email
+          </p>
+          <p className="justify-start text-white text-lg font-normal font-inter truncate">
+            {data.email}
+          </p>
         </div>
 
         {/* Score */}
-  <div className="mt-12 mb-4">
-  <p className="text-xl text-[#c5bba7] text-center font-brunoace mb-1">
-    Total Score
-  </p>
+        <div className="mt-12 mb-4">
+          <p className="text-xl text-[#c5bba7] text-center font-brunoace mb-1">
+            Total Score
+          </p>
 
-  {/* Progress container */}
-  <div className="mt-2 w-full bg-zinc-300 rounded-full h-5 relative overflow-hidden">
-    {/* Green progress bar */}
-    <div
-      className="bg-green-500 h-5 absolute top-0 left-0"
-      style={{ width: `${progress}%` }}
-    ></div>
+          {/* Progress container */}
+          <div className="mt-2 w-full bg-zinc-300 rounded-full h-5 relative overflow-hidden">
+            {/* Green progress bar */}
+            <div
+              className="bg-green-500 h-5 absolute top-0 left-0"
+              style={{ width: `${progress}%` }}
+            ></div>
 
-    {/* Score text (overlaid, centered across full bar) */}
-    <div className="absolute inset-0 flex items-center justify-center">
-      <span className="text-neutral-900 text-lg font-bold font-inter">
-        {profile.totalScore}/{profile.maxScore}
-      </span>
-    </div>
-  </div>
-</div>
-
+            {/* Score text (overlaid, centered across full bar) */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-neutral-900 text-lg font-bold font-inter">
+                {total_score}/{max_score}
+              </span>
+            </div>
+          </div>
+        </div>
 
         {/* Log Out Button */}
         <div className="flex justify-center mt-16 mb-8">
-          <button 
-           onClick={handleLogout}
-            className="!border-2 !border-red-500 !text-[#c5bba7] font-nulshock !bg-neutral-900 !px-2 !py-2 text-sm rounded-md !hover:bg-red-500 hover:text-white transition flex items-center gap-1">
+          <button
+            onClick={handleLogout}
+            className="!border-2 !border-red-500 !text-[#c5bba7] font-nulshock !bg-neutral-900 !px-2 !py-2 text-sm rounded-md !hover:bg-red-500 hover:text-white transition flex items-center gap-1"
+          >
             <Image
-            src="/logout.svg"
-            alt="close"
-            width={18}
-            height={18}
-            draggable={false}
-            unselectable="on"
-            priority
-           />
+              src="/logout.svg"
+              alt="close"
+              width={18}
+              height={18}
+              draggable={false}
+              unselectable="on"
+              priority
+            />
             LOG OUT
           </button>
         </div>

@@ -1,11 +1,8 @@
-import api from "./index";
+import { DashboardResponse } from "@/schemas/api/index";
 import { RoundStats } from "@/components/Dashboard/Statistics/statistics";
 
-export async function getRounds(): Promise<RoundStats[]> {
-  const res = await api.get("/dashboard");
-  const data = res.data.data;
+export function getRounds({ data }: { data: DashboardResponse }): RoundStats[] {
   const rounds: RoundStats[] = [];
-
   for (let i = 0; i <= 3; i++) {
     const completed = data.questions_completed[i] ?? 0;
     const incomplete = data.questions_not_completed[i] ?? 0;
