@@ -47,6 +47,7 @@ export default function Kitchen() {
   }, [setQuestions, setTestCases]);
   const [testCasesPanelSize, setTestCasesPanelSize] = useState(20);
   const [sidebarWidth, setSidebarWidth] = useState(50);
+  const [mobileActiveTab, setMobileActiveTab] = useState<'question' | 'editor' | 'testcases'>('question');
   const panelRef = useRef<ImperativePanelHandle | null>(null);
 
     const selectedTestcases = useMemo(() => {
@@ -127,53 +128,73 @@ export default function Kitchen() {
   return (
     <div className="flex flex-col h-screen bg-[#070E0A] text-gray-200 overflow-hidden">
       <Header />
-      <ResizablePanelGroup direction="horizontal" className="flex-grow">
-        <ResizablePanel
-          ref={panelRef}
-          defaultSize={50}
-          minSize={4}
-          maxSize={50}
-          onResize={(size) => setSidebarWidth(size)}
-        >
-          <div className="h-full overflow-hidden">
-            {sidebarWidth > 10 ? (
-              <div className="grid grid-cols-1 gap-6 lg:gap-10">
-                <div className="-mt-2 py-4 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
+      
+      {/* Mobile Layout (< md) */}
+      <div className="md:hidden flex-grow flex flex-col">
+
+        {/* Mobile Content - Tabs */}
+        <div className="flex-grow flex flex-col">
+          {/* Tab Navigation */}
+          <div className="flex border-b border-gray-700 bg-[#0A0F0B]">
+            <button 
+              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
+                mobileActiveTab === 'question' 
+                  ? 'text-white border-b-2 border-green-500' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+              onClick={() => setMobileActiveTab('question')}
+            >
+              Question
+            </button>
+            <button 
+              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
+                mobileActiveTab === 'editor' 
+                  ? 'text-white border-b-2 border-green-500' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+              onClick={() => setMobileActiveTab('editor')}
+            >
+              Editor
+            </button>
+            <button 
+              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
+                mobileActiveTab === 'testcases' 
+                  ? 'text-white border-b-2 border-green-500' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+              onClick={() => setMobileActiveTab('testcases')}
+            >
+              Test Cases
+            </button>
+          </div>
+          
+          {/* Tab Content */}
+          <div className="flex-grow overflow-hidden">
+            {mobileActiveTab === 'question' && (
+              <div className="h-full flex flex-col">
+                {/* Question Selector */}
+                <div className="flex overflow-x-auto px-3 py-2 bg-[#0F1310] border-b border-gray-700">
+                  <div className="flex gap-2 min-w-max">
+                    {questions.map((q, index) => (
+                      <TabButton
+                        key={q.ID}
+                        id={q.ID}
+                        newId={index}
+                        active={selectedQuestionId === q.ID}
+                        onClick={() => handleSetQuestionID(q.ID)}
+                      />
+                    ))}
+                  </div>
+                </div>
+                {/* Question Content */}
+                <div className="flex-grow overflow-hidden p-3">
                   <QuestionWindow />
                 </div>
               </div>
-            ) : (
-              <div className="flex flex-col items-center gap-20 pt-14">
-                {questions.map((q, index) => (
-                  <div key={q.ID} className="rotate-90">
-                    <TabButton
-                      id={q.ID}
-                      newId={index }
-                      active={selectedQuestionId === q.ID}
-                      onClick={() => {
-                        handleSetQuestionID(q.ID);
-                        if (panelRef.current) {
-                          panelRef.current.resize(50);
-                        }
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
             )}
-          </div>
-        </ResizablePanel>
-
-        <ResizableHandle withHandle />
-
-        <ResizablePanel defaultSize={70}>
-          <ResizablePanelGroup
-            direction="vertical"
-            className="translate-y-4"
-            defaultValue={80}
-          >
-            <ResizablePanel defaultSize={75} className="pb-4 pl-4">
-              <div className="h-full flex flex-col gap-2 mt-0">
+            
+            {mobileActiveTab === 'editor' && (
+              <div className="h-full p-3">
                 <Editor
                   languages={languages}
                   round="round 0"
@@ -181,27 +202,99 @@ export default function Kitchen() {
                   fullScreen={fullScreenEditor}
                 />
               </div>
-            </ResizablePanel>
-
-            <ResizableHandle withHandle />
-
-            <ResizablePanel
-              defaultSize={20}
-              maxSize={60}
-              className="pt-4 pl-4"
-              onResize={(size) => setTestCasesPanelSize(size)}
-            >
-              <div className="bg-[#131414]">
+            )}
+            
+            {mobileActiveTab === 'testcases' && (
+              <div className="h-full p-3 bg-[#131414]">
                 <TestCases
                   results={selectedTestcases}
                   compilerDetails={compilerDetails || defaultCompilerDetails}
-                  panelSize={testCasesPanelSize}
+                  panelSize={100}
                 />
               </div>
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        </ResizablePanel>
-      </ResizablePanelGroup>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop Layout (>= md) */}
+      <div className="hidden md:flex flex-grow">
+        <ResizablePanelGroup direction="horizontal" className="flex-grow">
+          <ResizablePanel
+            ref={panelRef}
+            defaultSize={50}
+            minSize={4}
+            maxSize={50}
+            onResize={(size) => setSidebarWidth(size)}
+          >
+            <div className="h-full overflow-hidden">
+              {sidebarWidth > 10 ? (
+                <div className="grid grid-cols-1 gap-4 lg:gap-6">
+                  <div className="-mt-2 py-3 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
+                    <QuestionWindow />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-12 lg:gap-20 pt-8 lg:pt-14">
+                  {questions.map((q, index) => (
+                    <div key={q.ID} className="rotate-90">
+                      <TabButton
+                        id={q.ID}
+                        newId={index}
+                        active={selectedQuestionId === q.ID}
+                        onClick={() => {
+                          handleSetQuestionID(q.ID);
+                          if (panelRef.current) {
+                            panelRef.current.resize(50);
+                          }
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </ResizablePanel>
+
+          <ResizableHandle withHandle />
+
+          <ResizablePanel defaultSize={70}>
+            <ResizablePanelGroup
+              direction="vertical"
+              className="translate-y-2 lg:translate-y-4"
+              defaultValue={80}
+            >
+              <ResizablePanel defaultSize={75} className="pb-2 lg:pb-4 pl-2 lg:pl-4">
+                <div className="h-full flex flex-col gap-2 mt-0">
+                  <Editor
+                    languages={languages}
+                    round="round 0"
+                    setfullScreen={handleSetFullScreenEditor}
+                    fullScreen={fullScreenEditor}
+                  />
+                </div>
+              </ResizablePanel>
+
+              <ResizableHandle withHandle />
+
+              <ResizablePanel
+                defaultSize={20}
+                maxSize={60}
+                className="pt-2 lg:pt-4 pl-2 lg:pl-4"
+                onResize={(size) => setTestCasesPanelSize(size)}
+              >
+                <div className="bg-[#131414] rounded lg:rounded-lg">
+                  <TestCases
+                    results={selectedTestcases}
+                    compilerDetails={compilerDetails || defaultCompilerDetails}
+                    panelSize={testCasesPanelSize}
+                  />
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </div>
     </div>
   );
 }
