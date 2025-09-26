@@ -2,14 +2,13 @@ import { handleAPIError } from "@/lib/error";
 import api from "@/services";
 
 export interface TestcaseFromAPI {
-  id: string;
-  input: string;
-  output?: string;
-  expected_output: string;
-  hidden: boolean;
-  runtime: number;
-  memory: number;
-  question_id: string;
+  ID: string;
+  Input: string;
+  ExpectedOutput: string;
+  Hidden: boolean;
+  Runtime: number;
+  Memory: number;
+  QuestionID: string;
 }
 
 export type Question = {

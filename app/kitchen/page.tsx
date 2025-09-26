@@ -15,8 +15,9 @@ import { getKitchenData } from "../api/kitchen";
 import Header from "@/components/Header/Header";
 import TabButton from "@/components/ui/TabButton";
 import { ImperativePanelHandle } from "react-resizable-panels";
+import toast from "react-hot-toast";
 
-export default function UIPage() {
+export default function Kitchen() {
   const {
     selectedQuestionId,
     fullScreenEditor,
@@ -35,19 +36,19 @@ export default function UIPage() {
     const fetchData = async () => {
       const { questions, testcases } = await getKitchenData();
       setQuestions(questions);
+      console.log("questions;", questions);
       setTestCases(testcases);
-      console.log("testcases;", testcases);
     };
     fetchData();
   }, [setQuestions, setTestCases]);
   const [testCasesPanelSize, setTestCasesPanelSize] = useState(20);
 
   const selectedTestcases = useMemo(() => {
-    const resultsForQuestion = testResults.filter(
+    const testCasesForQuestion = testResults.filter(
       (tc) => tc && tc.question_id === selectedQuestionId
     );
-    if (resultsForQuestion.length > 0) {
-      return resultsForQuestion;
+    if (testCasesForQuestion.length > 0) {
+      return testCasesForQuestion;
     }
     return testCases
       .filter((tc) => tc && tc.question_id === selectedQuestionId)
@@ -69,7 +70,7 @@ export default function UIPage() {
     isCompileSuccess: false,
     message: "Compilation Successful !!",
   };
-
+  
   const languages = Object.values(LANGUAGES);
 
   const handleSetFullScreenEditor: React.Dispatch<

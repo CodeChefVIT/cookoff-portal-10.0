@@ -9,29 +9,18 @@ export async function getKitchenData(): Promise<{
 
   const testcases = questions.flatMap((q) => {
     if (!q.testcases) return [];
-
     return q.testcases.map((tc) => ({
-      id: tc.id,
-      input: tc.input,
-      expected_output: tc.expected_output,
-      hidden: tc.hidden,
-      runtime: tc.runtime,
-      memory: tc.memory,
-      question_id: tc.question_id,
+      ID: tc.ID,
+      Input: tc.Input,
+      ExpectedOutput: tc.ExpectedOutput,
+      Hidden: tc.Hidden,
+      Runtime: tc.Runtime,
+      Memory: tc.Memory,
+      QuestionID: tc.QuestionID,
     }));
   });
   return { questions, testcases };
 }
-type testCasesPropsNew = {
-  ID: string;
-  Input: string;
-  output?: string;
-  ExpectedOutput: string;
-  Hidden: boolean;
-  Runtime: number;
-  memory: number;
-  QuestionID: string;
-};
 interface RunCodeRequest {
   source_code: string;
   language_id: number;
