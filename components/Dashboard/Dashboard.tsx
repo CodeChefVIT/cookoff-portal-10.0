@@ -54,7 +54,7 @@ export default function Dashboard() {
 
           {/* Statistics */}
           <div className="flex-1 min-w-[300px] lg:min-w-[650px] flex justify-center">
-            <Statistics data={data}/>{" "}
+            <Statistics data={data} loading={loading} />
           </div>
 
           {/* Details */}
@@ -82,7 +82,7 @@ export default function Dashboard() {
 
           {/* Statistics */}
           <div className="flex-1 min-w-[300px] lg:min-w-[650px] flex justify-center">
-            <Statistics data={data} />
+            <Statistics loading={loading} data={data} />
           </div>
 
           {/* Details */}
