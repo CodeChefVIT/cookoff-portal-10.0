@@ -125,7 +125,7 @@ export default function Kitchen() {
   return (
     <div className="relative bg-[#070E0A] max-h-screen text-gray-200 overflow-hidden">
       <ResizablePanelGroup direction="horizontal" className="">
-        <ResizablePanel defaultSize={50}>
+        <ResizablePanel defaultSize={50} maxSize={50}>
           <div className="grid grid-cols-1 gap-6 lg:gap-10">
             <div className="-mt-2 py-4 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
               <QuestionWindow />

@@ -36,7 +36,7 @@ export default function LanguageSelector({
       </button>
 
       {open && (
-        <div className="absolute mt-2 right-0 w-full min-w-[300px]  bg-white rounded-xl shadow-lg z-50 p-4 flex flex-col sm:flex-row sm:gap-4 flex-wrap sm:flex-nowrap">
+        <div className="absolute mt-2 right-0 w-full min-w-[300px]  bg-white rounded-xl shadow-lg  p-4 flex flex-col sm:flex-row sm:gap-4 flex-wrap sm:flex-nowrap">
           <div className="flex-1 flex flex-col gap-2 sm:border-r sm:border-gray-300 pr-0 sm:pr-4">
             {leftColumn.map((lang) => {
               const isSelected = lang.id === selectedLanguage.id;
