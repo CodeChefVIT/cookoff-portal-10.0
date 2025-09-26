@@ -57,7 +57,6 @@ export default function Kitchen() {
           ({
             id: tc.ID,
             input: tc.Input,
-            output: tc.Output || "",
             expected_output: tc.ExpectedOutput,
             hidden: tc.Hidden,
             runtime: tc.Runtime || 0,

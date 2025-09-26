@@ -36,9 +36,14 @@ export default function Editor({
     selectedQuestionId,
     codeByQuestion,
     setCodeForQuestion,
+    setLanguageForQuestion,
+    getLanguageForQuestion,
   } = useEditorState();
 
-  const placeholder = `${selectedLanguage.commentSymbol} Write your ${selectedLanguage.name} solution here`;
+  // Get the language for the current question
+  const questionLanguage = selectedQuestionId ? getLanguageForQuestion(selectedQuestionId) : selectedLanguage;
+
+  const placeholder = `${questionLanguage.commentSymbol} Write your ${questionLanguage.name} solution here`;
 
   const router = navigation.useRouter();
   const [code, setCode] = useState("");
@@ -49,7 +54,12 @@ export default function Editor({
   const editorRef = useRef<EditorView | null>(null);
 
   const handleLanguageChange = (language: Language) => {
-    setSelectedLanguage(language);
+    // Set language for current question instead of globally
+    if (selectedQuestionId) {
+      setLanguageForQuestion(selectedQuestionId, language);
+    } else {
+      setSelectedLanguage(language);
+    }
 
     // Use template instead of placeholder
     const newCode = language.template;
@@ -121,7 +131,7 @@ export default function Editor({
 
       const response = await getTestCasesAfterRun(
         code,
-        selectedLanguage.id,
+        questionLanguage.id,
         selectedQuestionId
       );
 
@@ -201,7 +211,7 @@ export default function Editor({
 
       const response = await submitCode(
         code,
-        selectedLanguage.id,
+        questionLanguage.id,
         selectedQuestionId
       );
 
@@ -228,7 +238,7 @@ export default function Editor({
         setCode(cachedState.code);
         return;
       } else {
-        setCode(selectedLanguage.template);
+        setCode(questionLanguage.template);
       }
 
       try {
@@ -241,12 +251,12 @@ export default function Editor({
             setCode(data.code);
             setCodeForQuestion(selectedQuestionId, data.code);
           } else {
-            setCode(selectedLanguage.template);
+            setCode(questionLanguage.template);
             // Set cursor position for new template
             setTimeout(() => {
-              if (editorRef.current && editorRef.current.dispatch && selectedLanguage.cursorPosition) {
+              if (editorRef.current && editorRef.current.dispatch && questionLanguage.cursorPosition) {
                 try {
-                  const { line, ch } = selectedLanguage.cursorPosition;
+                  const { line, ch } = questionLanguage.cursorPosition;
                   const doc = editorRef.current.state.doc;
                   
                   // Ensure line number is within bounds
@@ -266,12 +276,12 @@ export default function Editor({
             }, 200);
           }
         } else {
-          setCode(selectedLanguage.template);
+          setCode(questionLanguage.template);
           // Set cursor position for new template
           setTimeout(() => {
-            if (editorRef.current && editorRef.current.dispatch && selectedLanguage.cursorPosition) {
+            if (editorRef.current && editorRef.current.dispatch && questionLanguage.cursorPosition) {
               try {
-                const { line, ch } = selectedLanguage.cursorPosition;
+                const { line, ch } = questionLanguage.cursorPosition;
                 const doc = editorRef.current.state.doc;
                 
                 // Ensure line number is within bounds
@@ -293,7 +303,7 @@ export default function Editor({
       } catch (err: unknown) {
         if (axios.isAxiosError(err) && err.response?.status === 401) {
           console.log("User not authenticated - skipping code fetch");
-          setCode(selectedLanguage.template);
+          setCode(questionLanguage.template);
         } else {
           console.error("Error fetching saved code:", err);
         }
@@ -305,17 +315,18 @@ export default function Editor({
     selectedQuestionId,
     codeByQuestion,
     setCodeForQuestion,
-    selectedLanguage,
+    questionLanguage.template,
+    questionLanguage.cursorPosition,
   ]);
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      if (code.trim() === "" || code === selectedLanguage.template) return;
+      if (code.trim() === "" || code === questionLanguage.template) return;
 
       const payload = {
         questionId: selectedQuestionId,
         code,
-        language: selectedLanguage.name,
+        language: questionLanguage.name,
       };
 
       try {
@@ -330,7 +341,20 @@ export default function Editor({
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [code, selectedLanguage,selectedQuestionId]);
+  }, [code, questionLanguage.name, questionLanguage.template, selectedQuestionId]);
+
+  // Update code when question changes to show the correct template for the language
+  useEffect(() => {
+    if (selectedQuestionId) {
+      const cachedCode = codeByQuestion.find(
+        (state) => state.questionId === selectedQuestionId
+      );
+      if (!cachedCode) {
+        // No cached code for this question, use the template for this question's language
+        setCode(questionLanguage.template);
+      }
+    }
+  }, [selectedQuestionId, questionLanguage.template, codeByQuestion]);
 
   return (
     <div
@@ -345,7 +369,7 @@ export default function Editor({
         <div className="flex gap-10 items-center ">
           <LanguageSelector
             languages={languages}
-            selectedLanguage={selectedLanguage}
+            selectedLanguage={questionLanguage}
             onLanguageChange={handleLanguageChange}
           />
           {fullScreen ? (
@@ -369,10 +393,10 @@ export default function Editor({
       >
         <CodeMirror
           ref={editorRef}
-          value={code || selectedLanguage.template}
+          value={code || questionLanguage.template}
           height="100%"
           theme={oneDark}
-          extensions={[selectedLanguage.extension]}
+          extensions={[questionLanguage.extension]}
           onChange={handleChange}
         />
       </div>

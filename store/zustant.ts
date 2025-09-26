@@ -20,6 +20,11 @@ export type QuestionCode = {
   code: string;
 };
 
+export type QuestionLanguage = {
+  questionId: string;
+  language: Language;
+};
+
 export interface CompilerResult {
   isCompileSuccess: boolean;
   message: string;
@@ -30,6 +35,7 @@ interface KitchenState {
   selectedLanguage: Language;
   round: number;
   codeByQuestion: QuestionCode[];
+  languageByQuestion: QuestionLanguage[];
   questions: Question[];
   testCases: TestcaseFromAPI[];
 
@@ -45,6 +51,8 @@ interface KitchenState {
 
   setSelectedQuestionId: (id: string) => void;
   setSelectedLanguage: (language: Language) => void;
+  setLanguageForQuestion: (questionId: string, language: Language) => void;
+  getLanguageForQuestion: (questionId: string) => Language;
   setRound: (id: number) => void;
   setCodeForQuestion: (questionId: string, code: string) => void;
   setQuestions: (questions: Question[]) => void;
@@ -73,6 +81,7 @@ const initialState = {
   compilerDetails: null,
   activeCaseIndex: 0,
   codeByQuestion: [],
+  languageByQuestion: [],
   questions: [],
   testCases: [],
 };
@@ -86,6 +95,31 @@ const useKitchenStore = create<KitchenState>()(
         setSelectedQuestionId: (id) => set({ selectedQuestionId: id }),
 
         setSelectedLanguage: (language) => set({ selectedLanguage: language }),
+
+        setLanguageForQuestion: (questionId, language) =>
+          set((state) => {
+            const existing = state.languageByQuestion.find(
+              (q) => q.questionId === questionId
+            );
+            if (existing) {
+              return {
+                languageByQuestion: state.languageByQuestion.map((q) =>
+                  q.questionId === questionId ? { ...q, language } : q
+                ),
+              };
+            }
+            return {
+              languageByQuestion: [...state.languageByQuestion, { questionId, language }],
+            };
+          }),
+
+        getLanguageForQuestion: (questionId) => {
+          const state = get();
+          const found = state.languageByQuestion.find(
+            (q) => q.questionId === questionId
+          );
+          return found ? found.language : LANGUAGES.Python; // Default to Python
+        },
 
         setRound: (round) => set({ round: round }),
 
@@ -136,6 +170,7 @@ const useKitchenStore = create<KitchenState>()(
         partialize: (state) => ({
           selectedLanguage: state.selectedLanguage,
           codeByQuestion: state.codeByQuestion,
+          languageByQuestion: state.languageByQuestion,
         }),
         storage: {
           getItem: (name) => {
@@ -148,6 +183,10 @@ const useKitchenStore = create<KitchenState>()(
               state: {
                 ...state,
                 selectedLanguage: language || LANGUAGES.Python,
+                languageByQuestion: (state.languageByQuestion || []).map((q: {questionId: string, language: {name: string}}) => ({
+                  questionId: q.questionId,
+                  language: getLanguageByName(q.language.name) || LANGUAGES.Python,
+                })),
               },
             };
           },
@@ -157,6 +196,10 @@ const useKitchenStore = create<KitchenState>()(
               state: {
                 selectedLanguage: { name: state.selectedLanguage.name },
                 codeByQuestion: state.codeByQuestion,
+                languageByQuestion: state.languageByQuestion?.map((q: QuestionLanguage) => ({
+                  questionId: q.questionId,
+                  language: { name: q.language.name },
+                })) || [],
               },
               version,
             });
