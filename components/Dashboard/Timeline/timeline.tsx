@@ -2,6 +2,7 @@
 import api from "@/services/index";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import getTimer from "@/services/getTimer";
 
 interface TimelineStep {
   label: string;
@@ -11,7 +12,6 @@ interface TimelineStep {
 const DEFAULT_LABELS = ["Start", "Round 0", "Round 1", "Round 2", "Round 3"];
 
 export default function Timeline() {
-
   const [steps, setSteps] = useState<TimelineStep[]>(
     DEFAULT_LABELS.map((label: string) => ({ label, progress: 0 }))
   );
@@ -21,29 +21,28 @@ export default function Timeline() {
       let currentRoundProgress = 0;
       try {
         //current round
-      const res = await api.get("/dashboard");
-      const currentRound = Number(res.data.data.current_round);
+        const res = await api.get("/dashboard");
+        const currentRound = Number(res.data.data.current_round);
 
         //time info
-        try {const { data: timeData } = await api.get("/GetTime");
+        try {
+          const timerData = await getTimer();
 
-        const start = new Date(timeData.round_start_time).getTime();
-        const end = new Date(timeData.round_end_time).getTime();
-        const server = new Date(timeData.server_time).getTime();
+          const start = new Date(timerData.round_start_time).getTime();
+          const end = new Date(timerData.round_end_time).getTime();
+          const server = new Date(timerData.server_time).getTime();
 
-        
-        if (!isNaN(start) && !isNaN(end) && !isNaN(server) && end > start) {
-          const totalTime = end - start;
-          const elapsedTime = server - start;
-          currentRoundProgress = Math.max(
-            0,
-            Math.min(100, (elapsedTime / totalTime) * 100)
-          );
-        }}
-
-        catch(timeErr: unknown){
-          console.error('Timeline error:', timeErr);
-          currentRoundProgress=50;
+          if (!isNaN(start) && !isNaN(end) && !isNaN(server) && end > start) {
+            const totalTime = end - start;
+            const elapsedTime = server - start;
+            currentRoundProgress = Math.max(
+              0,
+              Math.min(100, (elapsedTime / totalTime) * 100)
+            );
+          }
+        } catch (timeErr: unknown) {
+          console.error("Timeline error:", timeErr);
+          currentRoundProgress = 50;
         }
 
         //update steps
@@ -95,7 +94,12 @@ export default function Timeline() {
             style={{ left: `${totalGreenPercent}%` }}
           >
             <div className="-top-3 -left-5 relative">
-              <Image src="/chef-hat.svg" alt="Chef Hat" width={56} height={56} />
+              <Image
+                src="/chef-hat.svg"
+                alt="Chef Hat"
+                width={56}
+                height={56}
+              />
             </div>
           </div>
         </div>
