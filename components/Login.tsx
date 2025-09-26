@@ -27,7 +27,7 @@ const formSchema = z.object({
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
-   const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,7 +50,6 @@ export default function Login() {
         console.error("Login failed:", error);
       }
     } catch (error: unknown) {
-
       const err = error as { status?: number; message: string };
 
       if (err.message === "User not found") {
@@ -89,132 +88,139 @@ export default function Login() {
         />
       </div>
 
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 text-center z-20">
-        <h2 className="text-[30px] font-[Nulshock] tracking-widest">
-          CODECHEF PRESENTS
-        </h2>
-      </div>
+      <div className="flex flex-col min-h-screen bg-dark">
+        {/* Header */}
+        <div className="text-center pt-8 pb-4">
+          <h2 className="text-2xl md:text-3xl font-[Nulshock] tracking-widest text-white">
+            CODECHEF-VIT PRESENTS
+          </h2>
+        </div>
 
-      <div className="absolute lg:bottom-6 bottom-auto sm:bottom-24 md:bottom-32 left-1/2 -translate-x-1/2 text-center z-20 w-full max-w-[90%]">
-        <p className="text-[38px] font-[Nulshock] tracking-widest text-[#D9D9D9]">
-          10 YEARS. ONE LEGACY.
-        </p>
-      </div>
-
-<div className="flex flex-col lg:flex-row items-center justify-center w-full min-h-screen text-white overflow-hidden
-  pt-20 sm:pt-44 lg:pt-0">
-      {/* Left Section */}
-      <div className="flex flex-col items-center justify-center w-full lg:w-1/2 p-8 text-center z-10">
-        <div className="flex flex-col items-center gap-2 ml-[50px]">
-          <div className="relative inline-block">
-            <h1 className="absolute inset-0 text-[96.75px] font-[Nulshock] text-[#125128] z-0 translate-x-[-6px] translate-y-[6px] stroke">
-              COOK OFF
-            </h1>
-
-            <div className="absolute top-[45] left-[0] w-[332.7px] h-[69.11px] opacity-32 z-[20] pointer-events-none bg-gradient-to-r from-[#D9D9D9] to-[#737373] blur-[54.2px]" />
-            <div className="absolute top-[45] left-[350] w-[332.7px] h-[69.11px] opacity-32 z-[20] pointer-events-none bg-gradient-to-r from-[#D9D9D9] to-[#737373] blur-[54.2px]" />
-            <h1 className="relative text-[96.75px] font-[Nulshock] text-[#b6ab98] z-10 stroke">
-              COOK OFF
-            </h1>
-          </div>
-
-          <div className="flex items-center">
-            <div className="relative inline-block">
-              <div className="absolute top-[45] left-[0] w-[267.54px] h-[77px] opacity-32 z-[20] pointer-events-none bg-[#137735] blur-[54.2px]" />
-              <h1 className="absolute inset-0 text-[96.75px] font-[Nulshock] text-[#125128] z-0 translate-x-[-6px] translate-y-[6px] stroke">
-                10.0
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col lg:flex-row items-center justify-center px-4 py-8 lg:py-0 gap-8 lg:gap-12">
+          {/* Left Section - Title */}
+          <div className="flex-1 flex flex-col items-center justify-center text-center max-w-2xl">
+            {/* COOK OFF Title */}
+            <div className="relative mb-4">
+              <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-[Nulshock] text-[#b6ab98] relative z-10">
+                COOK OFF
               </h1>
+              <h1 className="absolute inset-0 text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-[Nulshock] text-[#125128] -translate-x-1 translate-y-1 -z-10">
+                COOK OFF
+              </h1>
+              {/* Blur effects */}
+              <div className="absolute top-1/2 left-0 w-80 h-16 opacity-30 bg-gradient-to-r from-[#D9D9D9] to-[#737373] blur-[54px] pointer-events-none -z-20" />
+              <div className="absolute top-1/2 right-0 w-80 h-16 opacity-30 bg-gradient-to-r from-[#D9D9D9] to-[#737373] blur-[54px] pointer-events-none -z-20" />
+            </div>
 
-              <h1 className="relative text-[96.75px] font-[Nulshock] text-[#137735] z-10 stroke">
-                <span className="relative inline-block">
+            {/* 10.0 Title */}
+            <div className="relative">
+              <div className="relative flex items-center justify-center">
+                <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-[Nulshock] text-[#137735] relative z-10">
                   10.0
+                </h1>
+                <h1 className="absolute inset-0 text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-[Nulshock] text-[#125128] -translate-x-1 translate-y-1 -z-10">
+                  10.0
+                </h1>
+                {/* Chef Hat - positioned responsively */}
+                <div className="absolute -top-6 -right-8 sm:-top-8 sm:-right-10 md:-top-10 md:-right-12 -z-5">
                   <Image
                     src="/chef-hat.svg"
                     alt="Chef Hat"
-                    width={112.52}
-                    height={108.42}
-                    className="absolute -top-9 -right-12 -z-10"
+                    width={80}
+                    height={77}
+                    className="w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28"
                   />
-                </span>
-              </h1>
+                </div>
+              </div>
+              {/* Blur effect */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-20 opacity-30 bg-[#137735] blur-[54px] pointer-events-none -z-20" />
+            </div>
+          </div>
+
+          {/* Right Section - Login Form */}
+          <div className="flex-1 flex items-center justify-center w-full max-w-md">
+            <div className="w-full p-6 md:p-8 bg-[#19231E] border border-[#6B6262] rounded-[32px] shadow-lg">
+              <h2 className="text-center text-xl md:text-2xl font-[Nulshock] text-white mb-8 mt-4">
+                START COOKING
+              </h2>
+
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
+                  {/* Email Field */}
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter Email"
+                            {...field}
+                            className="w-full h-14 bg-[#B7AB98] text-black placeholder:text-black font-[Inter] font-medium rounded-lg px-4"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-[#FF8989] font-[Inter] text-sm mt-1" />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Password Field */}
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="relative">
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="Enter Password"
+                              {...field}
+                              className="w-full h-14 bg-[#B7AB98] text-black placeholder:text-black font-[Inter] font-medium rounded-lg px-4 pr-12"
+                            />
+                            <div
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-5 top-1/2 -translate-y-1/2  hover:cursor-pointer  h-full aspect-square flex items-center justify-center"
+                            >
+                              {showPassword ? (
+                                <EyeOff size={20} className="text-black bg-transparent" />
+                              ) : (
+                                <Eye size={20} className="text-black bg-transparent" />
+                              )}
+                            </div>
+                          </div>
+                        </FormControl>
+                        <FormMessage className="text-[#FF8989] font-[Inter] text-sm mt-1" />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Submit Button */}
+                  <div className="flex justify-center pt-4">
+                    <Button
+                      type="submit"
+                      disabled={isLoading || !form.formState.isValid}
+                      className="w-[148px] h-[53px] rounded-[9px] !bg-gradient-to-r from-[#32CA67] via-[#26AD55] to-[#26AD55] text-white font-[Ballega] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isLoading ? "Logging In..." : "Log In"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Right Section - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center z-10 px-4">
-        <div className="w-full max-w-md p-6 p-8 shadow-lg rounded-[32px] bg-[#19231E] border border-[#6B6262]">
-          <h2 className="text-center text-[26.51px] font-[Nulshock] text-white mt-[75.46px]">
-            START COOKING
-          </h2>
-
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="flex flex-col items-center gap-4"
-            >
-              {/* Email */}
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter Email"
-                        {...field}
-                        className="bg-[#B7AB98] w-[351.66px] h-[60.08px] radius-[8.84px] mt-[28.28px] mr-[42.41px] ml-[42.42px] text-black placeholder:text-black font-[Inter] placeholder:font-[Inter] font-medium placeholder:font-medium"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-[#FF8989] ml-[42.42px] font-[Inter] text-[13px]" />
-                  </FormItem>
-                )}
-              />
-
-              {/* Password */}
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <div className="relative w-[351.66px]">
-                          <Input
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Enter Password"
-                            {...field}
-                            className="bg-[#B7AB98] w-full h-[60.08px] radius-[8.84px] mt-[28.28px] text-black placeholder:text-black font-[Inter] font-medium pr-10"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-6 top-[52%] right-0 flex items-center !bg-transparent !shadow-none"
-                          >
-                            {showPassword ? (
-                              <EyeOff size={20} className="text-black bg-transparent" />
-                            ) : (
-                              <Eye size={20} className="text-black bg-transparent" />
-                            )}
-                          </button>
-                        </div>
-                    </FormControl>
-                    <FormMessage className="text-[#FF8989] ml-[42.42px] font-[Inter] text-[13px]" />
-                  </FormItem>
-                )}
-              />
-
-              <Button
-                type="submit"
-                disabled={isLoading || !form.formState.isValid}
-                className="w-[148px] h-[53px] rounded-[9px] !mt-[68.92px] !bg-gradient-to-r from-[#32CA67] via-[#26AD55] to-[#26AD55] text-white font-[Ballega] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? "Logging In..." : "Log In"}
-              </Button>
-            </form>
-          </Form>
+        {/* Footer */}
+        <div className="text-center pb-8 pt-4">
+          <p className="text-2xl md:text-3xl lg:text-4xl font-[Nulshock] tracking-widest text-[#D9D9D9]">
+            10 YEARS. ONE LEGACY.
+          </p>
         </div>
-      </div>
       </div>
     </div>
   );
