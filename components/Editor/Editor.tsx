@@ -438,7 +438,7 @@ export default function Editor({
 
       <div
         className={`flex-1 overflow-hidden ${
-          fullScreen ? "h-[95vh]" : "min-h-[200px]"
+          fullScreen ? "h-[95vh]" : ""
         }`}
       >
         <CodeMirror
@@ -462,14 +462,14 @@ export default function Editor({
             onClick={() => setCustomInput((prev) => !prev)}
             className="focus:outline-none !bg-transparent !shadow-none border-0 p-0 m-0"
           >
-            <span className="text-gray-300 text-xl flex items-center gap-3">
+            {/* <span className="text-gray-300 text-xl flex items-center gap-3">
               {customInput ? (
                 <FaToggleOn size={39} color="#22c55e" />
               ) : (
                 <FaToggleOff size={39} color="#64748b" />
               )}{" "}
               Custom Input
-            </span>
+            </span> */}
           </button>
         </div>
         <div className="flex gap-4">
