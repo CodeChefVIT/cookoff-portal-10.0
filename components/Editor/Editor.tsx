@@ -137,18 +137,27 @@ export default function Editor({
 
       console.log("Run code response:", response);
 
-      const transformedResults = response.result.map((result) => ({
-        id: result.token,
-        input: "",
-        output: result.stdout || result.stderr || result.message || "",
-        expected_output: "",
-        hidden: false,
-        runtime: parseFloat(result.time),
-        memory: result.memory,
-        question_id: selectedQuestionId,
-        stderr: result.stderr || undefined,
-        statusDescription: result.status.description || undefined,
-      }));
+      const transformedResults = response.result.map((result, index) => {
+        const hasError = result.stderr || result.status.id !== 3;
+        const isSuccess = result.status.id === 3 && !result.stderr;
+        
+        return {
+          id: result.token,
+          input: "",
+          output: result.stdout || result.stderr || result.message || "",
+          expected_output: "",
+          hidden: false,
+          runtime: parseFloat(result.time),
+          memory: result.memory,
+          question_id: selectedQuestionId,
+          stderr: result.stderr || undefined,
+          statusDescription: isSuccess 
+            ? `Test case ${index + 1}: Execution successful`
+            : hasError 
+              ? `Test case ${index + 1}: ${result.status.description || 'Execution failed'}`
+              : `Test case ${index + 1}: ${result.status.description || 'Unknown status'}`,
+        };
+      });
 
       const {
         setTestResults,
@@ -171,18 +180,19 @@ export default function Editor({
       const hasErrors = response.result.some(
         (r) => r.stderr || r.status.id !== 3
       );
+      const successCount = response.result.filter(r => r.status.id === 3 && !r.stderr).length;
+      const totalCount = response.result.length;
 
       if (hasErrors) {
-        toast.success("Code execution completed with errors", { id: toastId });
+        toast.error(`Code execution completed: ${successCount}/${totalCount} test cases passed`, { id: toastId });
       } else {
-        toast.success("Code executed successfully", { id: toastId });
+        toast.success(`All ${totalCount} test cases passed successfully`, { id: toastId });
       }
 
+      // Set overall compiler details with summary
       setCompilerDetails({
         isCompileSuccess: !hasErrors,
-        message: hasErrors
-          ? "Code execution completed with errors"
-          : "Code execution successful",
+        message: `Execution completed: ${successCount}/${totalCount} test cases passed`,
       });
     } catch (error) {
       console.error("Error running code:", error);

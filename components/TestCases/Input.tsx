@@ -18,10 +18,21 @@ const Input: React.FC<InputProps> = ({
   activeCaseData,
   outputExists,
 }) => {
+  // Determine per-test case compiler status
+  const testCaseSuccess = activeCaseData ? (
+    !activeCaseData.stderr && 
+    !!activeCaseData.output && 
+    activeCaseData.output.trim() === activeCaseData.expected_output.trim()
+  ) : compilerDetails.isCompileSuccess;
+  const testCaseMessage = activeCaseData?.statusDescription || compilerDetails.message;
+
   return (
     <div className="">
       {outputExists && (
-        <CompilerMessage message={compilerDetails.message} isCompileSuccess={compilerDetails.isCompileSuccess} />
+        <CompilerMessage 
+          message={testCaseMessage} 
+          isCompileSuccess={testCaseSuccess} 
+        />
       )}
       {activeCaseData && (
         <>
