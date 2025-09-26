@@ -133,6 +133,7 @@ const DetailsCard: React.FC = () => {
                   await timer();
                 } catch {
                   toast.error("Round not started yet!", { id: toastId });
+                  return;
                 }
 
                 toast.loading("Entering Kitchen...", { id: toastId });
