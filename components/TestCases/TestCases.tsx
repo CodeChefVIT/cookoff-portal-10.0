@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
 import useKitchenStore from "store/zustant";
 import { TestCase } from "store/zustant";
@@ -13,8 +13,6 @@ interface CompilerResult {
 }
 
 interface TestCasesProps {
-  results: TestCase[];
-  compilerDetails: CompilerResult;
   panelSize: number;
 }
 
@@ -25,39 +23,120 @@ function getTestCaseScoreColor(count: number, total: number) {
   return "text-accent";
 }
 
-const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
+const TestCases = ({ panelSize }: TestCasesProps) => {
   const [activeCaseIndex, setActiveCaseIndex] = useState(0);
-  const { fullScreenTestCases, setFullScreenTestCases } = useKitchenStore();
+  const {
+    fullScreenTestCases,
+    setFullScreenTestCases,
+    testResults,
+    compilerDetails,
+    testCases,
+    selectedQuestionId,
+    submissionStatus,
+    setSubmissionStatus,
+  } = useKitchenStore();
+
+  const displayedTestCases = useMemo(() => {
+    const initialCases = testCases
+      .filter((tc) => tc && tc.QuestionID === selectedQuestionId)
+      .map(
+        (tc) =>
+          ({
+            id: tc.ID,
+            input: tc.Input,
+            output: "",
+            expected_output: tc.ExpectedOutput,
+            hidden: tc.Hidden,
+            runtime: 0,
+            memory: 0,
+            question_id: selectedQuestionId,
+          } as TestCase)
+      );
+
+    const resultsForQuestion = testResults.filter(
+      (tc) => tc && tc.question_id === selectedQuestionId
+    );
+
+    if (resultsForQuestion.length === 0) {
+      return initialCases;
+    }
+
+    let resultIndex = 0;
+    const mergedCases = initialCases.map((c) => {
+      if (!c.hidden) {
+        const result = resultsForQuestion[resultIndex];
+        if (result) {
+          resultIndex++;
+          return {
+            ...c,
+            id: result.id, // This is the judge token
+            output: result.output,
+            runtime: result.runtime,
+            memory: result.memory,
+            stderr: result.stderr,
+            statusDescription: result.statusDescription,
+          };
+        }
+      }
+      return c;
+    });
+
+    return mergedCases;
+  }, [testCases, testResults, selectedQuestionId]);
+
   const {
     visibleCases,
     hiddenCases,
-    passedCount,
-    hiddenPassedCount,
+    passedCount: calculatedPassedCount,
+    hiddenPassedCount: calculatedHiddenPassedCount,
     totalCases,
     outputExists,
-  } = useTestCases(results);
+  } = useTestCases(displayedTestCases);
   const activeCaseData = visibleCases[activeCaseIndex];
+
+  const defaultCompilerDetails = {
+    isCompileSuccess: false,
+    message: "No code executed yet",
+    passedCount: 0,
+    totalCount: totalCases,
+    hiddenPassedCount: 0,
+  };
+
+  const finalCompilerDetails = compilerDetails || defaultCompilerDetails;
+
+  const passedCount =
+    submissionStatus === "submitted"
+      ? finalCompilerDetails.passedCount ?? 0
+      : calculatedPassedCount;
+
+  const totalFromSubmit = finalCompilerDetails.totalCount ?? totalCases;
+  const displayTotal =
+    submissionStatus === "submitted" ? totalFromSubmit : totalCases;
+  const hiddenPassedCount = calculatedHiddenPassedCount;
+
   return (
     <div
       className={`${
         fullScreenTestCases
-          ? "h-[95vh] w-screen -top-0 left-0 fixed z-50"
-          : "h-full"
-      } flex flex-col gap-4 bg-testcasesBG p-2 font-roboto`}
+          ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 "
+          : " h-full  "
+      }flex flex-col gap-4 bg-testcasesBG p-2 font-roboto`}
     >
       <div>
         <div className="flex justify-between items-center">
           <div
             className={`rounded-xl bg-testcasesBG text-3xl font-bold ${
-              outputExists
-                ? getTestCaseScoreColor(passedCount, totalCases)
+              outputExists && submissionStatus === "submitted"
+                ? getTestCaseScoreColor(passedCount, displayTotal)
                 : "text-gray-400"
             }`}
           >
-            {outputExists
-              ? `${passedCount}/${totalCases} Test Cases Passed !!`
+            {outputExists && submissionStatus === "submitted"
+              ? `${passedCount}/${displayTotal} Test Cases Passed !!`
+              : submissionStatus === "running"
+              ? "Submitting..."
               : `${totalCases} Test Cases`}
-          </div>
+          </div>{" "}
           {fullScreenTestCases ? (
             <MdFullscreenExit
               className="scale-200"
@@ -77,16 +156,17 @@ const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
           setActiveCaseIndex={setActiveCaseIndex}
           getTestCaseScoreColor={getTestCaseScoreColor}
           outputExists={outputExists}
+          activeCaseIndex={activeCaseIndex}
+          showHidden={submissionStatus === "submitted"}
         />
       </div>
 
       <Input
-        compilerDetails={compilerDetails}
+        compilerDetails={finalCompilerDetails}
         activeCaseData={activeCaseData}
         outputExists={outputExists}
       />
     </div>
   );
 };
-
 export default TestCases;

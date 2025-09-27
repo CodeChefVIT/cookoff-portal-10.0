@@ -92,7 +92,7 @@ class Program
 import java.io.*;
 import java.math.*;
 
-public class Solution {
+public class Main {
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		
@@ -113,8 +113,8 @@ from collections import defaultdict, deque
 from math import *
 
 def main():
-	# Your code here
-	pass
+  # Your code here
+  pass
 
 if __name__ == "__main__":
 	main()`,

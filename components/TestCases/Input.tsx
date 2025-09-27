@@ -2,6 +2,7 @@ import React from "react";
 import InputOutputCard from "./InputOutputCard";
 import CompilerMessage from "./CompilerMessage";
 import { TestCase } from "store/zustant";
+import useKitchenStore from "store/zustant";
 
 interface InputProps {
   compilerDetails: {
@@ -17,14 +18,21 @@ const Input: React.FC<InputProps> = ({
   activeCaseData,
   outputExists,
 }) => {
-  // Determine per-test case compiler status
-  const testCaseSuccess = activeCaseData
-    ? !activeCaseData.stderr &&
-      !!activeCaseData.output &&
-      activeCaseData.output.trim() === activeCaseData.expected_output.trim()
-    : compilerDetails.isCompileSuccess;
+  const { submissionStatus } = useKitchenStore();
+
   const testCaseMessage =
     activeCaseData?.statusDescription || compilerDetails.message;
+
+  let testCaseSuccess;
+  if (submissionStatus === 'submitted') {
+    testCaseSuccess = testCaseMessage.toLowerCase().includes('accepted');
+  } else {
+    testCaseSuccess = activeCaseData
+      ? !activeCaseData.stderr &&
+        !!activeCaseData.output &&
+        activeCaseData.output.trim() === activeCaseData.expected_output.trim()
+      : compilerDetails.isCompileSuccess;
+  }
 
   return (
     <div className="">
@@ -37,16 +45,11 @@ const Input: React.FC<InputProps> = ({
       {activeCaseData && (
         <>
           {activeCaseData.output ? (
-            <div className="flex justify-between font-inter">
+            <div className="flex justify-between font-inter gap-4">
               <InputOutputCard
                 title={"Input"}
                 data={activeCaseData.input}
-                className={"w-[31%]"}
-              />
-              <InputOutputCard
-                title={"Expected Output"}
-                data={activeCaseData.expected_output}
-                className={"w-[31%]"}
+                className="w-full"
               />
               <InputOutputCard
                 title={"Your Output"}
@@ -55,7 +58,7 @@ const Input: React.FC<InputProps> = ({
                     ? activeCaseData.output
                     : "no output given"
                 }
-                className={"w-[31%]"}
+                className="w-full"
               />
             </div>
           ) : (
@@ -63,16 +66,7 @@ const Input: React.FC<InputProps> = ({
               <InputOutputCard
                 title={"Input"}
                 data={activeCaseData.input}
-                className={"w-[48%]"}
-              />
-              <InputOutputCard
-                title={"Expected Output"}
-                data={
-                  activeCaseData.expected_output
-                    ? activeCaseData.expected_output
-                    : "no expected output given"
-                }
-                className={"w-[48%]"}
+                className={"w-full"}
               />
             </div>
           )}

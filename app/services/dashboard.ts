@@ -6,7 +6,6 @@ export function getRounds({ data }: { data: DashboardResponse }): RoundStats[] {
   for (let i = 0; i <= 3; i++) {
     const completed = data.questions_completed[i] ?? 0;
     const incomplete = data.questions_not_completed[i] ?? 0;
-    const score = data.round_scores[i] ?? 0;
 
     let status: "Closed" | "In Progress" | "Completed" = "Closed";
     if (data.current_round != null) {
@@ -18,7 +17,6 @@ export function getRounds({ data }: { data: DashboardResponse }): RoundStats[] {
       status,
       completed,
       incomplete,
-      score,
       progress:
         completed + incomplete > 0
           ? Math.round((completed / (completed + incomplete)) * 100)

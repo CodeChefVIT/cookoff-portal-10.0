@@ -34,15 +34,15 @@ export default function LanguageSelector({
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-full min-w-[300px] p-4 flex flex-col sm:flex-row sm:gap-4">
-        <div className="flex-1 flex flex-col gap-2 sm:border-r sm:border-gray-300 pr-0 sm:pr-4">
+      <DropdownMenuContent className="w-full min-w-[300px] p-4 flex flex-col sm:flex-row sm:gap-4 ">
+        <div className="flex-1 flex flex-col gap-2 sm:border-r sm:border-gray-300 pr-0 sm:pr-4 ">
           {leftColumn.map((lang) => {
             const isSelected = lang.id === selectedLanguage.id;
             return (
               <DropdownMenuItem
                 key={lang.id}
                 onClick={() => onLanguageChange(lang)}
-                className={`text-[16px] sm:text-[18px] ${
+                className={`text-[16px] sm:text-[18px] hover:bg-green-900 focus:bg-green-600 cursor-pointer ${
                   isSelected ? "bg-[rgba(27,169,76,0.42)]" : ""
                 }`}
               >
@@ -59,7 +59,7 @@ export default function LanguageSelector({
               <DropdownMenuItem
                 key={lang.id}
                 onClick={() => onLanguageChange(lang)}
-                className={`text-[16px] sm:text-[18px] ${
+                className={`text-[16px] sm:text-[18px] hover:bg-green-900 focus:bg-green-600  cursor-pointer ${
                   isSelected ? "bg-[rgba(27,169,76,0.42)]" : ""
                 }`}
               >
