@@ -39,6 +39,7 @@ interface ExecutionResult {
   stderr: string;
   message: string;
   language: string;
+  compile_output: string;
 }
 
 interface RunCodeResponse {
@@ -97,6 +98,7 @@ interface TestCaseResult {
   status: string;
   description: string;
   expected_output: string;
+  compile_output: string;
 }
 
 interface SubmissionResult {

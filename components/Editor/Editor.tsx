@@ -37,12 +37,14 @@ export default function Editor({
     getLanguageForQuestion,
     setTestResults,
     setCompilerDetails,
-    testCases: originalTestCases,
     selectedQuestionId,
     selectedLanguage,
     setSelectedLanguage,
     codeByQuestion,
     setCodeForQuestion,
+    testCases: originalTestCases,
+    setSubmissionStatus,
+    testResults,
   } = useKitchenStore();
 
   // Get the language for the current question
@@ -133,6 +135,7 @@ export default function Editor({
     const toastId = toast.loading("Running code...");
 
     try {
+      setSubmissionStatus("running");
       const response = await getTestCasesAfterRun(
         code,
         questionLanguage.id,
@@ -141,8 +144,11 @@ export default function Editor({
       console.log(response);
 
       const transformedResults = response.result.map((result, index) => {
-        const hasError = result.stderr || result.status.id !== 3;
-        const isSuccess = result.status.id === 3 && !result.stderr;
+        let statusDesc = result.status.description;
+        if (result.compile_output) {
+          statusDesc += `\n${result.compile_output}`;
+        }
+        console.log(result);
 
         return {
           id: result.token,
@@ -154,15 +160,7 @@ export default function Editor({
           memory: result.memory,
           question_id: selectedQuestionId,
           stderr: result.stderr || undefined,
-          statusDescription: isSuccess
-            ? `Test case ${index + 1}: Execution successful`
-            : hasError
-            ? `Test case ${index + 1}: ${
-                result.status.description || "Execution failed"
-              }`
-            : `Test case ${index + 1}: ${
-                result.status.description || "Unknown status"
-              }`,
+          statusDescription: statusDesc,
         };
       });
 
@@ -229,6 +227,7 @@ export default function Editor({
     const submissionToastId = toast.loading("Submitting code...");
 
     try {
+      setSubmissionStatus("submitted");
       const response = await submitCode(
         code,
         questionLanguage.id,
@@ -246,7 +245,7 @@ export default function Editor({
         const submissionResult = await getSubmissionResult(
           response.submission_id
         );
-
+        console.log(submissionResult);
         const questionTestCases = originalTestCases.filter(
           (tc) => tc.QuestionID === selectedQuestionId
         );
@@ -255,13 +254,17 @@ export default function Editor({
         const transformedResults = submissionResult.testcases.map(
           (testcase, index) => {
             const originalTestCase = questionTestCases[index];
+            const currentRunResult = testResults[index]; // result from the last run
+
+            let statusDesc = testcase.description;
+            if (testcase.compile_output) {
+              statusDesc += `\n${testcase.compile_output}`;
+            }
+
             return {
               id: testcase.id,
               input: originalTestCase?.Input || "",
-              output:
-                testcase.status === "Accepted"
-                  ? testcase.expected_output
-                  : `Status: ${testcase.status}\nDescription: ${testcase.description}`, // Show status info for failed cases
+              output: currentRunResult?.output || "", // CARRY OVER THE OUTPUT
               expected_output: originalTestCase?.ExpectedOutput || "",
               hidden: originalTestCase?.Hidden || false,
               runtime: testcase.runtime,
@@ -271,9 +274,7 @@ export default function Editor({
                 testcase.status !== "Accepted"
                   ? testcase.description
                   : undefined,
-              statusDescription: `Test case ${index + 1}: ${
-                testcase.description
-              }`,
+              statusDescription: statusDesc,
             };
           }
         );
@@ -292,10 +293,27 @@ export default function Editor({
           toast.success(successMessage, { id: resultToastId });
         }
 
+        const hiddenPassed = submissionResult.testcases.reduce(
+          (acc, testcase, index) => {
+            const originalTestCase = questionTestCases[index];
+            if (
+              originalTestCase?.Hidden &&
+              testcase.status.trim().toLowerCase() === "accepted"
+            ) {
+              return acc + 1;
+            }
+            return acc;
+          },
+          0
+        );
+
         // Set overall compiler details with submission summary
         setCompilerDetails({
           isCompileSuccess: submissionResult.failed === 0,
           message: successMessage,
+          passedCount: submissionResult.passed,
+          totalCount: submissionResult.passed + submissionResult.failed,
+          hiddenPassedCount: hiddenPassed,
         });
       } catch (resultError) {
         console.error("Error fetching submission result:", resultError);
