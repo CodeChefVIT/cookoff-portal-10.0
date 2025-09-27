@@ -22,7 +22,7 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
   getTestCaseScoreColor,
   outputExists,
   activeCaseIndex,
-  showHidden
+  showHidden,
 }) => {
   const testCaseStatus = useMemo(() => {
     return visibleCases.map((testCase) => {
@@ -30,52 +30,57 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
       if (!outputExists) {
         return {
           id: testCase.id,
-          status: 'neutral',
+          status: "neutral",
         };
       }
-      
+
       // Use statusDescription to determine the status
       if (testCase.statusDescription) {
         const statusDesc = testCase.statusDescription.trim().toLowerCase();
-        
+
         // Check for success indicators in status description
-        if (statusDesc.includes('successful') || statusDesc.includes('accepted')) {
+        if (
+          statusDesc.includes("successful") ||
+          statusDesc.includes("accepted")
+        ) {
           return {
             id: testCase.id,
-            status: 'passed',
+            status: "passed",
           };
         }
-        
+
         // Check for failure indicators in status description
-        if (statusDesc.includes('wrong answer') || 
-            statusDesc.includes('failed') || 
-            statusDesc.includes('time limit') ||
-            statusDesc.includes('runtime error') ||
-            statusDesc.includes('compilation error')) {
+        if (
+          statusDesc.includes("wrong answer") ||
+          statusDesc.includes("failed") ||
+          statusDesc.includes("time limit") ||
+          statusDesc.includes("runtime error") ||
+          statusDesc.includes("compilation error")
+        ) {
           return {
             id: testCase.id,
-            status: 'failed',
+            status: "failed",
           };
         }
       }
-      
+
       // Fallback to output comparison if statusDescription is not available
       const hasOutput = testCase.output && testCase.output.trim() !== "";
       if (!hasOutput) {
         return {
           id: testCase.id,
-          status: 'neutral',
+          status: "neutral",
         };
       }
-      
+
       const isPassed =
         testCase.expected_output &&
         testCase.output &&
         testCase.expected_output.trim() === testCase.output.trim();
-        
+
       return {
         id: testCase.id,
-        status: isPassed ? 'passed' : 'failed',
+        status: isPassed ? "passed" : "failed",
       };
     });
   }, [visibleCases, outputExists]);
@@ -85,7 +90,7 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
       <div>
         {visibleCases.map((testCase, idx) => {
           const status = testCaseStatus.find((s) => s.id === testCase.id);
-          const testStatus = status?.status || 'neutral';
+          const testStatus = status?.status || "neutral";
           const isActive = idx === activeCaseIndex;
           const renderIcon = () => {
             const baseClasses = "mr-2 transition-all duration-200";
@@ -113,13 +118,14 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
           };
 
           const getButtonStyles = () => {
-            const baseStyles = "rounded-xl px-4 py-2 text-sm font-semibold transition-colors";
+            const baseStyles =
+              "rounded-xl px-4 py-2 text-sm font-semibold transition-colors";
             switch (testStatus) {
-              case 'passed':
+              case "passed":
                 return `${baseStyles} bg-green-900/20 border border-green-500/30 hover:bg-green-900/30 text-green-100`;
-              case 'failed':
+              case "failed":
                 return `${baseStyles} bg-red-900/20 border border-red-500/30 hover:bg-red-900/30 text-red-100`;
-              case 'neutral':
+              case "neutral":
               default:
                 return `${baseStyles} bg-secondary hover:bg-border`;
             }
@@ -142,17 +148,16 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
         <div className=" flex cursor-pointer items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-sm ">
           <BsEyeSlash
             className={`opacity-80 ${
-              outputExists 
+              outputExists
                 ? getTestCaseScoreColor(hiddenPassedCount, hiddenCases.length)
                 : "text-gray-400"
             }`}
           />
           <span className="opacity-80">Hidden</span>
           <span className="opacity-80">
-            {outputExists 
+            {outputExists
               ? `${hiddenPassedCount}/${hiddenCases.length}`
-              : `${hiddenCases.length}`
-            }
+              : `${hiddenCases.length}`}
           </span>
         </div>
       )}

@@ -54,7 +54,7 @@ const Input: React.FC<InputProps> = ({
                 className="w-full"
               />
               <InputOutputCard
-                title={"Your Output"}
+                title={"Your Output:"}
                 data={
                   submissionStatus === "running"
                     ? ""
@@ -68,7 +68,7 @@ const Input: React.FC<InputProps> = ({
           ) : (
             <div className="flex justify-between font-inter">
               <InputOutputCard
-                title={"Input"}
+                title={"Input: "}
                 data={
                   submissionStatus === "running" ? "" : activeCaseData.input
                 }
