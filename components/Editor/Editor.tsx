@@ -321,91 +321,72 @@ export default function Editor({
       if (cachedState) {
         setCode(cachedState.code);
         return;
-      } else {
-        setCode(questionLanguage.template);
+      }
+
+      const key = `code_${selectedQuestionId}_${questionLanguage.name}`;
+      const localSaved = localStorage.getItem(key);
+
+      if (localSaved) {
+        setCode(localSaved);
+        setCodeForQuestion(selectedQuestionId, localSaved);
+        return;
       }
 
       try {
         const email = localStorage.getItem("email");
+        if (!email) throw new Error("No email found in localStorage");
+
         const res = await axios.get(
           `/api/save-code?questionId=${selectedQuestionId}&email=${email}`
         );
+
         if (res.status === 200) {
-          const data = await res.data;
+          const data = res.data;
           if (data?.code) {
             setCode(data.code);
             setCodeForQuestion(selectedQuestionId, data.code);
+
+            localStorage.setItem(key, data.code);
           } else {
             setCode(questionLanguage.template);
-            // Set cursor position for new template
-            setTimeout(() => {
-              if (
-                editorRef.current &&
-                editorRef.current.dispatch &&
-                questionLanguage.cursorPosition
-              ) {
-                try {
-                  const { line, ch } = questionLanguage.cursorPosition;
-                  const doc = editorRef.current.state.doc;
-
-                  // Ensure line number is within bounds
-                  const lineNumber = Math.min(Math.max(1, line), doc.lines);
-                  const lineObj = doc.line(lineNumber);
-                  const pos = Math.min(
-                    lineObj.from + Math.max(0, ch),
-                    lineObj.to
-                  );
-
-                  editorRef.current.dispatch({
-                    selection: { anchor: pos, head: pos },
-                    scrollIntoView: true,
-                  });
-                  editorRef.current.focus();
-                } catch (error) {
-                  console.warn("Failed to set cursor position:", error);
-                }
-              }
-            }, 200);
+            setCursorToTemplatePos();
           }
         } else {
           setCode(questionLanguage.template);
-          // Set cursor position for new template
-          setTimeout(() => {
-            if (
-              editorRef.current &&
-              editorRef.current.dispatch &&
-              questionLanguage.cursorPosition
-            ) {
-              try {
-                const { line, ch } = questionLanguage.cursorPosition;
-                const doc = editorRef.current.state.doc;
-
-                // Ensure line number is within bounds
-                const lineNumber = Math.min(Math.max(1, line), doc.lines);
-                const lineObj = doc.line(lineNumber);
-                const pos = Math.min(
-                  lineObj.from + Math.max(0, ch),
-                  lineObj.to
-                );
-
-                editorRef.current.dispatch({
-                  selection: { anchor: pos, head: pos },
-                  scrollIntoView: true,
-                });
-                editorRef.current.focus();
-              } catch (error) {
-                console.warn("Failed to set cursor position:", error);
-              }
-            }
-          }, 200);
+          setCursorToTemplatePos();
         }
       } catch (err: unknown) {
-        if (axios.isAxiosError(err) && err.response?.status === 401) {
-          setCode(questionLanguage.template);
-        } else {
-          console.error("Error fetching saved code:", err);
-        }
+        console.error("Error fetching code from MongoDB:", err);
+        setCode(questionLanguage.template);
+        setCursorToTemplatePos();
       }
+    };
+
+    const setCursorToTemplatePos = () => {
+      setTimeout(() => {
+        if (
+          editorRef.current &&
+          editorRef.current.dispatch &&
+          questionLanguage.cursorPosition
+        ) {
+          try {
+            const { line, ch } = questionLanguage.cursorPosition;
+            const doc = editorRef.current.state.doc;
+
+            const lineNumber = Math.min(Math.max(1, line), doc.lines);
+            const lineObj = doc.line(lineNumber);
+            const pos = Math.min(lineObj.from + Math.max(0, ch), lineObj.to);
+
+            editorRef.current.dispatch({
+              selection: { anchor: pos, head: pos },
+              scrollIntoView: true,
+            });
+            editorRef.current.focus();
+          } catch (error) {
+            console.warn("Failed to set cursor position:", error);
+          }
+        }
+      }, 200);
     };
 
     fetchSavedCode();
@@ -413,33 +394,48 @@ export default function Editor({
     selectedQuestionId,
     codeByQuestion,
     setCodeForQuestion,
+    questionLanguage.name,
     questionLanguage.template,
     questionLanguage.cursorPosition,
   ]);
 
   useEffect(() => {
-    const interval = setInterval(async () => {
+    const localInterval = setInterval(() => {
       if (code.trim() === "" || code === questionLanguage.template) return;
+
+      const key = `code_${selectedQuestionId}_${questionLanguage.name}`;
+      localStorage.setItem(key, code);
+    }, 5000);
+
+    const mongoInterval = setInterval(async () => {
+      if (code.trim() === "" || code === questionLanguage.template) return;
+
+      const email = localStorage.getItem("email");
+      if (!email) return;
 
       const payload = {
         questionId: selectedQuestionId,
         code,
         language: questionLanguage.name,
-        email: localStorage.getItem("email"),
+        email,
       };
 
       try {
         await axios.post("/api/save-code", payload);
+        console.log("Auto-saved code to MongoDB");
       } catch (err: unknown) {
         if (axios.isAxiosError(err) && err.response?.status === 401) {
-          // console.log("User not authenticated - skipping auto-save");
+          console.warn("User not authenticated, skipping auto-save");
         } else {
           console.error("Error auto-saving code:", err);
         }
       }
-    }, 5000);
+    }, 300000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(localInterval);
+      clearInterval(mongoInterval);
+    };
   }, [
     code,
     questionLanguage.name,
@@ -447,18 +443,52 @@ export default function Editor({
     selectedQuestionId,
   ]);
 
-  // Update code when question changes to show the correct template for the language
   useEffect(() => {
     if (selectedQuestionId) {
       const cachedCode = codeByQuestion.find(
         (state) => state.questionId === selectedQuestionId
       );
       if (!cachedCode) {
-        // No cached code for this question, use the template for this question's language
         setCode(questionLanguage.template);
       }
     }
   }, [selectedQuestionId, questionLanguage.template, codeByQuestion]);
+
+  const saveCode = async (
+    selectedQuestionId: string,
+    code: string,
+    questionLanguage: { name: string }
+  ) => {
+    if (!selectedQuestionId || !code.trim()) return;
+
+    const email = localStorage.getItem("email");
+    if (!email) {
+      console.error("No email found in localStorage, cannot save code");
+      return;
+    }
+
+    const payload = {
+      questionId: selectedQuestionId,
+      code,
+      language: questionLanguage.name,
+      email,
+    };
+
+    try {
+      const res = await axios.post("/api/save-code", payload);
+      if (res.status === 200) {
+        console.log("✅ Code saved successfully!");
+      } else {
+        console.warn("⚠️ Save request did not return 200:", res.status);
+      }
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        console.warn("User not authenticated, cannot save code.");
+      } else {
+        console.error("❌ Error saving code:", err);
+      }
+    }
+  };
 
   return (
     <div
@@ -470,6 +500,12 @@ export default function Editor({
     >
       <div className="flex items-center justify-between mb-4 z-20">
         <RoundTimer />
+        <button
+          className=" text-white px-4 py-2 rounded"
+          onClick={() => saveCode(selectedQuestionId, code, questionLanguage)}
+        >
+          Save Code
+        </button>
         <div className="flex items-center gap-4">
           <LanguageSelector
             languages={languages}
