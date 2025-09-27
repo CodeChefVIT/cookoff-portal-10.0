@@ -99,6 +99,7 @@ interface TestCaseResult {
   description: string;
   expected_output: string;
   compile_output: string;
+  stderr?: string;
 }
 
 interface SubmissionResult {
@@ -111,6 +112,7 @@ interface SubmissionResult {
   submission_time: string;
   description: string;
   testcases: TestCaseResult[];
+  stderr?: string;
 }
 
 export async function getSubmissionResult(
