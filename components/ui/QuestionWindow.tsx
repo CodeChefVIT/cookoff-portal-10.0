@@ -47,11 +47,11 @@ const QuestionWindow: React.FC = () => {
 
   return (
     <div
-      className={`bg-[#070E0A] text-gray-300 min-h-screen flex items-center justify-center ${inter.className}`}
+      className={`bg-[#070E0A] text-gray-300 min-h-screen flex items-center justify-center mt-0 ${inter.className}`}
     >
       <div className="w-full max-w-4xl">
         {/* Tabs - Hidden on mobile since we have question selector in mobile layout */}
-        <div className="hidden md:flex items-center mb-4 overflow-x-auto overflow-y-hidden scrollbar-thin-custom overflow-visible">
+        <div className="hidden md:flex items-center mb-4 mt-0 overflow-x-auto overflow-y-hidden scrollbar-thin-custom overflow-visible">
           {questions.map((q, key) => (
             <TabButton
               key={q.ID}
@@ -64,7 +64,7 @@ const QuestionWindow: React.FC = () => {
         </div>
 
         {/* Question content */}
-        <div className="bg-[#131414] p-6 sm:p-8 max-w-4xl mx-auto relative w-full min-h-[50vh] h-[90vh] overflow-y-scroll [&::-webkit-scrollbar]:w-0">
+        <div className="bg-[#131414] p-4 max-w-4xl mx-auto relative w-full min-h-[50vh] h-[90vh] overflow-y-scroll [&::-webkit-scrollbar]:w-0">
           {selectedQuestion ? (
             <main>
               <h1 className="text-2xl sm:text-3xl font-bold text-green-400 mb-2 font-nulshock">

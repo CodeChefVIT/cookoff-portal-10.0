@@ -294,10 +294,10 @@ export default function Kitchen() {
                 {/* Editor Panel */}
                 <ResizablePanel
                   defaultSize={75}
-                  className="pb-2 lg:pb-4 pl-2 lg:pl-4"
+                  className="py-4 pl-4 mt-0"
                 >
-                  <div className="h-full overflow-auto">
-                    <div className="flex flex-col gap-2 mt-0">
+                  <div className="h-full overflow-auto pr-4">
+                    <div className="flex flex-col gap-2 ">
                       <Editor
                         languages={languages}
                         round="round 0"

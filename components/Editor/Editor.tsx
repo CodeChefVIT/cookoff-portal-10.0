@@ -466,11 +466,11 @@ export default function Editor({
         fullScreen
           ? "h-[95vh] w-screen -top-0 left-0 fixed z-50 "
           : "h-full w-[50vw]"
-      }mx-auto flex flex-col bg-[#131414] shadow-lg overflow-x-hidden`}
+      }mx-auto flex flex-col shadow-lg overflow-x-hidden`}
     >
-      <div className="flex items-center justify-between px-6 py-3 z-20 bg-[#1e1f1f] border-b border-gray-700">
+      <div className="flex items-center justify-between mb-4 z-20">
         <RoundTimer />
-        <div className="flex gap-10 items-center">
+        <div className="flex items-center gap-4">
           <LanguageSelector
             languages={languages}
             selectedLanguage={questionLanguage}
@@ -478,12 +478,12 @@ export default function Editor({
           />
           {fullScreen ? (
             <MdFullscreenExit
-              className="scale-200"
+              className="scale-200 h-6 w-6 hover:cursor-pointer"
               onClick={() => setfullScreen((prev) => !prev)}
             />
           ) : (
             <MdFullscreen
-              className="scale-200 "
+              className="scale-200 h-6 w-6  hover:cursor-pointer"
               onClick={() => setfullScreen((prev) => !prev)}
             />
           )}
