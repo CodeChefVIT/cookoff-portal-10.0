@@ -18,8 +18,21 @@ export const metadata: Metadata = {
     default: "CookOff Portal - CodeChef VIT",
     template: "%s | CookOff Portal",
   },
-  description: "Official coding competition portal for CookOff by CodeChef VIT. Participate in challenging programming contests, solve problems, and compete with developers worldwide.",
-  keywords: ["coding", "programming", "contest", "competition", "cookoff", "codechef", "vit", "algorithms", "data structures", "online judge", "competitive programming"],
+  description:
+    "Official coding competition portal for CookOff by CodeChef VIT. Participate in challenging programming contests, solve problems, and compete with developers worldwide.",
+  keywords: [
+    "coding",
+    "programming",
+    "contest",
+    "competition",
+    "cookoff",
+    "codechef",
+    "vit",
+    "algorithms",
+    "data structures",
+    "online judge",
+    "competitive programming",
+  ],
   authors: [{ name: "CodeChef VIT", url: "https://codechefvit.com" }],
   creator: "CodeChef VIT",
   publisher: "CodeChef VIT",
@@ -30,7 +43,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "CookOff Portal - CodeChef VIT",
-    description: "Official coding competition portal for CookOff by CodeChef VIT",
+    description:
+      "Official coding competition portal for CookOff by CodeChef VIT",
     url: "https://cookoff.codechefvit.com",
     siteName: "CookOff Portal",
     type: "website",
@@ -47,7 +61,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "CookOff Portal - CodeChef VIT",
-    description: "Official coding competition portal for CookOff by CodeChef VIT",
+    description:
+      "Official coding competition portal for CookOff by CodeChef VIT",
     creator: "@codechefvit",
     images: ["/icon.png"],
   },
@@ -70,9 +85,7 @@ export const metadata: Metadata = {
       { url: "/icon.png", type: "image/png" },
       { url: "/icon.webp", type: "image/webp" },
     ],
-    apple: [
-      { url: "/icon.png", sizes: "180x180", type: "image/png" },
-    ],
+    apple: [{ url: "/icon.png", sizes: "180x180", type: "image/png" }],
     shortcut: "/icon.png",
   },
   manifest: "/manifest.json",
@@ -92,34 +105,39 @@ export default function RootLayout({
       <head>
         <meta name="theme-color" content="#070E0A" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
         <meta name="apple-mobile-web-app-title" content="CookOff Portal" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="application-name" content="CookOff Portal" />
         <meta name="msapplication-TileColor" content="#070E0A" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
       </head>
-      <body className={`${inter.variable} ${roboto.variable} antialiased lg:h-screen lg:overflow-hidden bg-[#070E0A]`}>
-        <Toaster 
-          position="top-right" 
+      <body
+        className={`${inter.variable} ${roboto.variable} antialiased lg:h-screen lg:overflow-hidden bg-[#070E0A]`}
+      >
+        <Toaster
+          position="top-right"
           reverseOrder={false}
           toastOptions={{
             duration: 4000,
             style: {
-              background: '#1a1a1a',
-              color: '#fff',
-              border: '1px solid #333',
+              background: "#1a1a1a",
+              color: "#fff",
+              border: "1px solid #333",
             },
             success: {
               style: {
-                background: '#10B981',
-                color: '#fff',
+                background: "#1ba94c",
+                color: "#fff",
               },
             },
             error: {
               style: {
-                background: '#EF4444',
-                color: '#fff',
+                background: "#EF4444",
+                color: "#fff",
               },
             },
           }}
