@@ -237,3 +237,28 @@ button:active {
   scrollbar-width: thin;
   scrollbar-color: #444 #1a1a1a;
 }
+
+
+/* Scrollbar for kitchen question numbers */
+.scrollbar-thin-custom {
+  scrollbar-width: thin;              
+  scrollbar-color: #666 #222;       
+}
+
+.scrollbar-thin-custom::-webkit-scrollbar {
+  height: 6px;                        
+}
+
+.scrollbar-thin-custom::-webkit-scrollbar-track {
+  background: #222;                  
+  border-radius: 9999px;              
+}
+
+.scrollbar-thin-custom::-webkit-scrollbar-thumb {
+  background: #666;                  
+  border-radius: 9999px;              
+}
+
+.scrollbar-thin-custom::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}

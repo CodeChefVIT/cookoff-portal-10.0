@@ -470,7 +470,7 @@ export default function Editor({
     >
       <div className="flex items-center justify-between px-6 py-3 z-20 bg-[#1e1f1f] border-b border-gray-700">
         <RoundTimer />
-        <div className="flex gap-10 items-center ">
+        <div className="flex gap-10 items-center">
           <LanguageSelector
             languages={languages}
             selectedLanguage={questionLanguage}
