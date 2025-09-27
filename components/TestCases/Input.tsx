@@ -47,7 +47,7 @@ const Input: React.FC<InputProps> = ({
           {activeCaseData.output ? (
             <div className="flex justify-between font-inter gap-4">
               <InputOutputCard
-                title={"Input"}
+                title={"Input: "}
                 data={
                   submissionStatus === "running" ? "" : activeCaseData.input
                 }
