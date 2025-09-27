@@ -261,19 +261,24 @@ export default function Editor({
               statusDesc += `\n${testcase.compile_output}`;
             }
 
+            const isAccepted =
+              testcase.status.trim().toLowerCase() === "accepted";
+
+            console.log("current run result :", currentRunResult);
             return {
               id: testcase.id,
               input: originalTestCase?.Input || "",
-              output: currentRunResult?.output || "", // CARRY OVER THE OUTPUT
+              output: isAccepted
+                ? currentRunResult?.output || ""
+                : testcase.description,
               expected_output: originalTestCase?.ExpectedOutput || "",
               hidden: originalTestCase?.Hidden || false,
               runtime: testcase.runtime,
               memory: testcase.memory,
               question_id: selectedQuestionId,
-              stderr:
-                testcase.status !== "Accepted"
-                  ? testcase.description
-                  : undefined,
+              stderr: isAccepted
+                ? undefined
+                : testcase.stderr || testcase.description,
               statusDescription: statusDesc,
             };
           }

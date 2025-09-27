@@ -13,9 +13,11 @@ export function useTestCases(results: TestCase[]) {
       // First check statusDescription
       if (r.statusDescription) {
         const statusDesc = r.statusDescription.toLowerCase();
-        return statusDesc.includes('successful') || statusDesc.includes('accepted');
+        return (
+          statusDesc.includes("successful") || statusDesc.includes("accepted")
+        );
       }
-      
+
       // Fallback to output comparison
       if (!r.expected_output || !r.output) return false;
       return r.expected_output.trim() === r.output.trim();

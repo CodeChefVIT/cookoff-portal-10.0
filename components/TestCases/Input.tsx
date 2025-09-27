@@ -2,6 +2,7 @@ import React from "react";
 import InputOutputCard from "./InputOutputCard";
 import CompilerMessage from "./CompilerMessage";
 import { TestCase } from "store/zustant";
+import useKitchenStore from "store/zustant";
 
 interface InputProps {
   compilerDetails: {
@@ -17,14 +18,21 @@ const Input: React.FC<InputProps> = ({
   activeCaseData,
   outputExists,
 }) => {
-  // Determine per-test case compiler status
-  const testCaseSuccess = activeCaseData
-    ? !activeCaseData.stderr &&
-      !!activeCaseData.output &&
-      activeCaseData.output.trim() === activeCaseData.expected_output.trim()
-    : compilerDetails.isCompileSuccess;
+  const { submissionStatus } = useKitchenStore();
+
   const testCaseMessage =
     activeCaseData?.statusDescription || compilerDetails.message;
+
+  let testCaseSuccess;
+  if (submissionStatus === 'submitted') {
+    testCaseSuccess = testCaseMessage.toLowerCase().includes('accepted');
+  } else {
+    testCaseSuccess = activeCaseData
+      ? !activeCaseData.stderr &&
+        !!activeCaseData.output &&
+        activeCaseData.output.trim() === activeCaseData.expected_output.trim()
+      : compilerDetails.isCompileSuccess;
+  }
 
   return (
     <div className="">
