@@ -91,7 +91,7 @@ const DetailsCard: React.FC = () => {
   }
 
   return (
-    <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
+    <div className="h-full w-full rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700 flex flex-col">
       {/* Header */}
       <div className="bg-neutral-800 text-center py-2">
         <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7]">
@@ -123,7 +123,7 @@ const DetailsCard: React.FC = () => {
           </p>
         </div>
         {/* Enter Kitchen Button */}
-        <div className="mt-7 mb-4">
+        <div className="mt-auto mb-4">
           <button
             onClick={() => {
               if (pathname === "/kitchen") return; // already in kitchen
