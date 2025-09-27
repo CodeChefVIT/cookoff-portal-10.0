@@ -17,7 +17,7 @@ export default function ScreenGuard({ children }: { children: React.ReactNode })
 
   if (!isAllowed) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-[#006E08] text-[#E0CCAB] font-[nulshock] text-2xl z-[9999]">
+      <div className="fixed inset-0 flex items-center justify-center bg-[#111] text-[#E0CCAB] font-[nulshock] text-2xl z-[9999]">
         Desktop mode only allowed
       </div>
     );
