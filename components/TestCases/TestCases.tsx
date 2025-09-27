@@ -77,6 +77,7 @@ const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
           setActiveCaseIndex={setActiveCaseIndex}
           getTestCaseScoreColor={getTestCaseScoreColor}
           outputExists={outputExists}
+          activeCaseIndex={activeCaseIndex}
         />
       </div>
 
