@@ -75,9 +75,9 @@ using System.Text;
 
 class Program
 {
-	static void Main(string[] args)
+  static void Main(string[] args)
 	{
-		// Your code here
+    // Your code here
 		
 	}
 }`,

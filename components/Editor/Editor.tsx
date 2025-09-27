@@ -3,6 +3,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { oneDark } from "@codemirror/theme-one-dark";
+import { indentUnit } from "@codemirror/language";
 import type { EditorView } from "@codemirror/view";
 import type { ViewUpdate } from "@codemirror/view";
 import LanguageSelector from "./LanguageSelector/LanguageSelector";
@@ -19,7 +20,6 @@ import { MdFullscreen } from "react-icons/md";
 import { MdFullscreenExit } from "react-icons/md";
 import { submitCode } from "@/api/kitchen";
 import toast from "react-hot-toast";
-import { email } from "zod";
 type EditorProps = {
   languages: Language[];
   round?: string;
@@ -502,8 +502,19 @@ export default function Editor({
           value={code || questionLanguage.template}
           height="100%"
           theme={oneDark}
-          extensions={[questionLanguage.extension]}
+          extensions={[
+            questionLanguage.extension,
+            indentUnit.of("  "), // 2 spaces for indentation
+          ]}
           onChange={handleChange}
+          basicSetup={{
+            tabSize: 2,
+            indentOnInput: true,
+            autocompletion: true,
+            bracketMatching: true,
+            foldGutter: true,
+            highlightSelectionMatches: true,
+          }}
         />
       </div>
 
