@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import Button from "../ui/Button";
-import { BsEyeSlash, BsCheckCircleFill, BsXCircleFill, BsCircle } from "react-icons/bs";
+import { BsEyeSlash, BsCheckCircleFill, BsXCircleFill, BsCircle, BsCircleFill } from "react-icons/bs";
 import { TestCase } from "store/zustant";
 
 interface SelectTestCasesProps {
@@ -10,6 +10,8 @@ interface SelectTestCasesProps {
   setActiveCaseIndex: (index: number) => void;
   getTestCaseScoreColor: (count: number, total: number) => string;
   outputExists: boolean;
+  activeCaseIndex: number;
+  showHidden: boolean;
 }
 
 const SelectTestCases: React.FC<SelectTestCasesProps> = ({
@@ -19,6 +21,8 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
   setActiveCaseIndex,
   getTestCaseScoreColor,
   outputExists,
+  activeCaseIndex,
+  showHidden
 }) => {
   const testCaseStatus = useMemo(() => {
     return visibleCases.map((testCase) => {
@@ -82,16 +86,29 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
         {visibleCases.map((testCase, idx) => {
           const status = testCaseStatus.find((s) => s.id === testCase.id);
           const testStatus = status?.status || 'neutral';
-
+          const isActive = idx === activeCaseIndex;
           const renderIcon = () => {
+            const baseClasses = "mr-2 transition-all duration-200";
             switch (testStatus) {
-              case 'passed':
-                return <BsCheckCircleFill className={`mr-2 size-4 text-green-500`} />;
-              case 'failed':
-                return <BsXCircleFill className={`mr-2 size-4 text-red-500`} />;
-              case 'neutral':
+              case "passed":
+                return isActive ? (
+                  <BsCircleFill className={`${baseClasses} text-green-500`} />
+                ) : (
+                  <BsCircle className={`${baseClasses} text-green-500`} />
+                );
+              case "failed":
+                return isActive ? (
+                  <BsCircleFill className={`${baseClasses} text-red-500`} />
+                ) : (
+                  <BsCircle className={`${baseClasses} text-red-500`} />
+                );
+              case "neutral":
               default:
-                return <BsCircle className={`mr-2 size-4 text-gray-400`} />;
+                return isActive ? (
+                  <BsCircleFill className={`${baseClasses} text-gray-500`} />
+                ) : (
+                  <BsCircle className={`${baseClasses} text-gray-500`} />
+                );
             }
           };
 
@@ -121,7 +138,7 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
           );
         })}
       </div>
-      {hiddenCases.length > 0 && (
+      {showHidden && hiddenCases.length > 0 && (
         <div className=" flex cursor-pointer items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-sm ">
           <BsEyeSlash
             className={`opacity-80 ${

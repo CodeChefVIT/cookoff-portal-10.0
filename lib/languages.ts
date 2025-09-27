@@ -113,8 +113,8 @@ from collections import defaultdict, deque
 from math import *
 
 def main():
-	# Your code here
-	pass
+  # Your code here
+  pass
 
 if __name__ == "__main__":
 	main()`,

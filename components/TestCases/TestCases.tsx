@@ -112,8 +112,7 @@ const TestCases = ({ panelSize }: TestCasesProps) => {
   const totalFromSubmit = finalCompilerDetails.totalCount ?? totalCases;
   const displayTotal =
     submissionStatus === "submitted" ? totalFromSubmit : totalCases;
-  const hiddenPassedCount = displayTotal - totalCases;
-  console.log(displayTotal - totalCases);
+  const hiddenPassedCount = calculatedHiddenPassedCount;
 
   return (
     <div
@@ -155,6 +154,8 @@ const TestCases = ({ panelSize }: TestCasesProps) => {
           setActiveCaseIndex={setActiveCaseIndex}
           getTestCaseScoreColor={getTestCaseScoreColor}
           outputExists={outputExists}
+          activeCaseIndex={activeCaseIndex}
+          showHidden={submissionStatus === "submitted"}
         />
       </div>
 
