@@ -11,6 +11,7 @@ interface SelectTestCasesProps {
   getTestCaseScoreColor: (count: number, total: number) => string;
   outputExists: boolean;
   activeCaseIndex: number;
+  showHidden: boolean;
 }
 
 const SelectTestCases: React.FC<SelectTestCasesProps> = ({
@@ -20,7 +21,8 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
   setActiveCaseIndex,
   getTestCaseScoreColor,
   outputExists,
-  activeCaseIndex
+  activeCaseIndex,
+  showHidden
 }) => {
   const testCaseStatus = useMemo(() => {
     return visibleCases.map((testCase) => {
@@ -136,7 +138,7 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
           );
         })}
       </div>
-      {hiddenCases.length > 0 && (
+      {showHidden && hiddenCases.length > 0 && (
         <div className=" flex cursor-pointer items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-sm ">
           <BsEyeSlash
             className={`opacity-80 ${
