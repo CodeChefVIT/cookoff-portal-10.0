@@ -582,14 +582,13 @@ export default function Editor({
         <CodeMirror
           ref={editorRef}
           value={code || questionLanguage.template}
-          height="100%"
+          height="99%"
           width="100%"
           theme={everforestTheme}
           extensions={[
             ...(vimMode ? [vim()] : []),
             questionLanguage.extension,
             indentUnit.of("    "), // 4 spaces for indentation
-            everforestTheme,
             syntaxHighlighting(everforestHighlightStyle),
           ]}
           onChange={handleChange}
@@ -661,7 +660,7 @@ export default function Editor({
                   loading: "Saving code to cloud...",
                   success: "Code saved successfully!",
                   error: "Failed to save code.",
-                }
+                },
               )
             }
           >

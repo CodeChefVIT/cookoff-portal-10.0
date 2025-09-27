@@ -99,12 +99,16 @@ export const everforestHighlightStyle = HighlightStyle.define([
 
 export const everforestTheme = EditorView.theme(
   {
+    ".cm-editor": {
+      fontFamily: "'Maple Mono'",
+    },
     "&": {
       color: everforest.fg,
       backgroundColor: everforest.bg,
     },
     ".cm-content": {
       caretColor: everforest.blue,
+      fontFamily: "'Maple Mono'",
     },
     "&.cm-focused .cm-cursor": {
       borderLeftColor: everforest.blue,
@@ -116,6 +120,12 @@ export const everforestTheme = EditorView.theme(
       backgroundColor: everforest.bg,
       color: everforest.gray,
       border: "none",
+    },
+    ".cm-activeLine": {
+      backgroundColor: "transparent !important",
+    },
+    ".cm-activeLineGutter": {
+      backgroundColor: "transparent !important",
     },
   },
   { dark: true },

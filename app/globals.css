@@ -2,263 +2,298 @@
 @import "tw-animate-css";
 
 @font-face {
-  font-family: "Nulshock";
-  src: url("/fonts/Nulshock Bd.otf") format("opentype");
+    font-family: "Nulshock";
+    src: url("/fonts/Nulshock Bd.otf") format("opentype");
 }
 
 @font-face {
-  font-family: "Bruno Ace";
-  src: url("/fonts/BrunoAce-Regular.ttf") format("truetype");
+    font-family: "Bruno Ace";
+    src: url("/fonts/BrunoAce-Regular.ttf") format("truetype");
 }
 
 @font-face {
-  font-family: "Ballega";
-  src: url("/fonts/Ballega.otf") format("opentype");
+    font-family: "Ballega";
+    src: url("/fonts/Ballega.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "Maple Mono";
+    src: url("/fonts/MapleMono-Bold.woff2") format("woff2");
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Maple Mono";
+    src: url("/fonts/MapleMono-BoldItalic.woff2") format("woff2");
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Maple Mono";
+    src: url("/fonts/MapleMono-Italic.woff2") format("woff2");
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Maple Mono";
+    src: url("/fonts/MapleMono-Regular.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
 }
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
 
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
 
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
 
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --color-testcasesBG: var(--tescases-bg);
-  --color-darkGreen: var(--darkGreen);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-testcasesBG: var(--tescases-bg);
+    --color-darkGreen: var(--darkGreen);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
 }
 
 :root {
-  --radius: 0.625rem;
+    --radius: 0.625rem;
 
-  --background: #070e0a;
-  --foreground: #f5f5f5;
+    --background: #070e0a;
+    --foreground: #f5f5f5;
 
-  --card: #111a14;
-  --card-foreground: #f5f5f5;
-  --popover: #111a14;
-  --popover-foreground: #f5f5f5;
+    --card: #111a14;
+    --card-foreground: #f5f5f5;
+    --popover: #111a14;
+    --popover-foreground: #f5f5f5;
 
-  --primary: #242424;
-  --primary-foreground: #ffffff;
+    --primary: #242424;
+    --primary-foreground: #ffffff;
 
-  --secondary: #1f2a24;
-  --secondary-foreground: #d9d9d9;
-  --muted: #1a221d;
-  --muted-foreground: #b3b3b3;
+    --secondary: #1f2a24;
+    --secondary-foreground: #d9d9d9;
+    --muted: #1a221d;
+    --muted-foreground: #b3b3b3;
 
-  --accent: #ff4d4d;
-  --accent-foreground: #ffffff;
+    --accent: #ff4d4d;
+    --accent-foreground: #ffffff;
 
-  --destructive: #e63946;
+    --destructive: #e63946;
 
-  --border: #2d3a33;
-  --input: #1e2923;
-  --ring: #1ba94c;
+    --border: #2d3a33;
+    --input: #1e2923;
+    --ring: #1ba94c;
 
-  --sidebar: #0e1511;
-  --sidebar-foreground: #e6e6e6;
-  --sidebar-primary: #1ba94c;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #222f28;
-  --sidebar-accent-foreground: #f5f5f5;
-  --sidebar-border: #2d3a33;
-  --sidebar-ring: #1ba94c;
+    --sidebar: #0e1511;
+    --sidebar-foreground: #e6e6e6;
+    --sidebar-primary: #1ba94c;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #222f28;
+    --sidebar-accent-foreground: #f5f5f5;
+    --sidebar-border: #2d3a33;
+    --sidebar-ring: #1ba94c;
 
-  --tescases-bg: #131414;
-  --darkGreen: #255f39;
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+    --tescases-bg: #131414;
+    --darkGreen: #255f39;
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
 
-  --green: #1ba94c;
-  --green-gradient: linear-gradient(90deg, #32ca67 83.17%, #0a8a36 92.79%);
-  --green-light: rgb(27, 169, 76, 42%);
-  --neutral-light: #b7ab98;
-  --neutral-dark: #5f5c51;
+    --green: #1ba94c;
+    --green-gradient: linear-gradient(90deg, #32ca67 83.17%, #0a8a36 92.79%);
+    --green-light: rgb(27, 169, 76, 42%);
+    --neutral-light: #b7ab98;
+    --neutral-dark: #5f5c51;
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+    * {
+        @apply border-border outline-ring/50;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
 }
 
 .font-inter {
-  font-family: "Inter", sans-serif;
+    font-family: "Inter", sans-serif;
 }
 .font-roboto {
-  font-family: "Roboto", Inter, sans-serif;
+    font-family: "Roboto", Inter, sans-serif;
 }
 
 html {
-  scroll-behavior: smooth;
+    scroll-behavior: smooth;
 }
 
 body {
-  font-family: "Inter", sans-serif;
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  transition: background-color 0.3s ease, color 0.3s ease;
+    font-family: "Inter", sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
 }
 
 code {
-  font-family: "Inter", monospace;
+    font-family: "Inter", monospace;
 }
 
 button {
-  margin: 2px 8px;
-  padding: 10px 20px;
-  border-radius: 10px;
-  background: #242424;
-  border: none;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
-  color: #f5f5f5;
-  transition: background-position 0.3s ease, transform 0.2s ease;
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 25px;
+    margin: 2px 8px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background: #242424;
+    border: none;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+    color: #f5f5f5;
+    transition:
+        background-position 0.3s ease,
+        transform 0.2s ease;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 25px;
 }
 
 button:hover {
-  transform: scale(1.02);
-  cursor: pointer;
+    transform: scale(1.02);
+    cursor: pointer;
 }
 
 button:active {
-  transform: scale(1);
+    transform: scale(1);
 }
 
 .btn-green {
-  background: linear-gradient(90deg, #32ca67, #26ad55);
-  background-size: 200% 100%;
-  background-position: left;
-  color: #ffffff;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.35);
+    background: linear-gradient(90deg, #32ca67, #26ad55);
+    background-size: 200% 100%;
+    background-position: left;
+    color: #ffffff;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.35);
 }
 
 .btn-green:hover {
-  background-position: right;
+    background-position: right;
 }
 
 .font-nulshock {
-  font-family: "Nulshock", monospace;
+    font-family: "Nulshock", monospace;
 }
 
 .font-brunoace {
-  font-family: "Bruno Ace", monospace;
+    font-family: "Bruno Ace", monospace;
 }
 
 @font-face {
-  font-family: "Inter";
-  src: url("/fonts/Inter.ttf") format("truetype");
-  font-weight: 400;
-  font-style: "regular";
+    font-family: "Inter";
+    src: url("/fonts/Inter.ttf") format("truetype");
+    font-weight: 400;
+    font-style: "regular";
 }
 .font-inter {
-  font-family: "Inter", monospace;
+    font-family: "Inter", monospace;
 }
 
 @font-face {
-  font-family: "Nunito";
-  src: url("/fonts/Nunito.ttf") format("truetype");
-  font-weight: 400;
-  font-style: "regular";
+    font-family: "Nunito";
+    src: url("/fonts/Nunito.ttf") format("truetype");
+    font-weight: 400;
+    font-style: "regular";
 }
 
 .font-Nunito {
-  font-family: "Nunito";
+    font-family: "Nunito";
 }
 
 .stroke {
-  -webkit-text-stroke: 3.95px black;
+    -webkit-text-stroke: 3.95px black;
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a1a;
+    background: #1a1a1a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #444;
-  border-radius: 9999px;
+    background: #444;
+    border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #666;
+    background: #666;
 }
 
 * {
-  scrollbar-width: thin;
-  scrollbar-color: #444 #1a1a1a;
+    scrollbar-width: thin;
+    scrollbar-color: #444 #1a1a1a;
 }
-
 
 /* Scrollbar for kitchen question numbers */
 .scrollbar-thin-custom {
-  scrollbar-width: thin;              
-  scrollbar-color: #666 #222;       
+    scrollbar-width: thin;
+    scrollbar-color: #666 #222;
 }
 
 .scrollbar-thin-custom::-webkit-scrollbar {
-  height: 6px;                        
+    height: 6px;
 }
 
 .scrollbar-thin-custom::-webkit-scrollbar-track {
-  background: #222;                  
-  border-radius: 9999px;              
+    background: #222;
+    border-radius: 9999px;
 }
 
 .scrollbar-thin-custom::-webkit-scrollbar-thumb {
-  background: #666;                  
-  border-radius: 9999px;              
+    background: #666;
+    border-radius: 9999px;
 }
 
 .scrollbar-thin-custom::-webkit-scrollbar-thumb:hover {
-  background: #888;
+    background: #888;
 }
