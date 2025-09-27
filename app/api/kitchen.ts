@@ -39,6 +39,7 @@ interface ExecutionResult {
   stderr: string;
   message: string;
   language: string;
+  compile_output: string;
 }
 
 interface RunCodeResponse {
@@ -59,6 +60,8 @@ export async function getTestCasesAfterRun(
     };
 
     const response = await api.post<RunCodeResponse>("/runcode", requestData);
+    // console.log("in get", response);
+
     return response.data;
   } catch (error) {
     console.error("Error running code:", error);
@@ -95,6 +98,8 @@ interface TestCaseResult {
   status: string;
   description: string;
   expected_output: string;
+  compile_output: string;
+  stderr?: string;
 }
 
 interface SubmissionResult {
@@ -107,13 +112,16 @@ interface SubmissionResult {
   submission_time: string;
   description: string;
   testcases: TestCaseResult[];
+  stderr?: string;
 }
 
 export async function getSubmissionResult(
   submission_id: string
 ): Promise<SubmissionResult> {
   try {
-    const response = await api.get<SubmissionResult>(`/result/${submission_id}`);
+    const response = await api.get<SubmissionResult>(
+      `/result/${submission_id}`
+    );
     return response.data;
   } catch (error) {
     console.error("Error getting submission result:", error);

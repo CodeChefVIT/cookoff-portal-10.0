@@ -32,7 +32,7 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
       
       // Use statusDescription to determine the status
       if (testCase.statusDescription) {
-        const statusDesc = testCase.statusDescription.toLowerCase();
+        const statusDesc = testCase.statusDescription.trim().toLowerCase();
         
         // Check for success indicators in status description
         if (statusDesc.includes('successful') || statusDesc.includes('accepted')) {
