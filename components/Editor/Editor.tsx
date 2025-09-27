@@ -579,7 +579,7 @@ export default function Editor({
         <CodeMirror
           ref={editorRef}
           value={code || questionLanguage.template}
-          height="99%"
+          height="100%"
           width="100%"
           theme={everforestTheme}
           extensions={[
