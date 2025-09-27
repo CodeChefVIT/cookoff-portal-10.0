@@ -3,7 +3,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { oneDark } from "@codemirror/theme-one-dark";
-import { indentUnit } from "@codemirror/language";
+import {
+  indentUnit,
+  syntaxHighlighting,
+  syntaxParserRunning,
+} from "@codemirror/language";
 import type { EditorView } from "@codemirror/view";
 import type { ViewUpdate } from "@codemirror/view";
 import { vim } from "@replit/codemirror-vim";
@@ -22,6 +26,7 @@ import { MdFullscreen } from "react-icons/md";
 import { MdFullscreenExit } from "react-icons/md";
 import { submitCode } from "@/api/kitchen";
 import toast from "react-hot-toast";
+import { everforestHighlightStyle, everforestTheme } from "./Theme";
 import { CloudUpload, Loader2, Play } from "lucide-react";
 type EditorProps = {
   languages: Language[];
@@ -151,7 +156,7 @@ export default function Editor({
       const response = await getTestCasesAfterRun(
         code,
         questionLanguage.id,
-        selectedQuestionId
+        selectedQuestionId,
       );
       console.log(response);
 
@@ -177,7 +182,7 @@ export default function Editor({
       });
 
       const questionTestCases = originalTestCases.filter(
-        (tc) => tc.QuestionID === selectedQuestionId
+        (tc) => tc.QuestionID === selectedQuestionId,
       );
 
       const finalResults = transformedResults.map((result, index) => {
@@ -194,17 +199,17 @@ export default function Editor({
       setTestResults(finalResults);
 
       const hasErrors = response.result.some(
-        (r) => r.stderr || r.status.id !== 3
+        (r) => r.stderr || r.status.id !== 3,
       );
       const successCount = response.result.filter(
-        (r) => r.status.id === 3 && !r.stderr
+        (r) => r.status.id === 3 && !r.stderr,
       ).length;
       const totalCount = response.result.length;
 
       if (hasErrors) {
         toast.error(
           `Code execution completed: ${successCount}/${totalCount} test cases passed`,
-          { id: toastId }
+          { id: toastId },
         );
       } else {
         toast.success(`All ${totalCount} test cases passed successfully`, {
@@ -246,7 +251,7 @@ export default function Editor({
       const response = await submitCode(
         code,
         questionLanguage.id,
-        selectedQuestionId
+        selectedQuestionId,
       );
 
       toast.success(`Code submitted successfully! Getting results...`, {
@@ -258,11 +263,11 @@ export default function Editor({
 
       try {
         const submissionResult = await getSubmissionResult(
-          response.submission_id
+          response.submission_id,
         );
         console.log(submissionResult);
         const questionTestCases = originalTestCases.filter(
-          (tc) => tc.QuestionID === selectedQuestionId
+          (tc) => tc.QuestionID === selectedQuestionId,
         );
 
         // Transform submission results to match the existing TestCase format
@@ -296,7 +301,7 @@ export default function Editor({
                 : testcase.stderr || testcase.description,
               statusDescription: statusDesc,
             };
-          }
+          },
         );
 
         setTestResults(transformedResults);
@@ -324,7 +329,7 @@ export default function Editor({
             }
             return acc;
           },
-          0
+          0,
         );
 
         // Set overall compiler details with submission summary
@@ -355,7 +360,7 @@ export default function Editor({
       if (!selectedQuestionId || selectedQuestionId === "1") return;
 
       const cachedState = codeByQuestion.find(
-        (state) => state.questionId === selectedQuestionId
+        (state) => state.questionId === selectedQuestionId,
       );
       if (cachedState) {
         setCode(cachedState.code);
@@ -376,7 +381,7 @@ export default function Editor({
         if (!email) throw new Error("No email found in localStorage");
 
         const res = await axios.get(
-          `/api/save-code?questionId=${selectedQuestionId}&email=${email}`
+          `/api/save-code?questionId=${selectedQuestionId}&email=${email}`,
         );
 
         if (res.status === 200) {
@@ -485,7 +490,7 @@ export default function Editor({
   useEffect(() => {
     if (selectedQuestionId) {
       const cachedCode = codeByQuestion.find(
-        (state) => state.questionId === selectedQuestionId
+        (state) => state.questionId === selectedQuestionId,
       );
       if (!cachedCode) {
         setCode(questionLanguage.template);
@@ -501,7 +506,7 @@ export default function Editor({
   const saveCode = async (
     selectedQuestionId: string,
     code: string,
-    questionLanguage: { name: string }
+    questionLanguage: { name: string },
   ) => {
     if (!selectedQuestionId || !code.trim()) return;
 
@@ -576,11 +581,12 @@ export default function Editor({
           value={code || questionLanguage.template}
           height="100%"
           width="100%"
-          theme={oneDark}
+          theme={everforestTheme}
           extensions={[
             ...(vimMode ? [vim()] : []),
             questionLanguage.extension,
             indentUnit.of("    "), // 4 spaces for indentation
+            syntaxHighlighting(everforestHighlightStyle),
           ]}
           onChange={handleChange}
           basicSetup={{
@@ -655,7 +661,7 @@ export default function Editor({
                     loading: "Saving code to cloud...",
                     success: "Code saved successfully!",
                     error: "Failed to save code.",
-                  }
+                  },
                 )
               }
             >
