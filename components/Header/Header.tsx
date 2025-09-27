@@ -47,7 +47,7 @@ export default function Header() {
       onClick={handleDashboardClick}
       className="cursor-pointer select-none"
       >
-        COOK {""}
+        COOK
         <span
           className="inline-block bg-clip-text text-transparent"
           style={{
