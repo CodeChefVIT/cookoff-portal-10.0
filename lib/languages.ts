@@ -95,12 +95,11 @@ public class Solution {
     extension: python(),
     commentSymbol: "#",
     template: `def main():
-    # Your code here
-    pass
-
+  # Your code here
+  pass
 if __name__ == "__main__":
-    main()`,
-    cursorPosition: { line: 2, ch: 4 },
+  main()`,
+    cursorPosition: { line: 2, ch: 2 },
   },
   JavaScript: {
     id: 63,
