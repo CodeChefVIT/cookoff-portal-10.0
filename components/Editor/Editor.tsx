@@ -537,9 +537,9 @@ export default function Editor({
     <div
       className={`${
         fullScreen
-          ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 "
+          ? "h-[100vh] w-screen -top-0 left-0 fixed p-4 z-50 "
           : "h-full w-[50vw]"
-      }mx-auto flex flex-col shadow-lg overflow-x-hidden`}
+      }mx-auto flex flex-col shadow-lg overflow-x-hidden`} //interesting string concatenation, lets leave it for people to ponder
     >
       <div className="flex items-center justify-between mb-4 z-20">
         <div className="flex gap-4 items-center ">
@@ -566,7 +566,7 @@ export default function Editor({
       </div>
 
       <div
-        className={`flex-grow overflow-hidden ${
+        className={`flex-grow overflow-auto ${
           fullScreen ? "h-[100vh]" : "min-h-[200px]"
         }`}
       >

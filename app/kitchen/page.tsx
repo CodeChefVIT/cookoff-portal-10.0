@@ -275,7 +275,7 @@ export default function Kitchen() {
                   defaultSize={20}
                   className="p-4 pb-4"
                 >
-                  <div className="bg-[#131414] h-full rounded lg:rounded-lg overflow-auto">
+                  <div className="bg-[#131414] h-full p-2 overflow-auto">
                     <TestCases />
                   </div>
                 </ResizablePanel>
