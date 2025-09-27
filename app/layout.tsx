@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Roboto } from "next/font/google";
 import { Toaster } from "react-hot-toast";
+import ScreenGuard from "@/components/ScreenGuard";
 import "./globals.css";
 const inter = Inter({
   subsets: ["latin"],
@@ -112,7 +113,7 @@ export default function RootLayout({
             },
             success: {
               style: {
-                background: '#10B981',
+                background: '#0A8A36',
                 color: '#fff',
               },
             },
@@ -124,7 +125,9 @@ export default function RootLayout({
             },
           }}
         />
-        {children}
+        <ScreenGuard>
+          {children}
+        </ScreenGuard>
       </body>
     </html>
   );
