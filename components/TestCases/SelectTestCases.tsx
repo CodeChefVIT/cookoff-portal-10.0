@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import Button from "../ui/Button";
-import { BsEyeSlash, BsCheckCircleFill, BsXCircleFill, BsCircle, BsCircleFill } from "react-icons/bs";
+import { BsEyeSlash, BsCircle, BsCircleFill } from "react-icons/bs";
 import { TestCase } from "store/zustant";
 
 interface SelectTestCasesProps {
