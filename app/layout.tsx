@@ -113,7 +113,7 @@ export default function RootLayout({
             },
             success: {
               style: {
-                background: '#10B981',
+                background: '#0A8A36',
                 color: '#fff',
               },
             },
