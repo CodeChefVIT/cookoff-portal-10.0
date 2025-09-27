@@ -77,7 +77,7 @@ export default function RoundTimer() {
         <span className="text-[22px] text-black capitalize">{`Round ${round}`}</span>
       </div>
 
-      <div className="flex-1 h-full flex items-center justify-center w-fit rounded-r-lg px-3 min-w-[130px]">
+      <div className="flex-1 h-full flex items-center justify-center rounded-r-lg px-2 pr-7 min-w-[130px]">
         <span className="text-[20px] text-[#1BA94C] tracking-widest text-center">
           {formatted}
         </span>

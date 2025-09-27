@@ -139,12 +139,12 @@ const TestCases = ({ panelSize }: TestCasesProps) => {
           </div>{" "}
           {fullScreenTestCases ? (
             <MdFullscreenExit
-              className="scale-200"
+              className="scale-200 mr-2"
               onClick={() => setFullScreenTestCases(false)}
             />
           ) : (
             <MdFullscreen
-              className="scale-200 "
+              className="scale-200 mr-2"
               onClick={() => setFullScreenTestCases(true)}
             />
           )}
