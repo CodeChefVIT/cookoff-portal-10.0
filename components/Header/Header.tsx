@@ -8,8 +8,6 @@ import { Home } from "lucide-react";
 
 export default function Header() {
   const icon = "/icon.avif";
-
-  const dashboardIcon = "/dashboard.svg";
   const pathname = usePathname();
   const router = useRouter();
 
@@ -57,12 +55,12 @@ export default function Header() {
         </span>
       </h1>
 
-      <div className="flex items-center gap-4 ml-auto">
+      <div className="flex items-center gap-0 ml-auto">
         <NotificationButton />
         {pathname === "/kitchen" && (
           <button
             onClick={handleDashboardClick}
-            className="focus:outline-none !bg-transparent"
+            className="focus:outline-none !bg-transparent transition-colors group"
           >
             <Home />
           </button>

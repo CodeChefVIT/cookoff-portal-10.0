@@ -100,7 +100,7 @@ const DetailsCard = ({
           </p>
         </div>
         {/* Enter Kitchen Button */}
-        <div className="mt-7 mb-4">
+        <div className="mt-7 mb-16">
           <button
             onClick={async () => {
               if (pathname === "/kitchen") return; // already in kitchen

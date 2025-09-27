@@ -127,7 +127,7 @@ const ProfileCard = ({ data, loading }: { data: DashboardResponse | undefined, l
         </div>
 
         {/* Score */}
-        <div className="mt-12 mb-4">
+        <div className="mt-8 mb-4">
           <p className="text-xl text-[#c5bba7] text-center font-brunoace mb-1">
             Total Score
           </p>
@@ -150,7 +150,7 @@ const ProfileCard = ({ data, loading }: { data: DashboardResponse | undefined, l
         </div>
 
         {/* Log Out Button */}
-        <div className="flex justify-center mt-16 mb-8">
+        <div className="flex justify-center mt-8 mb-8">
           <button
             onClick={handleLogout}
             className="!border-2 !border-red-500 !text-[#c5bba7] font-nulshock !bg-neutral-900 !px-2 !py-2 text-sm rounded-md !hover:bg-red-500 hover:text-white transition flex items-center gap-1"
