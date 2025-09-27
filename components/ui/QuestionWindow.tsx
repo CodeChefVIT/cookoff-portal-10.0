@@ -66,7 +66,7 @@ const QuestionWindow: React.FC = () => {
         {/* Question content */}
         <div className="bg-[#131414] p-4 max-w-4xl mx-auto relative w-full min-h-[50vh] h-[90vh] overflow-y-scroll [&::-webkit-scrollbar]:w-0">
           {selectedQuestion ? (
-            <main>
+            <main className="pb-15">
               <h1 className="text-2xl sm:text-3xl font-bold text-green-400 mb-2 font-nulshock">
                 {selectedQuestion.Title}
               </h1>
@@ -123,7 +123,7 @@ const QuestionWindow: React.FC = () => {
                   </h2>
                   {(selectedQuestion.SampleTestInput ?? []).map((input, i) => (
                     <div key={i} className="mb-6">
-                      <div className="mb-4">
+                      <div className="mb-4 ml-6">
                         <h3 className="text-green-400 font-semibold">
                           Sample Input {i + 1}
                         </h3>
@@ -131,7 +131,7 @@ const QuestionWindow: React.FC = () => {
 ${input}
 `}</Markdown>
                       </div>
-                      <div className="mb-4">
+                      <div className="mb-4 ml-6">
                         <h3 className="text-green-400 font-semibold">
                           Sample Output {i + 1}
                         </h3>
@@ -139,7 +139,7 @@ ${input}
 ${(selectedQuestion.SampleTestOutput ?? [])[i]}
 `}</Markdown>
                       </div>
-                      <div className="mb-4">
+                      <div className="mb-4 ml-10">
                         <h3 className="text-green-400 font-semibold">
                           Explanation {i + 1}
                         </h3>

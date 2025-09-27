@@ -82,14 +82,11 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/icon.png", type: "image/png" },
-      { url: "/icon.webp", type: "image/webp" },
-    ],
-    apple: [{ url: "/icon.png", sizes: "180x180", type: "image/png" }],
-    shortcut: "/icon.png",
+    icon: "/favicon-v2.ico",
+    shortcut: "/favicon-v2.ico",
+    apple: "/favicon-v2.ico",
   },
+
   manifest: "/manifest.json",
   metadataBase: new URL("https://cookoff.codechefvit.com"),
   alternates: {
