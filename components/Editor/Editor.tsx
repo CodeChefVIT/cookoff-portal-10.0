@@ -214,6 +214,7 @@ export default function Editor({
         message: "Failed to run code. Please try again.",
       });
     } finally {
+      setSubmissionStatus("submitted");
       setIsRunning(false);
     }
   };
@@ -227,7 +228,7 @@ export default function Editor({
     const submissionToastId = toast.loading("Submitting code...");
 
     try {
-      setSubmissionStatus("submitted");
+      setSubmissionStatus("running");
       const response = await submitCode(
         code,
         questionLanguage.id,
@@ -286,9 +287,11 @@ export default function Editor({
 
         setTestResults(transformedResults);
 
-        const successMessage = `Submission completed: ${submissionResult.passed
-          }/${submissionResult.passed + submissionResult.failed
-          } test cases passed`;
+        const successMessage = `Submission completed: ${
+          submissionResult.passed
+        }/${
+          submissionResult.passed + submissionResult.failed
+        } test cases passed`;
 
         if (submissionResult.failed > 0) {
           toast.error(successMessage, { id: resultToastId });
@@ -318,6 +321,7 @@ export default function Editor({
           totalCount: submissionResult.passed + submissionResult.failed,
           hiddenPassedCount: hiddenPassed,
         });
+        setSubmissionStatus("submitted");
       } catch (resultError) {
         console.error("Error fetching submission result:", resultError);
         toast.error("Submission successful, but failed to fetch results", {
@@ -483,10 +487,11 @@ export default function Editor({
 
   return (
     <div
-      className={`${fullScreen
-        ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 "
-        : "h-full w-[50vw]"
-        }mx-auto flex flex-col shadow-lg overflow-x-hidden`}
+      className={`${
+        fullScreen
+          ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 "
+          : "h-full w-[50vw]"
+      }mx-auto flex flex-col shadow-lg overflow-x-hidden`}
     >
       <div className="flex items-center justify-between mb-4 z-20">
         <div className="flex gap-4 items-center ">
@@ -513,8 +518,9 @@ export default function Editor({
       </div>
 
       <div
-        className={`flex-grow overflow-hidden ${fullScreen ? "h-[100vh]" : "min-h-[200px]"
-          }`}
+        className={`flex-grow overflow-hidden ${
+          fullScreen ? "h-[100vh]" : "min-h-[200px]"
+        }`}
       >
         <CodeMirror
           ref={editorRef}
