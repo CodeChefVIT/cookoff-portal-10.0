@@ -6,8 +6,13 @@ import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DashboardResponse } from "@/schemas/api/index";
 
-
-const ProfileCard = ({ data, loading }: { data: DashboardResponse | undefined, loading: boolean }) => {
+const ProfileCard = ({
+  data,
+  loading,
+}: {
+  data: DashboardResponse | undefined;
+  loading: boolean;
+}) => {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -23,13 +28,10 @@ const ProfileCard = ({ data, loading }: { data: DashboardResponse | undefined, l
 
   if (loading) {
     return (
-      <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
-        {/* Header strip */}
-        <div className="bg-neutral-800 text-center py-2">
-          <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7]">
-            PROFILE
-          </h2>
-        </div>
+      <div className="rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
+        <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7] bg-neutral-800 text-center py-2 leading-14">
+          PROFILE
+        </h2>
 
         {/* Body */}
         <div className="p-4">
@@ -84,7 +86,7 @@ const ProfileCard = ({ data, loading }: { data: DashboardResponse | undefined, l
   const progress = (total_score / max_score) * 100;
 
   return (
-    <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
+    <div className="rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700 h-full">
       {/* Header strip */}
       <div className="bg-neutral-800 text-center py-2">
         <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7]">
