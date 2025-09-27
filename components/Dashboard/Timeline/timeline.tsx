@@ -54,7 +54,6 @@ export default function Timeline({
 
     updateSteps();
     const interval = setInterval(updateSteps, 120_000);
-
     return () => clearInterval(interval);
   }, [current_round]);
 
@@ -68,27 +67,21 @@ export default function Timeline({
       {/* Connector Bar */}
       <div className="absolute top-2 left-0 right-0 z-0 mx-[37px] h-[10px]">
         <div className="w-full h-full bg-[#B7AB98] rounded" />
-        <div className="flex h-full absolute top-0 left-0 w-full">
-          {steps.slice(0, totalSteps - 1).map((step, idx) => (
-            <div key={idx} className="relative flex-1 h-full">
-              <div
-                className="h-full bg-[#1DDB5E] rounded transition-all duration-500"
-                style={{ width: `${step.progress}%` }}
-              />
-            </div>
-          ))}
+
+        <div className="absolute top-0 left-0 h-full w-full">
           <div
-            className="absolute top-1/2 -translate-y-1/2"
-            style={{ left: `${totalGreenPercent}%` }}
-          >
-            <div className="-top-3 -left-6 relative">
-              <Image
-                src="/chef-hat.svg"
-                alt="Chef Hat"
-                width={56}
-                height={56}
-              />
-            </div>
+            className="h-full bg-[#1DDB5E] rounded transition-all duration-500"
+            style={{ width: `${totalGreenPercent}%` }}
+          />
+        </div>
+
+        {/* Chef hat */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2"
+          style={{ left: `${totalGreenPercent}%` }}
+        >
+          <div className="-top-3 -left-6 relative">
+            <Image src="/chef-hat.svg" alt="Chef Hat" width={56} height={56} />
           </div>
         </div>
       </div>
@@ -96,11 +89,6 @@ export default function Timeline({
       {/* Steps */}
       <div className="flex justify-between relative z-10">
         {steps.map((step, idx) => {
-          const prevStep = steps[idx - 1];
-          const showFlag =
-            step.progress === 100 &&
-            (step.label === "Start" || (prevStep && prevStep.progress === 100));
-
           return (
             <div key={idx} className="flex flex-col items-center relative">
               <div className="relative z-10">
