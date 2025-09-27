@@ -71,7 +71,6 @@ export default function Kitchen() {
     fetchData();
   }, [setQuestions, setTestCases]);
 
-  const [testCasesPanelSize, setTestCasesPanelSize] = useState(20);
   const [sidebarWidth, setSidebarWidth] = useState(50);
   const [mobileActiveTab, setMobileActiveTab] = useState<
     "question" | "editor" | "testcases"
@@ -112,7 +111,7 @@ export default function Kitchen() {
   }
 
   if (fullScreenTestCases) {
-    return <TestCases panelSize={100} />;
+    return <TestCases />;
   }
   if (loading) {
     return <Loading />;
@@ -194,7 +193,7 @@ export default function Kitchen() {
 
             {mobileActiveTab === "testcases" && (
               <div className="h-full p-3 bg-[#131414]">
-                <TestCases panelSize={100} />
+                <TestCases />
               </div>
             )}
           </div>
@@ -275,10 +274,9 @@ export default function Kitchen() {
                 <ResizablePanel
                   defaultSize={20}
                   className="p-4 pb-4"
-                  onResize={(size) => setTestCasesPanelSize(size)}
                 >
                   <div className="bg-[#131414] h-full rounded lg:rounded-lg overflow-auto">
-                    <TestCases panelSize={testCasesPanelSize} />
+                    <TestCases />
                   </div>
                 </ResizablePanel>
               </ResizablePanelGroup>
