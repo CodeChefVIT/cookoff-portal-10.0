@@ -30,7 +30,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="relative min-h-screen flex flex-col">
+    <div className="relative min-h-fit p-8">
       {/* Background */}
       <div className="fixed inset-0 -z-10 bg-black">
         <Image
@@ -42,7 +42,7 @@ export default function Dashboard() {
       </div>
 
       {/* Page container */}
-      <div className=" flex flex-col gap-2 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex-1">
+      <div className="flex flex-col gap-2 w-full max-w-[1440px] mx-auto flex-1">
         {/* Timeline section */}
         <section className="h-[120px] w-full rounded-2xl flex items-center justify-center overflow-hidden">
           <Timeline current_round={data?.current_round} />

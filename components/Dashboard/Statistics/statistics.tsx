@@ -212,7 +212,7 @@ const Statistics = ({
       </p>
 
       {/* Vertical list of cards */}
-      <div className="ml-2 mb-2 h-full grid grid-rows-3 gap-6">
+      <div className="ml-2 mb-2 h-full grid grid-rows-3 gap-6 mt-6">
         {rounds
           .filter((r) => r.round !== 0) // skip round 0
           .map((r) => (
