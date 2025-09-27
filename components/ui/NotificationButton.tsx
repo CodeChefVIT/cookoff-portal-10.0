@@ -10,7 +10,6 @@ import {
   query,
   Timestamp,
 } from "firebase/firestore";
-import Button from "./Button";
 
 type Notification = {
   id: string;
@@ -85,18 +84,18 @@ export default function NotificationButton() {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <Button
+      <button
         onClick={handleToggleDropdown}
-        variant="ghost"
-        className="relative p-2 rounded-full hover:bg-[#1c1c1c] transition"
+        className="relative p-1 focus:outline-none !bg-transparent border-none"
       >
-        <FaBell className="text-2xl md:text-3xl g= text-gray-300" />
+
+        <FaBell className="text-xl  md:text-2xl text-gray-300 hover:text-white transition-colors" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 border-2  rounded-full">
+          <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-600 rounded-full">
             {unreadCount}
           </span>
         )}
-      </Button>
+      </button>
 
       {open && (
         <div className="absolute right-0 mt-2 w-80 rounded-xl border border-[#2c2c2c] bg-[#0f0f0f] shadow-2xl z-50">
