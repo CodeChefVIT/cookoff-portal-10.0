@@ -13,6 +13,7 @@ export default function Dashboard() {
   const [data, setData] = useState<DashboardResponse>();
   const [loading, setLoading] = useState<boolean>(true);
   const { setRound } = useKitchenStore();
+
   useEffect(() => {
     const fetchDetails = async () => {
       try {
@@ -48,25 +49,15 @@ export default function Dashboard() {
           <Timeline current_round={data?.current_round} />
         </section> 
 
-        <div className="grid gap-8 flex-1 lg:grid-cols-[20%_1fr_20%] grid-cols-2">
+        <div className="grid gap-8 flex-1 lg:grid-cols-[20%_1fr_20%] grid-cols-2 items-stretch">
           <div className="col-span-1">
             <ProfileCard data={data} loading={loading} />
           </div>
-          <div className="col-span-1 ">
-            <div className="hidden lg:block h-full">
-              <Statistics data={data} loading={loading} />
-            </div>
-            <div className="lg:hidden h-full">
-              <DetailsCard />
-            </div>
+          <div className="col-span-1">
+            <Statistics data={data} loading={loading} />
           </div>
           <div className="col-span-2 lg:col-span-1">
-            <div className="lg:hidden h-full">
-              <Statistics data={data} loading={loading} />
-            </div>
-            <div className="lg:block hidden h-full">
-              <DetailsCard />
-            </div>
+            <DetailsCard />
           </div>
         </div>
       </div>

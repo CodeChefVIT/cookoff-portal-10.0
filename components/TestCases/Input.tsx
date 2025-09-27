@@ -66,7 +66,7 @@ const Input: React.FC<InputProps> = ({
               <InputOutputCard
                 title={"Input"}
                 data={activeCaseData.input}
-                className={"w-[48%]"}
+                className={"w-full"}
               />
             </div>
           )}
