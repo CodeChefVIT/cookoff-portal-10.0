@@ -86,11 +86,11 @@ export default function Kitchen() {
   const handleSetFullScreenEditor: React.Dispatch<
     React.SetStateAction<boolean>
   > = (fullScreen) =>
-    setFullScreenEditor(
-      typeof fullScreen === "function"
-        ? fullScreen(fullScreenEditor)
-        : fullScreen
-    );
+      setFullScreenEditor(
+        typeof fullScreen === "function"
+          ? fullScreen(fullScreenEditor)
+          : fullScreen
+      );
 
   if (fullScreenQuestion) {
     return <QuestionWindow />;
@@ -124,31 +124,28 @@ export default function Kitchen() {
           {/* Tab Navigation */}
           <div className="flex border-b border-gray-700 bg-[#0A0F0B]">
             <button
-              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
-                mobileActiveTab === "question"
-                  ? "text-white border-b-2 border-green-500"
-                  : "text-gray-400 hover:text-white"
-              }`}
+              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${mobileActiveTab === "question"
+                ? "text-white border-b-2 border-green-500"
+                : "text-gray-400 hover:text-white"
+                }`}
               onClick={() => setMobileActiveTab("question")}
             >
               Question
             </button>
             <button
-              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
-                mobileActiveTab === "editor"
-                  ? "text-white border-b-2 border-green-500"
-                  : "text-gray-400 hover:text-white"
-              }`}
+              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${mobileActiveTab === "editor"
+                ? "text-white border-b-2 border-green-500"
+                : "text-gray-400 hover:text-white"
+                }`}
               onClick={() => setMobileActiveTab("editor")}
             >
               Editor
             </button>
             <button
-              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
-                mobileActiveTab === "testcases"
-                  ? "text-white border-b-2 border-green-500"
-                  : "text-gray-400 hover:text-white"
-              }`}
+              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${mobileActiveTab === "testcases"
+                ? "text-white border-b-2 border-green-500"
+                : "text-gray-400 hover:text-white"
+                }`}
               onClick={() => setMobileActiveTab("testcases")}
             >
               Test Cases

@@ -286,11 +286,9 @@ export default function Editor({
 
         setTestResults(transformedResults);
 
-        const successMessage = `Submission completed: ${
-          submissionResult.passed
-        }/${
-          submissionResult.passed + submissionResult.failed
-        } test cases passed`;
+        const successMessage = `Submission completed: ${submissionResult.passed
+          }/${submissionResult.passed + submissionResult.failed
+          } test cases passed`;
 
         if (submissionResult.failed > 0) {
           toast.error(successMessage, { id: resultToastId });
@@ -485,95 +483,78 @@ export default function Editor({
 
   return (
     <div
-      className={`${
-        fullScreen
-          ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 "
-          : "h-full w-[50vw]"
-      }mx-auto flex flex-col shadow-lg overflow-x-hidden`}
+      className={`${fullScreen
+        ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 "
+        : "h-full w-[50vw]"
+        }mx-auto flex flex-col shadow-lg overflow-x-hidden`}
     >
       <div className="flex items-center justify-between mb-4 z-20">
         <div className="flex gap-4 items-center ">
           <RoundTimer />
-          <div className="flex flex-col items-center gap-4">
-            <LanguageSelector
-              languages={languages}
-              selectedLanguage={questionLanguage}
-              onLanguageChange={handleLanguageChange}
-            />
-            {fullScreen ? (
-              <MdFullscreenExit
-                className="scale-200 h-6 w-6 hover:cursor-pointer"
-                onClick={() => setfullScreen((prev) => !prev)}
-              />
-            ) : (
-              <MdFullscreen
-                className="scale-200 h-6 w-6  hover:cursor-pointer"
-                onClick={() => setfullScreen((prev) => !prev)}
-              />
-            )}
-          </div>
         </div>
-
-        <div
-          className={`flex-grow overflow-hidden ${
-            fullScreen ? "h-[100vh]" : "min-h-[200px]"
-          }`}
-        >
-          <CodeMirror
-            ref={editorRef}
-            value={code || questionLanguage.template}
-            height="100%"
-            theme={oneDark}
-            extensions={[
-              questionLanguage.extension,
-              indentUnit.of("  "), // 2 spaces for indentation
-            ]}
-            onChange={handleChange}
-            basicSetup={{
-              tabSize: 2,
-              indentOnInput: true,
-              autocompletion: true,
-              bracketMatching: true,
-              foldGutter: true,
-              highlightSelectionMatches: true,
-            }}
+        <div className="flex flex-row items-center gap-4">
+          <LanguageSelector
+            languages={languages}
+            selectedLanguage={questionLanguage}
+            onLanguageChange={handleLanguageChange}
           />
+          {fullScreen ? (
+            <MdFullscreenExit
+              className="scale-200 h-6 w-6 hover:cursor-pointer"
+              onClick={() => setfullScreen((prev) => !prev)}
+            />
+          ) : (
+            <MdFullscreen
+              className="scale-200 h-6 w-6  hover:cursor-pointer"
+              onClick={() => setfullScreen((prev) => !prev)}
+            />
+          )}
         </div>
+      </div>
 
-        <div className="flex items-center justify-end px-6 py-2 bg-[#181919] text-gray-400 text-sm border-b border-gray-700">
-          Line: {cursor.line} &nbsp;|&nbsp; Col: {cursor.ch}
-        </div>
+      <div
+        className={`flex-grow overflow-hidden ${fullScreen ? "h-[100vh]" : "min-h-[200px]"
+          }`}
+      >
+        <CodeMirror
+          ref={editorRef}
+          value={code || questionLanguage.template}
+          height="100%"
+          width="100%"
+          theme={oneDark}
+          extensions={[
+            questionLanguage.extension,
+            indentUnit.of("    "), // 4 spaces for indentation
+          ]}
+          onChange={handleChange}
+          basicSetup={{
+            tabSize: 4,
+            indentOnInput: true,
+            autocompletion: true,
+            bracketMatching: true,
+            foldGutter: true,
+            highlightSelectionMatches: true,
+          }}
+        />
+      </div>
 
-        <div className="flex items-center justify-between px-6 py-3 bg-[#181919] z-100">
-          {/* <div className="flex items-center gap-2">
-          <button
-            aria-label="Toggle Custom Input"
-            onClick={() => setCustomInput((prev) => !prev)}
-            className="focus:outline-none !bg-transparent !shadow-none border-0 p-0 m-0"
+      {/* Footer sections */}
+      <div className="flex items-center justify-end px-6 py-2 bg-[#181919] text-gray-400 text-sm border-b border-gray-700">
+        Line: {cursor.line} &nbsp;|&nbsp; Col: {cursor.ch}
+      </div>
+      <div className="flex items-center justify-between px-6 py-3 bg-[#181919] z-100">
+        <div className="flex gap-4">
+          <Button
+            variant="run"
+            size="default"
+            onClick={runCode}
+            disabled={isRunning}
           >
-            <span className="text-gray-300 text-xl flex items-center gap-3">
-              {customInput ? (
-                <FaToggleOn size={39} color="#22c55e" />
-              ) : (
-                <FaToggleOff size={39} color="#64748b" />
-              )}{" "}
-              Custom Input
-            </span>
-          </button>
-        </div> */}
-          <div className="flex gap-4">
-            <Button
-              variant="run"
-              size="default"
-              onClick={runCode}
-              disabled={isRunning}
-            >
-              {isRunning ? "Running..." : "Run Code"}
-            </Button>
-            <Button variant="green" size="default" onClick={submitCodeHandler}>
-              Submit Code
-            </Button>
-          </div>
+            {isRunning ? "Running..." : "Run Code"}
+          </Button>
+          <Button variant="green" size="default" onClick={submitCodeHandler}>
+            Submit Code
+          </Button>
         </div>
       </div>
     </div>
