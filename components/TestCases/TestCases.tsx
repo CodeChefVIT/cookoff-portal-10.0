@@ -119,9 +119,9 @@ const TestCases = ({ panelSize }: TestCasesProps) => {
     <div
       className={`${
         fullScreenTestCases
-          ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 overflow-y-scroll "
-          : "min-h-[50vh] h-full  "
-      }flex flex-col flex-wrap gap-4 bg-testcasesBG p-2 font-roboto`}
+          ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 "
+          : " h-full  "
+      }flex flex-col gap-4 bg-testcasesBG p-2 font-roboto`}
     >
       <div>
         <div className="flex justify-between items-center">

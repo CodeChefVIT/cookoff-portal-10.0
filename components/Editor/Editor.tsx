@@ -3,6 +3,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { oneDark } from "@codemirror/theme-one-dark";
+import { indentUnit } from "@codemirror/language";
 import type { EditorView } from "@codemirror/view";
 import type { ViewUpdate } from "@codemirror/view";
 import LanguageSelector from "./LanguageSelector/LanguageSelector";
@@ -19,7 +20,6 @@ import { MdFullscreen } from "react-icons/md";
 import { MdFullscreenExit } from "react-icons/md";
 import { submitCode } from "@/api/kitchen";
 import toast from "react-hot-toast";
-import { email } from "zod";
 type EditorProps = {
   languages: Language[];
   round?: string;
@@ -491,7 +491,7 @@ export default function Editor({
           : "h-full w-[50vw]"
       }mx-auto flex flex-col bg-[#131414] shadow-lg overflow-x-hidden`}
     >
-      <div className="flex items-center justify-between px-6 py-3 z-20 bg-[#1e1f1f] border-b border-gray-700">
+      <div className="flex items-center justify-between px-6 py-3 z-[100] bg-[#1e1f1f] border-b border-gray-700 relative">
         <RoundTimer />
         <div className="flex gap-10 items-center ">
           <LanguageSelector
@@ -523,8 +523,19 @@ export default function Editor({
           value={code || questionLanguage.template}
           height="100%"
           theme={oneDark}
-          extensions={[questionLanguage.extension]}
+          extensions={[
+            questionLanguage.extension,
+            indentUnit.of("  "), // 2 spaces for indentation
+          ]}
           onChange={handleChange}
+          basicSetup={{
+            tabSize: 2,
+            indentOnInput: true,
+            autocompletion: true,
+            bracketMatching: true,
+            foldGutter: true,
+            highlightSelectionMatches: true,
+          }}
         />
       </div>
 

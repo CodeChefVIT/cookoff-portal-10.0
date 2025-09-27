@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Roboto } from "next/font/google";
 import { Toaster } from "react-hot-toast";
+import ScreenGuard from "@/components/ScreenGuard";
 import "./globals.css";
 const inter = Inter({
   subsets: ["latin"],
@@ -101,7 +102,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="lg:h-screen lg:overflow-hidden">
+    <html lang="en" className="lg:h-screen">
       <head>
         <meta name="theme-color" content="#070E0A" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -116,7 +117,7 @@ export default function RootLayout({
         <meta name="msapplication-config" content="/browserconfig.xml" />
       </head>
       <body
-        className={`${inter.variable} ${roboto.variable} antialiased lg:h-screen lg:overflow-hidden bg-[#070E0A]`}
+        className={`${inter.variable} ${roboto.variable} antialiased lg:h-screen bg-[#070E0A]`}
       >
         <Toaster
           position="top-right"
@@ -142,7 +143,7 @@ export default function RootLayout({
             },
           }}
         />
-        {children}
+        <ScreenGuard>{children}</ScreenGuard>
       </body>
     </html>
   );

@@ -51,7 +51,7 @@ const QuestionWindow: React.FC = () => {
     >
       <div className="w-full max-w-4xl">
         {/* Tabs - Hidden on mobile since we have question selector in mobile layout */}
-        <div className="hidden md:flex items-center space-x-1 sm:space-x-2 mb-[-1px] pl-4 overflow-x-auto scrollbar-hide">
+        <div className="hidden md:flex items-center mb-4 overflow-x-auto overflow-y-hidden scrollbar-thin-custom overflow-visible">
           {questions.map((q, key) => (
             <TabButton
               key={q.ID}

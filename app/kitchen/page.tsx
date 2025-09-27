@@ -109,9 +109,7 @@ export default function Kitchen() {
   }
 
   if (fullScreenTestCases) {
-    return (
-      <TestCases panelSize={100} />
-    );
+    return <TestCases panelSize={100} />;
   }
   if (loading) {
     return <Loading />;
@@ -205,18 +203,21 @@ export default function Kitchen() {
 
       {/* Desktop Layout (>= md) */}
       <div className="hidden md:flex flex-grow">
-        <ResizablePanelGroup direction="horizontal" className="flex-grow">
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="flex-grow"
+          style={{ overflow: "visible" }}
+        >
           <ResizablePanel
             ref={panelRef}
             defaultSize={50}
             minSize={4}
-            maxSize={50}
             onResize={(size) => setSidebarWidth(size)}
           >
             <div className="h-full overflow-hidden">
               {sidebarWidth > 10 ? (
                 <div className="grid grid-cols-1 gap-4 lg:gap-6">
-                  <div className="-mt-2 py-3 pr-2 min-h-[90vh] -translate-y-5 [&::-webkit-scrollbar]:w-0">
+                  <div className="min-h-[90vh] p-4 [&::-webkit-scrollbar]:w-0">
                     <QuestionWindow />
                   </div>
                 </div>
@@ -245,36 +246,47 @@ export default function Kitchen() {
           <ResizableHandle withHandle />
 
           {/* Right side scrollable section */}
-          <ResizablePanel defaultSize={70}>
-            <div className="h-full overflow-y-auto">
+          <ResizablePanel defaultSize={70} style={{ overflow: "visible" }}>
+            <div
+              className="h-full overflow-y-auto"
+              style={{ overflow: "visible" }}
+            >
               <ResizablePanelGroup
                 direction="vertical"
                 className="translate-y-2 lg:translate-y-4"
                 defaultValue={80}
+                style={{ overflow: "visible" }}
               >
+                {/* Editor Panel */}
                 <ResizablePanel
                   defaultSize={75}
                   className="pb-2 lg:pb-4 pl-2 lg:pl-4"
+                  style={{ overflow: "visible" }}
                 >
-                  <div className="h-full flex flex-col gap-2 mt-0">
-                    <Editor
-                      languages={languages}
-                      round="round 0"
-                      setfullScreen={handleSetFullScreenEditor}
-                      fullScreen={fullScreenEditor}
-                    />
+                  <div
+                    className="h-full flex flex-col gap-2 mt-0 relative z-30 overflow-auto"
+                    style={{ overflow: "visible" }}
+                  >
+                    <div className="flex flex-col gap-2 mt-0">
+                      <Editor
+                        languages={languages}
+                        round="round 0"
+                        setfullScreen={handleSetFullScreenEditor}
+                        fullScreen={fullScreenEditor}
+                      />
+                    </div>
                   </div>
                 </ResizablePanel>
 
                 <ResizableHandle withHandle />
 
+                {/* Test Cases Panel */}
                 <ResizablePanel
                   defaultSize={20}
-                  maxSize={60}
-                  className="pt-2 lg:pt-4 pl-2 lg:pl-4"
+                  className="p-4 pb-4"
                   onResize={(size) => setTestCasesPanelSize(size)}
                 >
-                  <div className="bg-[#131414] rounded lg:rounded-lg">
+                  <div className="bg-[#131414] h-full rounded lg:rounded-lg overflow-auto">
                     <TestCases panelSize={testCasesPanelSize} />
                   </div>
                 </ResizablePanel>

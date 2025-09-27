@@ -21,13 +21,10 @@ const DetailsCard = ({
 
   if (loading) {
     return (
-      <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
-        {/* Header */}
-        <div className="bg-neutral-800 text-center py-2">
-          <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7]">
-            DETAILS
-          </h2>
-        </div>
+      <div className="rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
+        <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7] bg-neutral-800 text-center py-2 leading-14">
+          Details
+        </h2>
 
         {/* Body */}
         <div className="mt-3 p-6 flex flex-col items-center text-center space-y-6">
@@ -63,14 +60,14 @@ const DetailsCard = ({
 
   if (current_round == undefined) {
     return (
-      <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md p-6 text-center">
+      <div className="rounded-lg bg-neutral-900 text-gray-200 shadow-md p-6 text-center">
         Failed to load details
       </div>
     );
   }
 
   return (
-    <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
+    <div className="rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700 h-full">
       {/* Header */}
       <div className="bg-neutral-800 text-center py-2">
         <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7]">
@@ -79,7 +76,7 @@ const DetailsCard = ({
       </div>
 
       {/* Body */}
-      <div className="mt-3 p-6 flex flex-col items-center text-center space-y-6">
+      <div className="p-4 flex flex-col items-center text-center space-y-6">
         {/* Current Round */}
         <div>
           <p className="text-lg font-inter font-normal text-white">
@@ -100,7 +97,7 @@ const DetailsCard = ({
           </p>
         </div>
         {/* Enter Kitchen Button */}
-        <div className="mt-7 mb-4">
+        <div className="mt-7 mb-16">
           <button
             onClick={async () => {
               if (pathname === "/kitchen") return; // already in kitchen
