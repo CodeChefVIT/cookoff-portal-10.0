@@ -126,7 +126,7 @@ const TestCases = ({ panelSize }: TestCasesProps) => {
       <div>
         <div className="flex justify-between items-center">
           <div
-            className={`rounded-xl bg-testcasesBG px-4 py-4 text-3xl font-bold ${
+            className={`rounded-xl bg-testcasesBG text-3xl font-bold ${
               outputExists && submissionStatus === "submitted"
                 ? getTestCaseScoreColor(passedCount, displayTotal)
                 : "text-gray-400"

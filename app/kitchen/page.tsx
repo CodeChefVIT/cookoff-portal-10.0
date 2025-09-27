@@ -18,7 +18,6 @@ import { ImperativePanelHandle } from "react-resizable-panels";
 import timer from "@/services/getTimer";
 import toast from "react-hot-toast";
 import Loading from "@/components/Loading";
-
 export default function Kitchen() {
   const {
     selectedQuestionId,
@@ -121,7 +120,7 @@ export default function Kitchen() {
       {/* Mobile Layout (< md) */}
       <div className="md:hidden flex-grow flex flex-col">
         {/* Mobile Content - Tabs */}
-        <div className="flex-grow flex flex-col">
+        <div className=" flex flex-col">
           {/* Tab Navigation */}
           <div className="flex border-b border-gray-700 bg-[#0A0F0B]">
             <button
@@ -258,23 +257,14 @@ export default function Kitchen() {
                 style={{ overflow: "visible" }}
               >
                 {/* Editor Panel */}
-                <ResizablePanel
-                  defaultSize={75}
-                  className="pb-2 lg:pb-4 pl-2 lg:pl-4"
-                  style={{ overflow: "visible" }}
-                >
-                  <div
-                    className="h-full flex flex-col gap-2 mt-0 relative z-30 overflow-auto"
-                    style={{ overflow: "visible" }}
-                  >
-                    <div className="flex flex-col gap-2 mt-0">
-                      <Editor
-                        languages={languages}
-                        round="round 0"
-                        setfullScreen={handleSetFullScreenEditor}
-                        fullScreen={fullScreenEditor}
-                      />
-                    </div>
+                <ResizablePanel defaultSize={75} className="py-4 pl-4 mt-0">
+                  <div className="h-full overflow-auto pr-4">
+                    <Editor
+                      languages={languages}
+                      round="round 0"
+                      setfullScreen={handleSetFullScreenEditor}
+                      fullScreen={fullScreenEditor}
+                    />
                   </div>
                 </ResizablePanel>
 

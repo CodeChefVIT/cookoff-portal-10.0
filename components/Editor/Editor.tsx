@@ -489,62 +489,63 @@ export default function Editor({
         fullScreen
           ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 "
           : "h-full w-[50vw]"
-      }mx-auto flex flex-col bg-[#131414] shadow-lg overflow-x-hidden`}
+      }mx-auto flex flex-col shadow-lg overflow-x-hidden`}
     >
-      <div className="flex items-center justify-between px-6 py-3 z-[100] bg-[#1e1f1f] border-b border-gray-700 relative">
-        <RoundTimer />
-        <div className="flex gap-10 items-center ">
-          <LanguageSelector
-            languages={languages}
-            selectedLanguage={questionLanguage}
-            onLanguageChange={handleLanguageChange}
-          />
-          {fullScreen ? (
-            <MdFullscreenExit
-              className="scale-200"
-              onClick={() => setfullScreen((prev) => !prev)}
+      <div className="flex items-center justify-between mb-4 z-20">
+        <div className="flex gap-4 items-center ">
+          <RoundTimer />
+          <div className="flex flex-col items-center gap-4">
+            <LanguageSelector
+              languages={languages}
+              selectedLanguage={questionLanguage}
+              onLanguageChange={handleLanguageChange}
             />
-          ) : (
-            <MdFullscreen
-              className="scale-200 "
-              onClick={() => setfullScreen((prev) => !prev)}
-            />
-          )}
+            {fullScreen ? (
+              <MdFullscreenExit
+                className="scale-200 h-6 w-6 hover:cursor-pointer"
+                onClick={() => setfullScreen((prev) => !prev)}
+              />
+            ) : (
+              <MdFullscreen
+                className="scale-200 h-6 w-6  hover:cursor-pointer"
+                onClick={() => setfullScreen((prev) => !prev)}
+              />
+            )}
+          </div>
         </div>
-      </div>
 
-      <div
-        className={`flex-1 overflow-hidden ${
-          fullScreen ? "h-[95vh]" : "min-h-[200px]"
-        }`}
-      >
-        <CodeMirror
-          ref={editorRef}
-          value={code || questionLanguage.template}
-          height="100%"
-          theme={oneDark}
-          extensions={[
-            questionLanguage.extension,
-            indentUnit.of("  "), // 2 spaces for indentation
-          ]}
-          onChange={handleChange}
-          basicSetup={{
-            tabSize: 2,
-            indentOnInput: true,
-            autocompletion: true,
-            bracketMatching: true,
-            foldGutter: true,
-            highlightSelectionMatches: true,
-          }}
-        />
-      </div>
+        <div
+          className={`flex-grow overflow-hidden ${
+            fullScreen ? "h-[100vh]" : "min-h-[200px]"
+          }`}
+        >
+          <CodeMirror
+            ref={editorRef}
+            value={code || questionLanguage.template}
+            height="100%"
+            theme={oneDark}
+            extensions={[
+              questionLanguage.extension,
+              indentUnit.of("  "), // 2 spaces for indentation
+            ]}
+            onChange={handleChange}
+            basicSetup={{
+              tabSize: 2,
+              indentOnInput: true,
+              autocompletion: true,
+              bracketMatching: true,
+              foldGutter: true,
+              highlightSelectionMatches: true,
+            }}
+          />
+        </div>
 
-      <div className="flex items-center justify-end px-6 py-2 bg-[#181919] text-gray-400 text-sm border-b border-gray-700">
-        Line: {cursor.line} &nbsp;|&nbsp; Col: {cursor.ch}
-      </div>
+        <div className="flex items-center justify-end px-6 py-2 bg-[#181919] text-gray-400 text-sm border-b border-gray-700">
+          Line: {cursor.line} &nbsp;|&nbsp; Col: {cursor.ch}
+        </div>
 
-      <div className="flex items-center justify-between px-6 py-3 bg-[#181919] z-100">
-        {/* <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between px-6 py-3 bg-[#181919] z-100">
+          {/* <div className="flex items-center gap-2">
           <button
             aria-label="Toggle Custom Input"
             onClick={() => setCustomInput((prev) => !prev)}
@@ -560,18 +561,19 @@ export default function Editor({
             </span>
           </button>
         </div> */}
-        <div className="flex gap-4">
-          <Button
-            variant="run"
-            size="default"
-            onClick={runCode}
-            disabled={isRunning}
-          >
-            {isRunning ? "Running..." : "Run Code"}
-          </Button>
-          <Button variant="green" size="default" onClick={submitCodeHandler}>
-            Submit Code
-          </Button>
+          <div className="flex gap-4">
+            <Button
+              variant="run"
+              size="default"
+              onClick={runCode}
+              disabled={isRunning}
+            >
+              {isRunning ? "Running..." : "Run Code"}
+            </Button>
+            <Button variant="green" size="default" onClick={submitCodeHandler}>
+              Submit Code
+            </Button>
+          </div>
         </div>
       </div>
     </div>

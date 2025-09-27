@@ -77,7 +77,7 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
   }, [visibleCases, outputExists]);
 
   return (
-    <div className="flex items-center justify-between gap-3">
+    <div className="flex items-center justify-between gap-3 -ml-2">
       <div>
         {visibleCases.map((testCase, idx) => {
           const status = testCaseStatus.find((s) => s.id === testCase.id);
@@ -122,7 +122,7 @@ const SelectTestCases: React.FC<SelectTestCasesProps> = ({
         })}
       </div>
       {hiddenCases.length > 0 && (
-        <div className=" flex cursor-pointer items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-sm hover:scale-105 hover:bg-border">
+        <div className=" flex cursor-pointer items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-sm ">
           <BsEyeSlash
             className={`opacity-80 ${
               outputExists 
