@@ -501,12 +501,12 @@ export default function Editor({
           />
           {fullScreen ? (
             <MdFullscreenExit
-              className="scale-200 h-6 w-6 hover:cursor-pointer"
+              className="scale-200 h-6 w-6 hover:cursor-pointer mr-2"
               onClick={() => setfullScreen((prev) => !prev)}
             />
           ) : (
             <MdFullscreen
-              className="scale-200 h-6 w-6  hover:cursor-pointer"
+              className="scale-200 h-6 w-6  hover:cursor-pointer mr-2"
               onClick={() => setfullScreen((prev) => !prev)}
             />
           )}
