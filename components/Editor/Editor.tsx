@@ -9,7 +9,7 @@ import type { ViewUpdate } from "@codemirror/view";
 import LanguageSelector from "./LanguageSelector/LanguageSelector";
 import RoundTimer from "./RoundTimer/RoundTimer";
 import Button from "../ui/Button";
-import useEditorState from "store/zustant";
+import useKitchenStore from "store/zustant";
 import { Language } from "@/lib/languages";
 import axios from "axios";
 import {
@@ -33,14 +33,19 @@ export default function Editor({
   setfullScreen,
 }: EditorProps) {
   const {
-    selectedLanguage,
-    setSelectedLanguage,
-    selectedQuestionId,
-    codeByQuestion,
-    setCodeForQuestion,
     setLanguageForQuestion,
     getLanguageForQuestion,
-  } = useEditorState();
+    setTestResults,
+    setCompilerDetails,
+    selectedQuestionId,
+    selectedLanguage,
+    setSelectedLanguage,
+    codeByQuestion,
+    setCodeForQuestion,
+    testCases: originalTestCases,
+    setSubmissionStatus,
+    testResults,
+  } = useKitchenStore();
 
   // Get the language for the current question
   const questionLanguage = selectedQuestionId
@@ -130,15 +135,20 @@ export default function Editor({
     const toastId = toast.loading("Running code...");
 
     try {
+      setSubmissionStatus("running");
       const response = await getTestCasesAfterRun(
         code,
         questionLanguage.id,
         selectedQuestionId
       );
+      console.log(response);
 
       const transformedResults = response.result.map((result, index) => {
-        const hasError = result.stderr || result.status.id !== 3;
-        const isSuccess = result.status.id === 3 && !result.stderr;
+        let statusDesc = result.status.description;
+        if (result.compile_output) {
+          statusDesc += `\n${result.compile_output}`;
+        }
+        console.log(result);
 
         return {
           id: result.token,
@@ -150,26 +160,16 @@ export default function Editor({
           memory: result.memory,
           question_id: selectedQuestionId,
           stderr: result.stderr || undefined,
-          statusDescription: isSuccess
-            ? `Test case ${index + 1}: Execution successful`
-            : hasError
-            ? `Test case ${index + 1}: ${
-                result.status.description || "Execution failed"
-              }`
-            : `Test case ${index + 1}: ${
-                result.status.description || "Unknown status"
-              }`,
+          statusDescription: statusDesc,
         };
       });
 
-      const {
-        setTestResults,
-        setCompilerDetails,
-        testCases: originalTestCases,
-      } = useEditorState.getState();
+      const questionTestCases = originalTestCases.filter(
+        (tc) => tc.QuestionID === selectedQuestionId
+      );
 
       const finalResults = transformedResults.map((result, index) => {
-        const originalTestCase = originalTestCases[index];
+        const originalTestCase = questionTestCases[index];
         return {
           ...result,
           input: originalTestCase?.Input || "",
@@ -177,6 +177,7 @@ export default function Editor({
           hidden: originalTestCase?.Hidden || false,
         };
       });
+      console.log(finalResults);
 
       setTestResults(finalResults);
 
@@ -208,7 +209,6 @@ export default function Editor({
       console.error("Error running code:", error);
       toast.error("Failed to run code. Please try again.", { id: toastId });
 
-      const { setCompilerDetails } = useEditorState.getState();
       setCompilerDetails({
         isCompileSuccess: false,
         message: "Failed to run code. Please try again.",
@@ -227,6 +227,7 @@ export default function Editor({
     const submissionToastId = toast.loading("Submitting code...");
 
     try {
+      setSubmissionStatus("submitted");
       const response = await submitCode(
         code,
         questionLanguage.id,
@@ -244,47 +245,50 @@ export default function Editor({
         const submissionResult = await getSubmissionResult(
           response.submission_id
         );
-
-        const {
-          setTestResults,
-          setCompilerDetails,
-          testCases: originalTestCases,
-        } = useEditorState.getState();
+        console.log(submissionResult);
+        const questionTestCases = originalTestCases.filter(
+          (tc) => tc.QuestionID === selectedQuestionId
+        );
 
         // Transform submission results to match the existing TestCase format
         const transformedResults = submissionResult.testcases.map(
           (testcase, index) => {
-            const originalTestCase = originalTestCases[index];
+            const originalTestCase = questionTestCases[index];
+            const currentRunResult = testResults[index]; // result from the last run
+
+            let statusDesc = testcase.description;
+            if (testcase.compile_output) {
+              statusDesc += `\n${testcase.compile_output}`;
+            }
+
+            const isAccepted =
+              testcase.status.trim().toLowerCase() === "accepted";
+
+            console.log("current run result :", currentRunResult);
             return {
               id: testcase.id,
               input: originalTestCase?.Input || "",
-              output:
-                testcase.status === "Accepted"
-                  ? testcase.expected_output
-                  : `Status: ${testcase.status}\nDescription: ${testcase.description}`, // Show status info for failed cases
-              expected_output: testcase.expected_output,
+              output: isAccepted
+                ? currentRunResult?.output || ""
+                : testcase.description,
+              expected_output: originalTestCase?.ExpectedOutput || "",
               hidden: originalTestCase?.Hidden || false,
               runtime: testcase.runtime,
               memory: testcase.memory,
               question_id: selectedQuestionId,
-              stderr:
-                testcase.status !== "Accepted"
-                  ? testcase.description
-                  : undefined,
-              statusDescription: `Test case ${index + 1}: ${
-                testcase.description
-              }`,
+              stderr: isAccepted
+                ? undefined
+                : testcase.stderr || testcase.description,
+              statusDescription: statusDesc,
             };
           }
         );
 
         setTestResults(transformedResults);
 
-        const successMessage = `Submission completed: ${
-          submissionResult.passed
-        }/${
-          submissionResult.passed + submissionResult.failed
-        } test cases passed`;
+        const successMessage = `Submission completed: ${submissionResult.passed
+          }/${submissionResult.passed + submissionResult.failed
+          } test cases passed`;
 
         if (submissionResult.failed > 0) {
           toast.error(successMessage, { id: resultToastId });
@@ -292,10 +296,27 @@ export default function Editor({
           toast.success(successMessage, { id: resultToastId });
         }
 
+        const hiddenPassed = submissionResult.testcases.reduce(
+          (acc, testcase, index) => {
+            const originalTestCase = questionTestCases[index];
+            if (
+              originalTestCase?.Hidden &&
+              testcase.status.trim().toLowerCase() === "accepted"
+            ) {
+              return acc + 1;
+            }
+            return acc;
+          },
+          0
+        );
+
         // Set overall compiler details with submission summary
         setCompilerDetails({
           isCompileSuccess: submissionResult.failed === 0,
           message: successMessage,
+          passedCount: submissionResult.passed,
+          totalCount: submissionResult.passed + submissionResult.failed,
+          hiddenPassedCount: hiddenPassed,
         });
       } catch (resultError) {
         console.error("Error fetching submission result:", resultError);
@@ -462,15 +483,16 @@ export default function Editor({
 
   return (
     <div
-      className={`${
-        fullScreen
-          ? "h-[95vh] w-screen -top-0 left-0 fixed z-50 "
-          : "h-full w-[50vw]"
-      }mx-auto flex flex-col shadow-lg overflow-x-hidden`}
+      className={`${fullScreen
+        ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 "
+        : "h-full w-[50vw]"
+        }mx-auto flex flex-col shadow-lg overflow-x-hidden`}
     >
       <div className="flex items-center justify-between mb-4 z-20">
-        <RoundTimer />
-        <div className="flex items-center gap-4">
+        <div className="flex gap-4 items-center ">
+          <RoundTimer />
+        </div>
+        <div className="flex flex-row items-center gap-4">
           <LanguageSelector
             languages={languages}
             selectedLanguage={questionLanguage}
@@ -491,22 +513,22 @@ export default function Editor({
       </div>
 
       <div
-        className={`flex-1 overflow-hidden ${
-          fullScreen ? "h-[95vh]" : "min-h-[200px]"
-        }`}
+        className={`flex-grow overflow-hidden ${fullScreen ? "h-[100vh]" : "min-h-[200px]"
+          }`}
       >
         <CodeMirror
           ref={editorRef}
           value={code || questionLanguage.template}
           height="100%"
+          width="100%"
           theme={oneDark}
           extensions={[
             questionLanguage.extension,
-            indentUnit.of("  "), // 2 spaces for indentation
+            indentUnit.of("    "), // 4 spaces for indentation
           ]}
           onChange={handleChange}
           basicSetup={{
-            tabSize: 2,
+            tabSize: 4,
             indentOnInput: true,
             autocompletion: true,
             bracketMatching: true,
@@ -516,27 +538,11 @@ export default function Editor({
         />
       </div>
 
+      {/* Footer sections */}
       <div className="flex items-center justify-end px-6 py-2 bg-[#181919] text-gray-400 text-sm border-b border-gray-700">
         Line: {cursor.line} &nbsp;|&nbsp; Col: {cursor.ch}
       </div>
-
       <div className="flex items-center justify-between px-6 py-3 bg-[#181919] z-100">
-        {/* <div className="flex items-center gap-2">
-          <button
-            aria-label="Toggle Custom Input"
-            onClick={() => setCustomInput((prev) => !prev)}
-            className="focus:outline-none !bg-transparent !shadow-none border-0 p-0 m-0"
-          >
-            <span className="text-gray-300 text-xl flex items-center gap-3">
-              {customInput ? (
-                <FaToggleOn size={39} color="#22c55e" />
-              ) : (
-                <FaToggleOff size={39} color="#64748b" />
-              )}{" "}
-              Custom Input
-            </span>
-          </button>
-        </div> */}
         <div className="flex gap-4">
           <Button
             variant="run"

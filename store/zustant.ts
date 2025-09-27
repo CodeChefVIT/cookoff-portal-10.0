@@ -28,9 +28,13 @@ export type QuestionLanguage = {
 export interface CompilerResult {
   isCompileSuccess: boolean;
   message: string;
+  passedCount?: number;
+  totalCount?: number;
+  hiddenPassedCount?: number;
 }
 
 interface KitchenState {
+  submissionStatus: "idle" | "running" | "submitted";
   selectedQuestionId: string;
   selectedLanguage: Language;
   round: number;
@@ -49,6 +53,7 @@ interface KitchenState {
   compilerDetails: CompilerResult | null;
   activeCaseIndex: number;
 
+  setSubmissionStatus: (status: "idle" | "running" | "submitted") => void;
   setSelectedQuestionId: (id: string) => void;
   setSelectedLanguage: (language: Language) => void;
   setLanguageForQuestion: (questionId: string, language: Language) => void;
@@ -69,6 +74,7 @@ interface KitchenState {
 }
 
 const initialState = {
+  submissionStatus: "idle" as const,
   selectedQuestionId: "1",
   selectedLanguage: LANGUAGES.Python,
   round: 0,
@@ -91,6 +97,8 @@ const useKitchenStore = create<KitchenState>()(
     persist(
       (set, get) => ({
         ...initialState,
+
+        setSubmissionStatus: (status) => set({ submissionStatus: status }),
 
         setSelectedQuestionId: (id) => set({ selectedQuestionId: id }),
 

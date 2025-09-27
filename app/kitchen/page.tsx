@@ -18,7 +18,6 @@ import { ImperativePanelHandle } from "react-resizable-panels";
 import timer from "@/services/getTimer";
 import toast from "react-hot-toast";
 import Loading from "@/components/Loading";
-
 export default function Kitchen() {
   const {
     selectedQuestionId,
@@ -75,38 +74,6 @@ export default function Kitchen() {
   >("question");
   const panelRef = useRef<ImperativePanelHandle | null>(null);
 
-  const selectedTestcases = useMemo(() => {
-    const testCasesForQuestion = testResults.filter(
-      (tc) => tc && tc.question_id === selectedQuestionId
-    );
-
-    if (testCasesForQuestion.length > 0) {
-      return testCasesForQuestion;
-    }
-
-    // Only show template test cases if no execution results exist
-    return testCases
-      .filter((tc) => tc && tc.QuestionID === selectedQuestionId)
-      .map(
-        (tc) =>
-          ({
-            id: tc.ID,
-            input: tc.Input,
-            output: "", // Empty output indicates no execution
-            expected_output: tc.ExpectedOutput,
-            hidden: tc.Hidden,
-            runtime: 0, // 0 indicates no execution
-            memory: 0, // 0 indicates no execution
-            question_id: selectedQuestionId,
-          } as TestCase)
-      );
-  }, [testCases, testResults, selectedQuestionId]);
-
-  const defaultCompilerDetails = {
-    isCompileSuccess: false,
-    message: "No code executed yet",
-  };
-
   const languages = Object.values(LANGUAGES);
 
   const handleSetQuestionID: React.Dispatch<React.SetStateAction<string>> = (
@@ -119,11 +86,11 @@ export default function Kitchen() {
   const handleSetFullScreenEditor: React.Dispatch<
     React.SetStateAction<boolean>
   > = (fullScreen) =>
-    setFullScreenEditor(
-      typeof fullScreen === "function"
-        ? fullScreen(fullScreenEditor)
-        : fullScreen
-    );
+      setFullScreenEditor(
+        typeof fullScreen === "function"
+          ? fullScreen(fullScreenEditor)
+          : fullScreen
+      );
 
   if (fullScreenQuestion) {
     return <QuestionWindow />;
@@ -141,13 +108,7 @@ export default function Kitchen() {
   }
 
   if (fullScreenTestCases) {
-    return (
-      <TestCases
-        results={selectedTestcases}
-        compilerDetails={compilerDetails || defaultCompilerDetails}
-        panelSize={100}
-      />
-    );
+    return <TestCases panelSize={100} />;
   }
   if (loading) {
     return <Loading />;
@@ -159,35 +120,32 @@ export default function Kitchen() {
       {/* Mobile Layout (< md) */}
       <div className="md:hidden flex-grow flex flex-col">
         {/* Mobile Content - Tabs */}
-        <div className="flex-grow flex flex-col">
+        <div className=" flex flex-col">
           {/* Tab Navigation */}
           <div className="flex border-b border-gray-700 bg-[#0A0F0B]">
             <button
-              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
-                mobileActiveTab === "question"
-                  ? "text-white border-b-2 border-green-500"
-                  : "text-gray-400 hover:text-white"
-              }`}
+              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${mobileActiveTab === "question"
+                ? "text-white border-b-2 border-green-500"
+                : "text-gray-400 hover:text-white"
+                }`}
               onClick={() => setMobileActiveTab("question")}
             >
               Question
             </button>
             <button
-              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
-                mobileActiveTab === "editor"
-                  ? "text-white border-b-2 border-green-500"
-                  : "text-gray-400 hover:text-white"
-              }`}
+              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${mobileActiveTab === "editor"
+                ? "text-white border-b-2 border-green-500"
+                : "text-gray-400 hover:text-white"
+                }`}
               onClick={() => setMobileActiveTab("editor")}
             >
               Editor
             </button>
             <button
-              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
-                mobileActiveTab === "testcases"
-                  ? "text-white border-b-2 border-green-500"
-                  : "text-gray-400 hover:text-white"
-              }`}
+              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${mobileActiveTab === "testcases"
+                ? "text-white border-b-2 border-green-500"
+                : "text-gray-400 hover:text-white"
+                }`}
               onClick={() => setMobileActiveTab("testcases")}
             >
               Test Cases
@@ -232,11 +190,7 @@ export default function Kitchen() {
 
             {mobileActiveTab === "testcases" && (
               <div className="h-full p-3 bg-[#131414]">
-                <TestCases
-                  results={selectedTestcases}
-                  compilerDetails={compilerDetails || defaultCompilerDetails}
-                  panelSize={100}
-                />
+                <TestCases panelSize={100} />
               </div>
             )}
           </div>
@@ -245,7 +199,11 @@ export default function Kitchen() {
 
       {/* Desktop Layout (>= md) */}
       <div className="hidden md:flex flex-grow">
-        <ResizablePanelGroup direction="horizontal" className="flex-grow" style={{ overflow: 'visible' }}>
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="flex-grow"
+          style={{ overflow: "visible" }}
+        >
           <ResizablePanel
             ref={panelRef}
             defaultSize={50}
@@ -284,28 +242,26 @@ export default function Kitchen() {
           <ResizableHandle withHandle />
 
           {/* Right side scrollable section */}
-          <ResizablePanel defaultSize={70} style={{ overflow: 'visible' }}>
-            <div className="h-full overflow-y-auto" style={{ overflow: 'visible' }}>
+          <ResizablePanel defaultSize={70} style={{ overflow: "visible" }}>
+            <div
+              className="h-full overflow-y-auto"
+              style={{ overflow: "visible" }}
+            >
               <ResizablePanelGroup
                 direction="vertical"
                 className="translate-y-2 lg:translate-y-4"
                 defaultValue={80}
-                style={{ overflow: 'visible' }}
+                style={{ overflow: "visible" }}
               >
                 {/* Editor Panel */}
-                <ResizablePanel
-                  defaultSize={75}
-                  className="py-4 pl-4 mt-0"
-                >
+                <ResizablePanel defaultSize={75} className="py-4 pl-4 mt-0">
                   <div className="h-full overflow-auto pr-4">
-                    <div className="flex flex-col gap-2 ">
-                      <Editor
-                        languages={languages}
-                        round="round 0"
-                        setfullScreen={handleSetFullScreenEditor}
-                        fullScreen={fullScreenEditor}
-                      />
-                    </div>
+                    <Editor
+                      languages={languages}
+                      round="round 0"
+                      setfullScreen={handleSetFullScreenEditor}
+                      fullScreen={fullScreenEditor}
+                    />
                   </div>
                 </ResizablePanel>
 
@@ -318,13 +274,7 @@ export default function Kitchen() {
                   onResize={(size) => setTestCasesPanelSize(size)}
                 >
                   <div className="bg-[#131414] h-full rounded lg:rounded-lg overflow-auto">
-                    <TestCases
-                      results={selectedTestcases}
-                      compilerDetails={
-                        compilerDetails || defaultCompilerDetails
-                      }
-                      panelSize={testCasesPanelSize}
-                    />
+                    <TestCases panelSize={testCasesPanelSize} />
                   </div>
                 </ResizablePanel>
               </ResizablePanelGroup>

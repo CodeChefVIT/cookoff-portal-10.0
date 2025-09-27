@@ -6,25 +6,49 @@ import { useRouter, usePathname } from "next/navigation";
 import useKitchenStore from "store/zustant";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "react-hot-toast";
-import timer from "@/services/getTimer";
 
-const DetailsCard = ({
-  current_round,
-  loading,
-}: {
-  current_round: number | undefined;
-  loading: boolean;
-}) => {
+interface DetailsCardProps {
+  currentRound: string;
+}
+
+const DetailsCard: React.FC = () => {
+  const [details, setDetails] = useState<DetailsCardProps | null>(null);
+  const [loading, setLoading] = useState(true);
+  const setRound = useKitchenStore((state) => state.setRound);
 
   const router = useRouter();
   const pathname = usePathname();
+  useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        const res = await api.get("/dashboard");
+        const data = res.data.data;
+
+        const mapped: DetailsCardProps = {
+          currentRound: data.current_round,
+        };
+
+        setRound(Number(mapped.currentRound));
+        setDetails(mapped);
+      } catch (err) {
+        console.error("Failed to fetch details:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDetails();
+  }, [setRound]);
 
   if (loading) {
     return (
-      <div className="rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
-        <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7] bg-neutral-800 text-center py-2 leading-14">
-          Details
-        </h2>
+      <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
+        {/* Header */}
+        <div className="bg-neutral-800 text-center py-2">
+          <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7]">
+            DETAILS
+          </h2>
+        </div>
 
         {/* Body */}
         <div className="mt-3 p-6 flex flex-col items-center text-center space-y-6">
@@ -58,16 +82,16 @@ const DetailsCard = ({
     );
   }
 
-  if (current_round == undefined) {
+  if (!details) {
     return (
-      <div className="rounded-lg bg-neutral-900 text-gray-200 shadow-md p-6 text-center">
+      <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md p-6 text-center">
         Failed to load details
       </div>
     );
   }
 
   return (
-    <div className="rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700 h-full">
+    <div className="w-75 rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
       {/* Header */}
       <div className="bg-neutral-800 text-center py-2">
         <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7]">
@@ -76,16 +100,18 @@ const DetailsCard = ({
       </div>
 
       {/* Body */}
-      <div className="p-4 flex flex-col items-center text-center space-y-6">
+      <div className="mt-3 p-6 flex flex-col items-center text-center space-y-6">
         {/* Current Round */}
         <div>
           <p className="text-lg font-inter font-normal text-white">
             Current Round
           </p>
           <p className="text-2xl font-normal font-brunoace text-green-500">
-            {current_round}
+            {details.currentRound}
           </p>
         </div>
+
+
 
         {/* Tip Box */}
         <div className="mt-3 bg-neutral-800 rounded-lg py-4 px-6 text-sm text-gray-300 italic max-w-xs">
@@ -97,34 +123,22 @@ const DetailsCard = ({
           </p>
         </div>
         {/* Enter Kitchen Button */}
-        <div className="mt-7 mb-16">
+        <div className="mt-7 mb-4">
           <button
-            onClick={async () => {
+            onClick={() => {
               if (pathname === "/kitchen") return; // already in kitchen
 
-              const toastId = toast.loading("Checking round status...");
-              try {
-                try {
-                  await timer();
-                } catch {
-                  toast.error("Round not started yet!", { id: toastId });
-                  return;
-                }
+              const toastId = toast.loading("Entering Kitchen...");
 
-                toast.loading("Entering Kitchen...", { id: toastId });
-                router.push("/kitchen");
+              router.push("/kitchen");
 
-                const checkPath = setInterval(() => {
-                  if (window.location.pathname === "/kitchen") {
-                    toast.success("Welcome to Kitchen", { id: toastId });
-                    clearInterval(checkPath);
-                  }
-                }, 100);
-              } catch (err: unknown) {
-                if (err instanceof Error) {
-                  toast.error("Round not started yet!", { id: toastId });
+              // Poll until we are actually on /kitchen
+              const checkPath = setInterval(() => {
+                if (window.location.pathname === "/kitchen") {
+                  toast.success("Welcome to Kitchen", { id: toastId });
+                  clearInterval(checkPath);
                 }
-              }
+              }, 100);
             }}
             className="!border-2 !border-green-500 !text-[#c5bba7] font-nulshock !bg-neutral-900 !px-2 !py-2 text-sm rounded-md !hover:bg-green-500 hover:text-white transition flex items-center"
           >
