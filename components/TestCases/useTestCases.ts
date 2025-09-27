@@ -10,15 +10,23 @@ export function useTestCases(results: TestCase[]) {
 
   const passedCount = useMemo(() => {
     return visibleCases.filter((r) => {
-      // First check statusDescription
+      // First check statusDescription for explicit failure cases
       if (r.statusDescription) {
         const statusDesc = r.statusDescription.toLowerCase();
+        // Explicitly check for failure keywords first
+        if (statusDesc.includes("wrong answer") || 
+            statusDesc.includes("time limit exceeded") || 
+            statusDesc.includes("runtime error") ||
+            statusDesc.includes("compilation error")) {
+          return false;
+        }
+        // Then check for success keywords
         return (
           statusDesc.includes("successful") || statusDesc.includes("accepted")
         );
       }
 
-      // Fallback to output comparison
+      // Fallback to output comparison only if no status description
       if (!r.expected_output || !r.output) return false;
       return r.expected_output.trim() === r.output.trim();
     }).length;
@@ -26,15 +34,23 @@ export function useTestCases(results: TestCase[]) {
 
   const hiddenPassedCount = useMemo(() => {
     return hiddenCases.filter((r) => {
-      // First check statusDescription
+      // First check statusDescription for explicit failure cases
       if (r.statusDescription) {
         const statusDesc = r.statusDescription.toLowerCase();
+        // Explicitly check for failure keywords first
+        if (statusDesc.includes("wrong answer") || 
+            statusDesc.includes("time limit exceeded") || 
+            statusDesc.includes("runtime error") ||
+            statusDesc.includes("compilation error")) {
+          return false;
+        }
+        // Then check for success keywords
         return (
           statusDesc.includes("successful") || statusDesc.includes("accepted")
         );
       }
 
-      // Fallback to output comparison
+      // Fallback to output comparison only if no status description
       if (!r.expected_output || !r.output) return false;
       return r.expected_output.trim() === r.output.trim();
     }).length;
