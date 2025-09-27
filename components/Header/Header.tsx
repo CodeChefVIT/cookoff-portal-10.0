@@ -62,11 +62,7 @@ export default function Header() {
             onClick={handleDashboardClick}
             className="focus:outline-none !bg-transparent transition-colors group"
           >
-<<<<<<< HEAD
-            <Home className="h-6 w-6 md:h-8 md:w-8 text-[#B7AB98] group-hover:text-[#32CA67] transition-colors"/>
-=======
             <Home />
->>>>>>> 44b81cce36c4fcd173a4393f0e5be12471c78bdb
           </button>
         )}
       </div>

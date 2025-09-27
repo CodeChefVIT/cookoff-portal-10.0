@@ -41,26 +41,26 @@ export default function Dashboard() {
       </div>
 
       {/* Page container */}
-      <div className=" flex flex-col gap-8 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className=" flex flex-col gap-3 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Timeline section */}
         <section className="h-[120px] w-full rounded-2xl flex items-center justify-center overflow-hidden">
           <Timeline current_round={data?.current_round} />
         </section>
 
         {/* when on > md */}
-        <div className="hidden lg:flex flex-col lg:flex-row w-full space-x-8 md:space-x-6 lg:space-x-8 justify-center gap-y-6">
+        <div className="hidden lg:flex flex-col lg:flex-row w-full min-h-[calc(100vh-120px-2rem)] space-x-8 md:space-x-6 lg:space-x-8 justify-center gap-y-6">
           {/* Profile */}
-          <div className="flex-1 min-w-[250px] lg:min-w-[200px] flex justify-center">
+          <div className="flex-1 min-w-[250px] lg:min-w-[200px] h-full flex justify-center">
             <ProfileCard data={data} loading={loading} />
           </div>
 
           {/* Statistics */}
-          <div className="flex-1 min-w-[300px] lg:min-w-[650px] flex justify-center">
+          <div className="flex-1 min-w-[300px] lg:min-w-[650px] h-full flex justify-center">
             <Statistics data={data} loading={loading} />
           </div>
 
           {/* Details */}
-          <div className="flex-1 min-w-[250px] lg:min-w-[200px] flex justify-center px-4">
+          <div className="flex-1 min-w-[250px] lg:min-w-[200px] h-full flex justify-center px-4">
             <DetailsCard
               current_round={data?.current_round}
               loading={loading}
@@ -68,13 +68,13 @@ export default function Dashboard() {
           </div>
         </div>
         {/* when on < md screens */}
-        <div className="lg:hidden flex  flex-col lg:flex-row w-full space-x-8 md:space-x-6 lg:space-x-8 justify-center gap-y-6">
+        <div className="lg:hidden flex  flex-col lg:flex-row w-full min-h-[calc(100vh-120px-2rem)] space-x-8 md:space-x-6 lg:space-x-8 justify-center gap-y-6">
           {/* Profile */}
           <div className="flex justify-between">
-            <div className="flex-1 min-w-[250px] lg:min-w-[200px] flex justify-center">
+            <div className="flex-1 min-w-[250px] lg:min-w-[200px] h-full flex justify-center">
               <ProfileCard data={data} loading={loading} />
             </div>
-            <div className="flex-1 min-w-[250px] lg:min-w-[200px] flex justify-center px-4">
+            <div className="flex-1 min-w-[250px] lg:min-w-[200px] h-full flex justify-center px-4">
               <DetailsCard
                 current_round={data?.current_round}
                 loading={loading}
@@ -83,7 +83,7 @@ export default function Dashboard() {
           </div>
 
           {/* Statistics */}
-          <div className="flex-1 min-w-[300px] lg:min-w-[650px] flex justify-center">
+          <div className="flex-1 min-w-[300px] lg:min-w-[650px] h-full flex justify-center">
             <Statistics loading={loading} data={data} />
           </div>
 
