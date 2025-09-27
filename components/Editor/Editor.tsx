@@ -425,7 +425,7 @@ export default function Editor({
         questionId: selectedQuestionId,
         code,
         language: questionLanguage.name,
-        email: localStorage.getItem("email")
+        email: localStorage.getItem("email"),
       };
 
       try {
@@ -464,7 +464,7 @@ export default function Editor({
     <div
       className={`${
         fullScreen
-          ? "h-[95vh] w-screen -top-0 left-0 fixed z-50 "
+          ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 "
           : "h-full w-[50vw]"
       }mx-auto flex flex-col bg-[#131414] shadow-lg overflow-x-hidden`}
     >
