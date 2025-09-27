@@ -155,6 +155,7 @@ const TestCases = ({ panelSize }: TestCasesProps) => {
           setActiveCaseIndex={setActiveCaseIndex}
           getTestCaseScoreColor={getTestCaseScoreColor}
           outputExists={outputExists}
+          activeCaseIndex={activeCaseIndex}
         />
       </div>
 
