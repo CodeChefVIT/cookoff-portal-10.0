@@ -215,6 +215,7 @@ export default function Editor({
         message: "Failed to run code. Please try again.",
       });
     } finally {
+      setSubmissionStatus("submitted");
       setIsRunning(false);
     }
   };
@@ -228,7 +229,7 @@ export default function Editor({
     const submissionToastId = toast.loading("Submitting code...");
 
     try {
-      setSubmissionStatus("submitted");
+      setSubmissionStatus("running");
       const response = await submitCode(
         code,
         questionLanguage.id,
@@ -321,6 +322,7 @@ export default function Editor({
           totalCount: submissionResult.passed + submissionResult.failed,
           hiddenPassedCount: hiddenPassed,
         });
+        setSubmissionStatus("submitted");
       } catch (resultError) {
         console.error("Error fetching submission result:", resultError);
         toast.error("Submission successful, but failed to fetch results", {
