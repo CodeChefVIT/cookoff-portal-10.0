@@ -287,9 +287,11 @@ export default function Editor({
 
         setTestResults(transformedResults);
 
-        const successMessage = `Submission completed: ${submissionResult.passed
-          }/${submissionResult.passed + submissionResult.failed
-          } test cases passed`;
+        const successMessage = `Submission completed: ${
+          submissionResult.passed
+        }/${
+          submissionResult.passed + submissionResult.failed
+        } test cases passed`;
 
         if (submissionResult.failed > 0) {
           toast.error(successMessage, { id: resultToastId });
@@ -484,10 +486,11 @@ export default function Editor({
 
   return (
     <div
-      className={`${fullScreen
-        ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 "
-        : "h-full w-[50vw]"
-        }mx-auto flex flex-col shadow-lg overflow-x-hidden`}
+      className={`${
+        fullScreen
+          ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 "
+          : "h-full w-[50vw]"
+      }mx-auto flex flex-col shadow-lg overflow-x-hidden`}
     >
       <div className="flex items-center justify-between mb-4 z-20">
         <div className="flex gap-4 items-center ">
@@ -514,8 +517,9 @@ export default function Editor({
       </div>
 
       <div
-        className={`flex-grow overflow-hidden ${fullScreen ? "h-[100vh]" : "min-h-[200px]"
-          }`}
+        className={`flex-grow overflow-hidden ${
+          fullScreen ? "h-[100vh]" : "min-h-[200px]"
+        }`}
       >
         <CodeMirror
           ref={editorRef}
@@ -538,12 +542,11 @@ export default function Editor({
           }}
         />
       </div>
-
       {/* Footer sections */}
       <div className="flex items-center justify-end px-6 py-2 bg-[#181919] text-gray-400 text-sm border-b border-gray-700">
         Line: {cursor.line} &nbsp;|&nbsp; Col: {cursor.ch}
       </div>
-      <div className="flex items-center justify-between px-6 py-3 bg-[#181919] z-100">
+      <div className="flex items-center justify-between px-6 py-3 bg-[#181919] z-50">
         <div className="flex gap-4">
           <Button
             variant="run"
