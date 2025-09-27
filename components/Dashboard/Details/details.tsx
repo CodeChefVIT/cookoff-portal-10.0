@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import useKitchenStore from "store/zustant";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "react-hot-toast";
+import timer from "@/services/getTimer";
 
 interface DetailsCardProps {
   currentRound: string;
