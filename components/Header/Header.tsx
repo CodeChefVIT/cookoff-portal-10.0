@@ -43,7 +43,11 @@ export default function Header() {
       </a>
 
       <h1 className="absolute left-1/2 -translate-x-1/2 font-nulshock font-bold text-2xl md:text-4xl lg:text-5xl capitalize text-center text-[#B7AB98]">
-        COOK {""}
+      <span
+      onClick={handleDashboardClick}
+      className="cursor-pointer select-none"
+      >
+        COOK
         <span
           className="inline-block bg-clip-text text-transparent"
           style={{
@@ -53,6 +57,7 @@ export default function Header() {
         >
           OFF 10.0
         </span>
+      </span>
       </h1>
 
       <div className="flex items-center gap-0 ml-auto">
