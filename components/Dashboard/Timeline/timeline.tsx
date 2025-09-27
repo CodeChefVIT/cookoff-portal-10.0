@@ -8,7 +8,7 @@ interface TimelineStep {
   progress: number;
 }
 
-const DEFAULT_LABELS = ["Start", "Round 0", "Round 1", "Round 2", "Round 3"];
+const DEFAULT_LABELS = ["Start", "Round 1", "Round 2", "Round 3"];
 
 export default function Timeline({
   current_round,
@@ -81,7 +81,7 @@ export default function Timeline({
             className="absolute top-1/2 -translate-y-1/2"
             style={{ left: `${totalGreenPercent}%` }}
           >
-            <div className="-top-3 -left-5 relative">
+            <div className="-top-3 -left-6 relative">
               <Image
                 src="/chef-hat.svg"
                 alt="Chef Hat"
@@ -105,11 +105,6 @@ export default function Timeline({
             <div key={idx} className="flex flex-col items-center relative">
               <div className="relative z-10">
                 <div className="w-6 h-6 rounded-full bg-white border-2 border-gray-400 relative"></div>
-                {showFlag && (
-                  <div className="absolute -top-7 left-1 w-[46px] h-[46px] z-20">
-                    <Image src="/flag.svg" alt="Completed" fill />
-                  </div>
-                )}
               </div>
               <span className="text-white font-[16px] font-brunoace mt-[9px]">
                 {step.label}
