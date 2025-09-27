@@ -52,11 +52,6 @@ const Input: React.FC<InputProps> = ({
                 className={"w-[31%]"}
               />
               <InputOutputCard
-                title={"Expected Output"}
-                data={activeCaseData.expected_output}
-                className={"w-[31%]"}
-              />
-              <InputOutputCard
                 title={"Your Output"}
                 data={
                   activeCaseData.output
@@ -71,15 +66,6 @@ const Input: React.FC<InputProps> = ({
               <InputOutputCard
                 title={"Input"}
                 data={activeCaseData.input}
-                className={"w-[48%]"}
-              />
-              <InputOutputCard
-                title={"Expected Output"}
-                data={
-                  activeCaseData.expected_output
-                    ? activeCaseData.expected_output
-                    : "no expected output given"
-                }
                 className={"w-[48%]"}
               />
             </div>

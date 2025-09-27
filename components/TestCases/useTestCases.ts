@@ -33,27 +33,31 @@ export function useTestCases(results: TestCase[]) {
   }, [visibleCases]);
 
   const hiddenPassedCount = useMemo(() => {
-    return hiddenCases.filter((r) => {
+    const passedHidden = hiddenCases.filter((r) => {
       // First check statusDescription for explicit failure cases
       if (r.statusDescription) {
         const statusDesc = r.statusDescription.toLowerCase();
+        console.log('Hidden test case status:', statusDesc);
         // Explicitly check for failure keywords first
         if (statusDesc.includes("wrong answer") || 
             statusDesc.includes("time limit exceeded") || 
             statusDesc.includes("runtime error") ||
             statusDesc.includes("compilation error")) {
+          console.log('Hidden test case failed:', statusDesc);
           return false;
         }
         // Then check for success keywords
-        return (
-          statusDesc.includes("successful") || statusDesc.includes("accepted")
-        );
+        const passed = statusDesc.includes("successful") || statusDesc.includes("accepted");
+        console.log('Hidden test case passed check:', passed);
+        return passed;
       }
 
       // Fallback to output comparison only if no status description
       if (!r.expected_output || !r.output) return false;
       return r.expected_output.trim() === r.output.trim();
-    }).length;
+    });
+    console.log('Hidden cases total:', hiddenCases.length, 'Hidden passed:', passedHidden.length);
+    return passedHidden.length;
   }, [hiddenCases]);
 
   const outputExists = useMemo(
