@@ -133,6 +133,8 @@ const TestCases = ({ panelSize }: TestCasesProps) => {
           >
             {outputExists && submissionStatus === "submitted"
               ? `${passedCount}/${displayTotal} Test Cases Passed !!`
+              : submissionStatus === "running"
+              ? "Submitting..."
               : `${totalCases} Test Cases`}
           </div>{" "}
           {fullScreenTestCases ? (
