@@ -120,8 +120,9 @@ export default function Editor({
 
     const view = viewUpdate.view;
     const pos = view.state.selection.main.head;
-    const line = view.state.doc.lineAt(pos).number;
-    const ch = pos - view.state.doc.line(line - 1).from + 1;
+    const currentLine = view.state.doc.lineAt(pos);
+    const line = currentLine.number;
+    const ch = pos - currentLine.from + 1;
     setCursor({ line, ch });
   };
 
