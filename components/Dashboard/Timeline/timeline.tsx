@@ -92,7 +92,10 @@ export default function Timeline({
           return (
             <div key={idx} className="flex flex-col items-center relative">
               <div className="relative z-10">
-                <div className="w-6 h-6 rounded-full bg-white border-2 border-gray-400 relative"></div>
+                <div className="absolute -top-9 left-8 -translate-x-1/2 w-14 h-14">
+                  <Image src="/flag.svg" alt="Flag" fill />
+                </div>
+                <div className="w-6 h-6 rounded-full bg-white relative"></div>
               </div>
               <span className="text-white font-[16px] font-brunoace mt-[9px]">
                 {step.label}
