@@ -425,7 +425,7 @@ export default function Editor({
         questionId: selectedQuestionId,
         code,
         language: questionLanguage.name,
-        email: localStorage.getItem("email")
+        email: localStorage.getItem("email"),
       };
 
       try {
@@ -464,29 +464,31 @@ export default function Editor({
     <div
       className={`${
         fullScreen
-          ? "h-[95vh] w-screen -top-0 left-0 fixed z-50 "
-          : "h-full w-[50vw]"
-      }mx-auto flex flex-col bg-[#131414] shadow-lg overflow-x-hidden`}
-    >
-      <div className="flex items-center justify-between px-6 py-3 z-20 bg-[#1e1f1f] border-b border-gray-700">
-        <RoundTimer />
-        <div className="flex gap-10 items-center ">
+        ? "h-[95vh] w-screen -top-0 left-0 fixed z-50 "
+        : "h-full w-[50vw]"
+        }mx-auto flex flex-col bg-[#131414] shadow-lg overflow-x-hidden`}
+        >
+      <div className="flex items-center justify-between px-6 py-3 z-[100] bg-[#1e1f1f] border-b border-gray-700 relative">
+        <div className="flex gap-4 items-center ">
+      {fullScreen ? (
+        <MdFullscreenExit
+          className="scale-200"
+          onClick={() => setfullScreen((prev) => !prev)}
+        />
+      ) : (
+        <MdFullscreen
+          className="scale-200 "
+          onClick={() => setfullScreen((prev) => !prev)}
+        />
+      )}
           <LanguageSelector
             languages={languages}
             selectedLanguage={questionLanguage}
             onLanguageChange={handleLanguageChange}
           />
-          {fullScreen ? (
-            <MdFullscreenExit
-              className="scale-200"
-              onClick={() => setfullScreen((prev) => !prev)}
-            />
-          ) : (
-            <MdFullscreen
-              className="scale-200 "
-              onClick={() => setfullScreen((prev) => !prev)}
-            />
-          )}
+        </div>
+        <div className="flex gap-3 items-center">
+          <RoundTimer />
         </div>
       </div>
 
