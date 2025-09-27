@@ -164,6 +164,7 @@ const Statistics = ({
       {/* Vertical list of cards */}
       <div className="ml-2 mb-2 h-full grid grid-rows-3 gap-6 mt-6">
         {displayRounds.map((r) => {
+          const isLocked = r.status === "Closed";
           const total = r.completed + r.incomplete;
           const calcProgress =
             total > 0 ? Math.round((r.completed / total) * 100) : 0;
@@ -171,7 +172,7 @@ const Statistics = ({
           return (
             <div
               key={r.round}
-              className="flex-1 bg-[#111] text-[#B7AB98] rounded-xl p-[18px] shadow-[-9.63px_8.67px_0_#1BA94C] flex justify-between items-start w-full"
+              className="relative flex-1 bg-[#111] text-[#B7AB98] rounded-xl p-[18px] shadow-[-9.63px_8.67px_0_#1BA94C] flex justify-between items-start w-full"
             >
               {/* Left side: Progress + info */}
               <div className="flex items-center gap-4 h-full">
@@ -228,6 +229,22 @@ const Statistics = ({
                   </p>
                 </div>
               )}
+
+              {isLocked && (
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex flex-col items-center justify-center rounded-xl">
+                  <Image
+                    src="/statistics/lock.svg"
+                    alt="Locked"
+                    width={36}
+                    height={36}
+                    className="opacity-80 mb-2"
+                  />
+                  <p className="font-inter font-bold text-[16.2px] leading-[100%] text-center text-[#B7AB98] mt-[7.21px]">
+                    This Round is Locked
+                  </p>
+                </div>
+            )}
+
             </div>
           );
         })}

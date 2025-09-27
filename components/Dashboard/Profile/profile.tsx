@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import api from "@/services/index";
 import { useRouter } from "next/navigation";
@@ -24,8 +24,6 @@ const ProfileCard = ({
     }
   };
 
-  const max_score = 180;
-
   if (loading) {
     return (
       <div className="rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700">
@@ -33,36 +31,28 @@ const ProfileCard = ({
           PROFILE
         </h2>
 
-        {/* Body */}
         <div className="p-4">
-          {/* Avatar/Icon */}
           <div className="flex justify-center mt-2 mb-4">
             <Skeleton className="h-[90px] w-[90px] rounded-full bg-neutral-700" />
           </div>
 
-          {/* Name */}
           <div className="mt-4 mb-2">
             <Skeleton className="h-4 w-16 mb-2 rounded-md bg-neutral-700" />
             <Skeleton className="h-6 w-40 rounded-md bg-neutral-700" />
           </div>
 
-          {/* Email */}
           <div className="mt-2 mb-4">
             <Skeleton className="h-4 w-16 mb-2 rounded-md bg-neutral-700" />
             <Skeleton className="h-6 w-60 rounded-md bg-neutral-700" />
           </div>
 
-          {/* Score */}
           <div className="mt-12 mb-4">
             <Skeleton className="h-6 w-32 mx-auto mb-4 rounded-md bg-neutral-700" />
-
-            {/* Progress bar placeholder */}
             <div className="mt-2 w-full h-5 bg-neutral-800 rounded-full relative overflow-hidden">
               <Skeleton className="h-5 w-full rounded-full bg-neutral-700" />
             </div>
           </div>
 
-          {/* Log Out Button */}
           <div className="flex justify-center mt-16 mb-8">
             <Skeleton className="h-10 w-40 rounded-md bg-neutral-700" />
           </div>
@@ -79,28 +69,32 @@ const ProfileCard = ({
     );
   }
 
-  const total_score = data.round_scores.reduce(
-    (accumulator, currentValue) => accumulator + currentValue,
+  // ✅ Calculate total completed and total questions using the new DashboardResponse arrays
+  const totalCompleted = data.questions_completed.reduce(
+    (acc, val) => acc + val,
     0
   );
-  const progress = (total_score / max_score) * 100;
+  const totalNotCompleted = data.questions_not_completed.reduce(
+    (acc, val) => acc + val,
+    0
+  );
+  const totalQuestions = totalCompleted + totalNotCompleted;
+  const progress =
+    totalQuestions > 0 ? (totalCompleted / totalQuestions) * 100 : 0;
 
   return (
     <div className="rounded-lg bg-neutral-900 text-gray-200 shadow-md overflow-hidden border border-gray-700 h-full">
-      {/* Header strip */}
       <div className="bg-neutral-800 text-center py-2">
         <h2 className="text-3xl font-bold font-nulshock tracking-wide text-[#c5bba7]">
           PROFILE
         </h2>
       </div>
 
-      {/* Body */}
       <div className="p-4">
-        {/* Avatar/Icon */}
         <div className="flex justify-center mt-2 mb-4">
           <Image
             src="/profile_picture.svg"
-            alt="close"
+            alt="Profile"
             width={90}
             height={90}
             draggable={false}
@@ -109,7 +103,6 @@ const ProfileCard = ({
           />
         </div>
 
-        {/* Info */}
         <div className="mt-4 mb-2">
           <p className="justify-start text-sm font-normal font-inter text-[#c5bba7]">
             Name
@@ -128,30 +121,26 @@ const ProfileCard = ({
           </p>
         </div>
 
-        {/* Score */}
+        {/* ✅ Updated Progress Section */}
         <div className="mt-8 mb-4">
           <p className="text-xl text-[#c5bba7] text-center font-brunoace mb-1">
-            Total Score
+            Progress
           </p>
 
-          {/* Progress container */}
           <div className="mt-2 w-full bg-zinc-300 rounded-full h-5 relative overflow-hidden">
-            {/* Green progress bar */}
             <div
               className="bg-green-500 h-5 absolute top-0 left-0"
               style={{ width: `${progress}%` }}
             ></div>
 
-            {/* Score text (overlaid, centered across full bar) */}
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-neutral-900 text-lg font-bold font-inter">
-                {total_score}/{max_score}
+                {totalCompleted}/{totalQuestions}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Log Out Button */}
         <div className="flex justify-center mt-8 mb-8">
           <button
             onClick={handleLogout}
@@ -159,7 +148,7 @@ const ProfileCard = ({
           >
             <Image
               src="/logout.svg"
-              alt="close"
+              alt="Logout"
               width={18}
               height={18}
               draggable={false}
