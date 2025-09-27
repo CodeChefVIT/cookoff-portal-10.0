@@ -169,7 +169,7 @@ const TestCases = () => {
         )}
       </div>
 
-      {submissionStatus !== "running" && (
+      {submissionStatus !== 'running' && activeCaseData && (
         <Input
           compilerDetails={finalCompilerDetails}
           activeCaseData={activeCaseData}
