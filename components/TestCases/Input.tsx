@@ -30,6 +30,7 @@ const Input: React.FC<InputProps> = ({
     testCaseSuccess = activeCaseData
       ? !activeCaseData.stderr &&
         !!activeCaseData.output &&
+        !!activeCaseData.expected_output &&
         activeCaseData.output.trim() === activeCaseData.expected_output.trim()
       : compilerDetails.isCompileSuccess;
   }
