@@ -38,7 +38,7 @@ const Input: React.FC<InputProps> = ({
     <div className="">
       {outputExists && (
         <CompilerMessage
-          message={submissionStatus === "running" ? " " : testCaseMessage}
+          message={submissionStatus === "running" ? "" : testCaseMessage}
           isCompileSuccess={testCaseSuccess}
         />
       )}
@@ -49,14 +49,16 @@ const Input: React.FC<InputProps> = ({
               <InputOutputCard
                 title={"Input"}
                 data={
-                  submissionStatus === "running" ? " " : activeCaseData.input
+                  submissionStatus === "running" ? "" : activeCaseData.input
                 }
                 className="w-full"
               />
               <InputOutputCard
                 title={"Your Output"}
                 data={
-                  activeCaseData.output
+                  submissionStatus === "running"
+                    ? ""
+                    : activeCaseData.output
                     ? activeCaseData.output
                     : "no output given"
                 }
@@ -68,7 +70,7 @@ const Input: React.FC<InputProps> = ({
               <InputOutputCard
                 title={"Input"}
                 data={
-                  submissionStatus === "running" ? " " : activeCaseData.input
+                  submissionStatus === "running" ? "" : activeCaseData.input
                 }
                 className={"w-full"}
               />

@@ -132,6 +132,8 @@ export default function Editor({
       return;
     }
 
+    setTestResults([]);
+    setCompilerDetails(null);
     setIsRunning(true);
     const toastId = toast.loading("Running code...");
 
@@ -215,7 +217,7 @@ export default function Editor({
         message: "Failed to run code. Please try again.",
       });
     } finally {
-      setSubmissionStatus("submitted");
+      setSubmissionStatus("idle");
       setIsRunning(false);
     }
   };
@@ -226,6 +228,8 @@ export default function Editor({
       return;
     }
 
+    setTestResults([]);
+    setCompilerDetails(null);
     const submissionToastId = toast.loading("Submitting code...");
 
     try {
