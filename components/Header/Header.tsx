@@ -27,7 +27,7 @@ export default function Header() {
     }, 100);
   };
   return (
-    <header className="relative flex items-center justify-between w-full px-8 py-4  border-b-2 border-b-[#B7AB98] select-none h-[80px]">
+    <header className="relative flex items-center justify-between w-full p-4  border-b-2 border-b-[#B7AB98] select-none h-[80px]">
       <a
         href="https://www.codechefvit.com"
         target="_blank"
