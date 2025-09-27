@@ -45,11 +45,11 @@ const Input: React.FC<InputProps> = ({
       {activeCaseData && (
         <>
           {activeCaseData.output ? (
-            <div className="flex justify-between font-inter">
+            <div className="flex justify-between font-inter gap-4">
               <InputOutputCard
                 title={"Input"}
                 data={activeCaseData.input}
-                className={"w-[31%]"}
+                className="w-full"
               />
               <InputOutputCard
                 title={"Your Output"}
@@ -58,7 +58,7 @@ const Input: React.FC<InputProps> = ({
                     ? activeCaseData.output
                     : "no output given"
                 }
-                className={"w-[31%]"}
+                className="w-full"
               />
             </div>
           ) : (
