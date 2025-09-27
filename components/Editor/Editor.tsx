@@ -643,8 +643,15 @@ export default function Editor({
           <Button
             variant="secondary"
             size="sm"
-            onClick={() =>
-              saveCode(selectedQuestionId, code, questionLanguage)
+            onClick={async () =>
+              toast.promise(
+                saveCode(selectedQuestionId, code, questionLanguage),
+                {
+                  loading: "Saving code to cloud...",
+                  success: "Code saved successfully!",
+                  error: "Failed to save code.",
+                }
+              )
             }
           >
             Cloud save
