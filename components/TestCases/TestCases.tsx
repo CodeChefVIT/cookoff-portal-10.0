@@ -37,8 +37,6 @@ const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
     outputExists,
   } = useTestCases(results);
   const activeCaseData = visibleCases[activeCaseIndex];
-  // console.log("active case data", activeCaseData);
-
   return (
     <div
       className={`${

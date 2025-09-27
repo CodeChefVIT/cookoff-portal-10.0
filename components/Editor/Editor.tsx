@@ -17,7 +17,7 @@ import {
 } from "../../app/api/kitchen";
 import { MdFullscreen } from "react-icons/md";
 import { MdFullscreenExit } from "react-icons/md";
-import { submitCode, getResultById } from "@/api/kitchen";
+import { submitCode } from "@/api/kitchen";
 import toast from "react-hot-toast";
 import { email } from "zod";
 type EditorProps = {
@@ -40,8 +40,6 @@ export default function Editor({
     setCodeForQuestion,
     setLanguageForQuestion,
     getLanguageForQuestion,
-    testCases,
-    testResults,
   } = useEditorState();
 
   // Get the language for the current question
@@ -242,28 +240,6 @@ export default function Editor({
       // Now fetch the submission results
       const resultToastId = toast.loading("Fetching submission results...");
 
-      console.log(response);
-      let outputExists = testResults.find(
-        (test) => test.output && !test.hidden
-      );
-
-      if (!outputExists) {
-        console.log("No output found for visible test cases, running code...");
-        await runCode();
-
-        const { testResults: updatedTestResults } = useEditorState.getState();
-
-        const visibleTestResults = updatedTestResults.filter(
-          (test) => !test.hidden
-        );
-        if (visibleTestResults.length > 0) {
-          console.log(
-            "Setting output for visible test cases:",
-            visibleTestResults.length
-          );
-        }
-      }
-      console.log("output exists for visible cases:", !!outputExists);
       try {
         const submissionResult = await getSubmissionResult(
           response.submission_id
@@ -275,24 +251,18 @@ export default function Editor({
           testCases: originalTestCases,
         } = useEditorState.getState();
 
-        const currentTestResults = useEditorState.getState().testResults;
-
+        // Transform submission results to match the existing TestCase format
         const transformedResults = submissionResult.testcases.map(
           (testcase, index) => {
-            // console.log(testcase.id);
             const originalTestCase = originalTestCases[index];
-            const currentResult = currentTestResults[index];
-            console.log(
-              "Current result for test case",
-              index,
-              ":",
-              currentResult
-            );
             return {
               id: testcase.id,
               input: originalTestCase?.Input || "",
+              output:
+                testcase.status === "Accepted"
+                  ? testcase.expected_output
+                  : `Status: ${testcase.status}\nDescription: ${testcase.description}`, // Show status info for failed cases
               expected_output: testcase.expected_output,
-              output: currentResult?.output || "",
               hidden: originalTestCase?.Hidden || false,
               runtime: testcase.runtime,
               memory: testcase.memory,
@@ -565,11 +535,7 @@ export default function Editor({
           >
             {isRunning ? "Running..." : "Run Code"}
           </Button>
-          <Button
-            className="!bg-[#1ea34d] hover:!bg-[#22c55e] text-white"
-            size="default"
-            onClick={submitCodeHandler}
-          >
+          <Button variant="green" size="default" onClick={submitCodeHandler}>
             Submit Code
           </Button>
         </div>
