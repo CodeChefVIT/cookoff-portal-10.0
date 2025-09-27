@@ -59,8 +59,8 @@ export default function Timeline({
 
   const totalSteps = steps.length;
   const totalGreenPercent = steps
-    .slice(0, totalSteps - 1)
-    .reduce((acc, step) => acc + step.progress / (totalSteps - 1), 0);
+    .slice(0, 3)
+    .reduce((acc, step) => acc + step.progress / 3, 0);
 
   return (
     <div className="relative w-full mx-auto mt-5">
