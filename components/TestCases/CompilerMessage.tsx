@@ -7,10 +7,10 @@ interface CompilerMessageProps {
 
 function CompilerMessage({ isCompileSuccess, message }: CompilerMessageProps) {
   return (
-    <div className="flex flex-col">
-      <h1 className="mb-2">Result:</h1>
+    <div className="flex flex-col mb-4">
+      <h1 className="mb-2 font-semibold text-lg">Result:</h1>
       <div
-        className={`bg-secondary font-bold py-2 px-4 rounded-md ${
+        className={`min-h-[5vh] bg-secondary font-semibold py-2 px-4 rounded-md ${
           isCompileSuccess ? "text-green-500" : "text-accent"
         }`}
       >
