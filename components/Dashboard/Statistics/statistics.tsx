@@ -73,7 +73,7 @@ const RoundCard: React.FC<{ stats: RoundStats }> = ({ stats }) => {
   const isLocked = status === "Closed";
 
   return (
-    <div className="relative bg-[#111] text-[#B7AB98] rounded-xl p-5 mb-5 shadow-[-9.63px_8.67px_0_#1BA94C] w-[307.17px] min-h-[233.33px] font-[Nulshock,monospace]">
+    <div className=" bg-[#111] text-[#B7AB98] rounded-xl p-5 mb-5 shadow-[-9.63px_8.67px_0_#1BA94C] w-[307.17px] min-h-[233.33px] font-[Nulshock,monospace]">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <p className="font-bold text-[29.54px] tracking-[2px]">ROUND {round}</p>
@@ -154,9 +154,9 @@ const Statistics = ({
   if (loading) {
     return (
       <div className="w-full h-full text-[#ccc] font-[Nulshock,monospace]">
-        <div className="relative w-[673px] h-[612px] mx-auto">
+        <div className=" mx-auto">
           {/* Text on top of rectangle */}
-          <p className="relative z-10 text-center font-bold text-3xl text-[#beb7a6] tracking-[3px] select-none leading-14 bg-[#1F2622] rounded-t-[10px]">
+          <p className=" z-10 text-center font-bold text-3xl text-[#beb7a6] tracking-[3px] select-none leading-14 bg-[#1F2622] rounded-t-[10px]">
             STATISTICS
           </p>
 
@@ -165,7 +165,7 @@ const Statistics = ({
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="relative bg-[#111] rounded-xl p-5 mb-5 shadow-[-9.63px_8.67px_0_#1BA94C] w-[307.17px] min-h-[233.33px]"
+                className=" bg-[#111] rounded-xl p-5 mb-5 shadow-[-9.63px_8.67px_0_#1BA94C] w-[307.17px] min-h-[233.33px]"
               >
                 {/* Card Header */}
                 <div className="flex justify-between items-center mb-4">
@@ -206,33 +206,46 @@ const Statistics = ({
   }
 
   return (
-  <div className="w-full h-full text-[#ccc] font-[Nulshock,monospace]">
-    <div className="relative w-[673px] mx-auto">
-      {/* Header */}
-      <p className="relative z-10 text-center font-bold text-3xl bg-[#1F2622] rounded-t-[10px] text-[#beb7a6] tracking-[3px] select-none leading-14">
+    <div className="w-full h-full flex flex-col  text-[#ccc] font-[Nulshock,monospace] ">
+      <p className="z-10 text-center font-bold text-3xl bg-[#1F2622] rounded-t-[10px] text-[#beb7a6] tracking-[3px] select-none leading-14">
         STATISTICS
       </p>
 
       {/* Vertical list of cards */}
-      <div className="mt-4 flex flex-col gap-5 pb-4">
+      <div className="ml-2 mb-2 h-full grid grid-rows-3 gap-6 mt-6">
         {rounds
           .filter((r) => r.round !== 0) // skip round 0
           .map((r) => (
             <div
               key={r.round}
-              className="relative bg-[#111] text-[#B7AB98] rounded-xl p-[18px] shadow-[-9.63px_8.67px_0_#1BA94C] flex justify-between items-start w-full"
+              className="flex-1  bg-[#111] text-[#B7AB98] rounded-xl p-[18px] shadow-[-9.63px_8.67px_0_#1BA94C] flex justify-between items-start w-full"
             >
               {/* Left side: Progress + info */}
-              <div className="flex items-center gap-4">
-                <ProgressCircle progress={r.status === "Closed" ? 0 : r.progress} />
+              <div className="flex items-center gap-4 h-full">
+                <ProgressCircle
+                  progress={r.status === "Closed" ? 0 : r.progress}
+                />
+
                 <div>
-                  <p className="font-bold text-[20px] text-white mb-1">ROUND {r.round}</p>
+                  <p className="font-bold text-[20px] text-white mb-1">
+                    ROUND {r.round}
+                  </p>
                   <p className="flex items-center gap-2 text-[12px]">
-                    <Image src="/statistics/tick.svg" alt="Completed" width={10} height={10} />
+                    <Image
+                      src="/statistics/tick.svg"
+                      alt="Completed"
+                      width={10}
+                      height={10}
+                    />
                     Completed: {r.status === "Closed" ? 0 : r.completed}
                   </p>
                   <p className="flex items-center gap-2 text-[12px]">
-                    <Image src="/statistics/cross.svg" alt="Incomplete" width={10} height={10} />
+                    <Image
+                      src="/statistics/cross.svg"
+                      alt="Incomplete"
+                      width={10}
+                      height={10}
+                    />
                     Not Completed: {r.status === "Closed" ? 0 : r.incomplete}
                   </p>
                   <p className="mt-1 font-brunoace text-white text-[16px]">
@@ -243,15 +256,18 @@ const Statistics = ({
 
               {/* Top-right status */}
               <div className="flex flex-col items-end gap-1">
-                <span className={`rounded-full w-3 h-3 ${statusColors[r.status]}`} />
-                <p className="text-[10px] font-inter text-white select-none">{r.status}</p>
+                <span
+                  className={`rounded-full w-3 h-3 ${statusColors[r.status]}`}
+                />
+                <p className="text-[10px] font-inter text-white select-none">
+                  {r.status}
+                </p>
               </div>
             </div>
           ))}
       </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default Statistics;

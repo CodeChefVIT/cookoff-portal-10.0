@@ -27,7 +27,7 @@ export default function Header() {
     }, 100);
   };
   return (
-    <header className="relative flex items-center justify-between w-full px-8 py-4  border-b-2 border-b-[#B7AB98] select-none">
+    <header className="relative flex items-center justify-between w-full px-8 py-4  border-b-2 border-b-[#B7AB98] select-none h-[80px]">
       <a
         href="https://www.codechefvit.com"
         target="_blank"
@@ -38,7 +38,7 @@ export default function Header() {
           alt="CodechefVIT Logo"
           width={1000}
           height={1000}
-          className="h-4 w-4 md:h-12 md:w-12"
+          className="h-12 w-12"
         />
       </a>
 
