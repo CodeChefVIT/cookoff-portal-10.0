@@ -8,7 +8,7 @@ import type { ViewUpdate } from "@codemirror/view";
 import LanguageSelector from "./LanguageSelector/LanguageSelector";
 import RoundTimer from "./RoundTimer/RoundTimer";
 import Button from "../ui/Button";
-import useEditorState from "store/zustant";
+import useKitchenStore from "store/zustant";
 import { Language } from "@/lib/languages";
 import axios from "axios";
 import {
@@ -33,14 +33,17 @@ export default function Editor({
   setfullScreen,
 }: EditorProps) {
   const {
-    selectedLanguage,
-    setSelectedLanguage,
-    selectedQuestionId,
-    codeByQuestion,
-    setCodeForQuestion,
     setLanguageForQuestion,
     getLanguageForQuestion,
-  } = useEditorState();
+    setTestResults,
+    setCompilerDetails,
+    testCases: originalTestCases,
+    selectedQuestionId,
+    selectedLanguage,
+    setSelectedLanguage,
+    codeByQuestion,
+    setCodeForQuestion,
+  } = useKitchenStore();
 
   // Get the language for the current question
   const questionLanguage = selectedQuestionId
@@ -135,6 +138,7 @@ export default function Editor({
         questionLanguage.id,
         selectedQuestionId
       );
+      console.log(response);
 
       const transformedResults = response.result.map((result, index) => {
         const hasError = result.stderr || result.status.id !== 3;
@@ -162,14 +166,12 @@ export default function Editor({
         };
       });
 
-      const {
-        setTestResults,
-        setCompilerDetails,
-        testCases: originalTestCases,
-      } = useEditorState.getState();
+      const questionTestCases = originalTestCases.filter(
+        (tc) => tc.QuestionID === selectedQuestionId
+      );
 
       const finalResults = transformedResults.map((result, index) => {
-        const originalTestCase = originalTestCases[index];
+        const originalTestCase = questionTestCases[index];
         return {
           ...result,
           input: originalTestCase?.Input || "",
@@ -177,6 +179,7 @@ export default function Editor({
           hidden: originalTestCase?.Hidden || false,
         };
       });
+      console.log(finalResults);
 
       setTestResults(finalResults);
 
@@ -208,7 +211,6 @@ export default function Editor({
       console.error("Error running code:", error);
       toast.error("Failed to run code. Please try again.", { id: toastId });
 
-      const { setCompilerDetails } = useEditorState.getState();
       setCompilerDetails({
         isCompileSuccess: false,
         message: "Failed to run code. Please try again.",
@@ -245,16 +247,14 @@ export default function Editor({
           response.submission_id
         );
 
-        const {
-          setTestResults,
-          setCompilerDetails,
-          testCases: originalTestCases,
-        } = useEditorState.getState();
+        const questionTestCases = originalTestCases.filter(
+          (tc) => tc.QuestionID === selectedQuestionId
+        );
 
         // Transform submission results to match the existing TestCase format
         const transformedResults = submissionResult.testcases.map(
           (testcase, index) => {
-            const originalTestCase = originalTestCases[index];
+            const originalTestCase = questionTestCases[index];
             return {
               id: testcase.id,
               input: originalTestCase?.Input || "",
@@ -262,7 +262,7 @@ export default function Editor({
                 testcase.status === "Accepted"
                   ? testcase.expected_output
                   : `Status: ${testcase.status}\nDescription: ${testcase.description}`, // Show status info for failed cases
-              expected_output: testcase.expected_output,
+              expected_output: originalTestCase?.ExpectedOutput || "",
               hidden: originalTestCase?.Hidden || false,
               runtime: testcase.runtime,
               memory: testcase.memory,

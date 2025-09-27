@@ -59,6 +59,8 @@ export async function getTestCasesAfterRun(
     };
 
     const response = await api.post<RunCodeResponse>("/runcode", requestData);
+    // console.log("in get", response);
+
     return response.data;
   } catch (error) {
     console.error("Error running code:", error);
@@ -113,7 +115,9 @@ export async function getSubmissionResult(
   submission_id: string
 ): Promise<SubmissionResult> {
   try {
-    const response = await api.get<SubmissionResult>(`/result/${submission_id}`);
+    const response = await api.get<SubmissionResult>(
+      `/result/${submission_id}`
+    );
     return response.data;
   } catch (error) {
     console.error("Error getting submission result:", error);

@@ -13,8 +13,6 @@ interface CompilerResult {
 }
 
 interface TestCasesProps {
-  results: TestCase[];
-  compilerDetails: CompilerResult;
   panelSize: number;
 }
 
@@ -25,9 +23,9 @@ function getTestCaseScoreColor(count: number, total: number) {
   return "text-accent";
 }
 
-const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
+const TestCases = ({ panelSize }: TestCasesProps) => {
   const [activeCaseIndex, setActiveCaseIndex] = useState(0);
-  const { fullScreenTestCases, setFullScreenTestCases } = useKitchenStore();
+  const { fullScreenTestCases, setFullScreenTestCases, testResults, compilerDetails } = useKitchenStore();
   const {
     visibleCases,
     hiddenCases,
@@ -35,11 +33,17 @@ const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
     hiddenPassedCount,
     totalCases,
     outputExists,
-  } = useTestCases(results);
+  } = useTestCases(testResults);
   const activeCaseData = visibleCases[activeCaseIndex];
+
+  const defaultCompilerDetails = {
+    isCompileSuccess: false,
+    message: "No code executed yet",
+  };
+
   return (
     <div
-      className={`${
+      className={`${ 
         fullScreenTestCases
           ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 overflow-y-scroll "
           : "min-h-[50vh] h-full  "
@@ -81,7 +85,7 @@ const TestCases = ({ results, compilerDetails }: TestCasesProps) => {
       </div>
 
       <Input
-        compilerDetails={compilerDetails}
+        compilerDetails={compilerDetails || defaultCompilerDetails}
         activeCaseData={activeCaseData}
         outputExists={outputExists}
       />

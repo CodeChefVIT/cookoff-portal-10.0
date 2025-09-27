@@ -75,38 +75,6 @@ export default function Kitchen() {
   >("question");
   const panelRef = useRef<ImperativePanelHandle | null>(null);
 
-  const selectedTestcases = useMemo(() => {
-    const testCasesForQuestion = testResults.filter(
-      (tc) => tc && tc.question_id === selectedQuestionId
-    );
-
-    if (testCasesForQuestion.length > 0) {
-      return testCasesForQuestion;
-    }
-
-    // Only show template test cases if no execution results exist
-    return testCases
-      .filter((tc) => tc && tc.QuestionID === selectedQuestionId)
-      .map(
-        (tc) =>
-          ({
-            id: tc.ID,
-            input: tc.Input,
-            output: "", // Empty output indicates no execution
-            expected_output: tc.ExpectedOutput,
-            hidden: tc.Hidden,
-            runtime: 0, // 0 indicates no execution
-            memory: 0, // 0 indicates no execution
-            question_id: selectedQuestionId,
-          } as TestCase)
-      );
-  }, [testCases, testResults, selectedQuestionId]);
-
-  const defaultCompilerDetails = {
-    isCompileSuccess: false,
-    message: "No code executed yet",
-  };
-
   const languages = Object.values(LANGUAGES);
 
   const handleSetQuestionID: React.Dispatch<React.SetStateAction<string>> = (
@@ -142,11 +110,7 @@ export default function Kitchen() {
 
   if (fullScreenTestCases) {
     return (
-      <TestCases
-        results={selectedTestcases}
-        compilerDetails={compilerDetails || defaultCompilerDetails}
-        panelSize={100}
-      />
+      <TestCases panelSize={100} />
     );
   }
   if (loading) {
@@ -232,11 +196,7 @@ export default function Kitchen() {
 
             {mobileActiveTab === "testcases" && (
               <div className="h-full p-3 bg-[#131414]">
-                <TestCases
-                  results={selectedTestcases}
-                  compilerDetails={compilerDetails || defaultCompilerDetails}
-                  panelSize={100}
-                />
+                <TestCases panelSize={100} />
               </div>
             )}
           </div>
@@ -315,13 +275,7 @@ export default function Kitchen() {
                   onResize={(size) => setTestCasesPanelSize(size)}
                 >
                   <div className="bg-[#131414] rounded lg:rounded-lg">
-                    <TestCases
-                      results={selectedTestcases}
-                      compilerDetails={
-                        compilerDetails || defaultCompilerDetails
-                      }
-                      panelSize={testCasesPanelSize}
-                    />
+                    <TestCases panelSize={testCasesPanelSize} />
                   </div>
                 </ResizablePanel>
               </ResizablePanelGroup>
