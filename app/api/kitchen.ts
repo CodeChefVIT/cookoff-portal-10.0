@@ -120,3 +120,21 @@ export async function getSubmissionResult(
     throw error;
   }
 }
+
+export async function getResultById(
+  source_code: string,
+  language_id: string,
+  input: string
+): Promise<SubmissionResult> {
+  try {
+    const response = await api.post<SubmissionResult>('/runcustom', {
+      source_code,
+      language_id,
+      input
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error getting result by ID:', error);
+    throw error;
+  }
+}
