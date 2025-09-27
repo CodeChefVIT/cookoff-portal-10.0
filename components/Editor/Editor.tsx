@@ -10,9 +10,11 @@ import {
 } from "@codemirror/language";
 import type { EditorView } from "@codemirror/view";
 import type { ViewUpdate } from "@codemirror/view";
+import { vim } from "@replit/codemirror-vim";
 import LanguageSelector from "./LanguageSelector/LanguageSelector";
 import RoundTimer from "./RoundTimer/RoundTimer";
 import Button from "../ui/Button";
+import { Toggle } from "../ui/toggle";
 import useKitchenStore from "store/zustant";
 import { Language } from "@/lib/languages";
 import axios from "axios";
@@ -64,6 +66,12 @@ export default function Editor({
   const [cursor, setCursor] = useState({ line: 1, ch: 1 });
   const [isRunning, setIsRunning] = useState(false);
   const [editorReady, setEditorReady] = useState(false);
+  const [vimMode, setVimMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("vimMode") === "true";
+    }
+    return false;
+  });
   const editorRef = useRef<EditorView | null>(null);
 
   const handleLanguageChange = (language: Language) => {
@@ -155,7 +163,7 @@ export default function Editor({
       );
       console.log(response);
 
-      const transformedResults = response.result.map((result, index) => {
+      const transformedResults = response.result.map((result) => {
         let statusDesc = result.status.description;
         if (result.compile_output) {
           statusDesc += `\n${result.compile_output}`;
@@ -493,6 +501,11 @@ export default function Editor({
     }
   }, [selectedQuestionId, questionLanguage.template, codeByQuestion]);
 
+  // Save vim mode preference to localStorage
+  useEffect(() => {
+    localStorage.setItem("vimMode", vimMode.toString());
+  }, [vimMode]);
+
   const saveCode = async (
     selectedQuestionId: string,
     code: string,
@@ -533,20 +546,14 @@ export default function Editor({
     <div
       className={`${
         fullScreen
-          ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 "
+          ? "h-[100vh] w-screen -top-0 left-0 fixed p-4 z-50 "
           : "h-full w-[50vw]"
-      }mx-auto flex flex-col shadow-lg overflow-x-hidden`}
+      }mx-auto flex flex-col shadow-lg overflow-x-hidden`} //interesting string concatenation, lets leave it for people to ponder
     >
       <div className="flex items-center justify-between mb-4 z-20">
         <div className="flex gap-4 items-center ">
           <RoundTimer />
         </div>
-        <button
-          className=" text-white px-4 py-2 rounded"
-          onClick={() => saveCode(selectedQuestionId, code, questionLanguage)}
-        >
-          Save Code
-        </button>
         <div className="flex flex-row items-center gap-4">
           <LanguageSelector
             languages={languages}
@@ -568,7 +575,7 @@ export default function Editor({
       </div>
 
       <div
-        className={`flex-grow overflow-hidden ${
+        className={`flex-grow overflow-auto ${
           fullScreen ? "h-[100vh]" : "min-h-[200px]"
         }`}
       >
@@ -579,6 +586,7 @@ export default function Editor({
           width="100%"
           theme={everforestTheme}
           extensions={[
+            ...(vimMode ? [vim()] : []),
             questionLanguage.extension,
             indentUnit.of("    "), // 4 spaces for indentation
             everforestTheme,
@@ -596,8 +604,15 @@ export default function Editor({
         />
       </div>
       {/* Footer sections */}
-      <div className="flex items-center justify-end px-6 py-2 bg-[#181919] text-gray-400 text-sm border-b border-gray-700">
-        Line: {cursor.line} &nbsp;|&nbsp; Col: {cursor.ch}
+      <div className="flex items-center justify-between px-6 py-2 bg-[#181919] text-gray-400 text-sm border-b border-gray-700">
+        <div className="flex items-center gap-4">
+          {vimMode && (
+            <span className="text-green-400 font-mono">VIM MODE</span>
+          )}
+        </div>
+        <div>
+          Line: {cursor.line} &nbsp;|&nbsp; Col: {cursor.ch}
+        </div>
       </div>
       <div className="flex items-center justify-between px-6 py-3 bg-[#181919] z-50">
         <div className="flex gap-4">
@@ -611,6 +626,46 @@ export default function Editor({
           </Button>
           <Button variant="green" size="default" onClick={submitCodeHandler}>
             Submit Code
+          </Button>
+        </div>
+        <div className="flex gap-2">
+          <Toggle
+            pressed={vimMode}
+            onPressedChange={(pressed) => {
+              setVimMode(pressed);
+              // Focus editor after mode change
+              setTimeout(() => {
+                if (editorRef.current && editorRef.current.dom) {
+                  editorRef.current.dom.focus();
+                }
+              }, 100);
+            }}
+            variant="outline"
+            size="sm"
+            className={`px-3 py-1 text-sm transition-colors ${
+              vimMode
+                ? "bg-green-600 text-white hover:bg-green-700 border-green-600"
+                : "text-gray-300 hover:bg-gray-700"
+            }`}
+            title={vimMode ? "Disable Vim Mode" : "Enable Vim Mode"}
+          >
+            {vimMode ? "VIM" : "NOT VIM"}
+          </Toggle>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={async () =>
+              toast.promise(
+                saveCode(selectedQuestionId, code, questionLanguage),
+                {
+                  loading: "Saving code to cloud...",
+                  success: "Code saved successfully!",
+                  error: "Failed to save code.",
+                }
+              )
+            }
+          >
+            Cloud save
           </Button>
         </div>
       </div>
