@@ -26,11 +26,8 @@ import { MdFullscreen } from "react-icons/md";
 import { MdFullscreenExit } from "react-icons/md";
 import { submitCode } from "@/api/kitchen";
 import toast from "react-hot-toast";
-import {
-  everforestHighlightExtension,
-  everforestHighlightStyle,
-  everforestTheme,
-} from "./Theme";
+import { everforestHighlightStyle, everforestTheme } from "./Theme";
+import { CloudUpload, Loader2, Play } from "lucide-react";
 type EditorProps = {
   languages: Language[];
   round?: string;
@@ -613,59 +610,65 @@ export default function Editor({
           Line: {cursor.line} &nbsp;|&nbsp; Col: {cursor.ch}
         </div>
       </div>
-      <div className="flex items-center justify-between px-6 py-3 bg-[#181919] z-50">
-        <div className="flex gap-4">
-          <Button
-            variant="run"
-            size="default"
-            onClick={runCode}
-            disabled={isRunning}
-          >
-            {isRunning ? "Running..." : "Run Code"}
-          </Button>
-          <Button variant="green" size="default" onClick={submitCodeHandler}>
-            Submit Code
-          </Button>
-        </div>
-        <div className="flex gap-2">
-          <Toggle
-            pressed={vimMode}
-            onPressedChange={(pressed) => {
-              setVimMode(pressed);
-              // Focus editor after mode change
-              setTimeout(() => {
-                if (editorRef.current && editorRef.current.dom) {
-                  editorRef.current.dom.focus();
-                }
-              }, 100);
-            }}
-            variant="outline"
-            size="sm"
-            className={`px-3 py-1 text-sm transition-colors ${
-              vimMode
-                ? "bg-green-600 text-white hover:bg-green-700 border-green-600"
-                : "text-gray-300 hover:bg-gray-700"
-            }`}
-            title={vimMode ? "Disable Vim Mode" : "Enable Vim Mode"}
-          >
-            {vimMode ? "VIM" : "NOT VIM"}
-          </Toggle>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={async () =>
-              toast.promise(
-                saveCode(selectedQuestionId, code, questionLanguage),
-                {
-                  loading: "Saving code to cloud...",
-                  success: "Code saved successfully!",
-                  error: "Failed to save code.",
-                },
-              )
-            }
-          >
-            Cloud save
-          </Button>
+      <div className="flex items-center justify-between p-4 bg-[#181919] z-50">
+        <div className="flex gap-4 justify-between w-full items-center">
+          <div className="flex gap-4">
+            <Button variant="run" onClick={runCode} disabled={isRunning}>
+              {isRunning ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Running...
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4" />
+                  Run Code
+                </>
+              )}
+            </Button>
+            <Button variant="green" onClick={submitCodeHandler}>
+              Submit Code
+            </Button>
+          </div>
+          <div className="flex gap-4">
+            <Toggle
+              pressed={vimMode}
+              onPressedChange={(pressed) => {
+                setVimMode(pressed);
+                // Focus editor after mode change
+                setTimeout(() => {
+                  if (editorRef.current && editorRef.current.dom) {
+                    editorRef.current.dom.focus();
+                  }
+                }, 100);
+              }}
+              variant="outline"
+              className={`px-3 py-1 text-sm transition-colors ${
+                vimMode
+                  ? "bg-green-600 text-white hover:bg-green-700 border-green-600"
+                  : "text-gray-300 hover:bg-gray-700"
+              }`}
+              title={vimMode ? "Disable Vim Mode" : "Enable Vim Mode"}
+            >
+              {vimMode ? "VIM ON" : "VIM OFF"}
+            </Toggle>
+            <Button
+              variant="secondary"
+              onClick={async () =>
+                toast.promise(
+                  saveCode(selectedQuestionId, code, questionLanguage),
+                  {
+                    loading: "Saving code to cloud...",
+                    success: "Code saved successfully!",
+                    error: "Failed to save code.",
+                  },
+                )
+              }
+            >
+              <CloudUpload className="w-4 h-4" />
+              Cloud save
+            </Button>
+          </div>
         </div>
       </div>
     </div>

@@ -3,16 +3,16 @@ import { EditorView } from "@codemirror/view";
 import { HighlightStyle } from "@codemirror/language";
 
 const everforest = {
-  fg: "#d3c6aa",
-  bg: "#2d353b",
-  gray: "#7a8478",
-  red: "#e67e80",
-  orange: "#e69875",
-  yellow: "#dbbc7f",
-  green: "#a7c080",
-  aqua: "#83c092",
-  blue: "#7fbbb3",
-  purple: "#d699b6",
+  fg: "#f0e8d0",
+  bg: "#404a50",
+  gray: "#a5b0a5",
+  red: "#ff5f70",
+  orange: "#ff8c42",
+  yellow: "#ffcc00",
+  green: "#7dd87d",
+  aqua: "#42d4a8",
+  blue: "#5ba7ff",
+  purple: "#d946ef",
 };
 
 export const everforestHighlightStyle = HighlightStyle.define([
@@ -104,7 +104,7 @@ export const everforestTheme = EditorView.theme(
     },
     "&": {
       color: everforest.fg,
-      backgroundColor: everforest.bg,
+      backgroundColor: "transparent !important",
     },
     ".cm-content": {
       caretColor: everforest.blue,
@@ -114,10 +114,10 @@ export const everforestTheme = EditorView.theme(
       borderLeftColor: everforest.blue,
     },
     "&.cm-focused .cm-selectionBackground, ::selection": {
-      backgroundColor: "#475258",
+      backgroundColor: "#ff8c4240",
     },
     ".cm-gutters": {
-      backgroundColor: everforest.bg,
+      backgroundColor: "transparent !important",
       color: everforest.gray,
       border: "none",
     },
