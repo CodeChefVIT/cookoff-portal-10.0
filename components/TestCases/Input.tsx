@@ -27,12 +27,32 @@ const Input: React.FC<InputProps> = ({
   if (submissionStatus === "submitted") {
     testCaseSuccess = testCaseMessage.toLowerCase().includes("accepted");
   } else {
-    testCaseSuccess = activeCaseData
-      ? !activeCaseData.stderr &&
-        !!activeCaseData.output &&
-        !!activeCaseData.expected_output &&
-        activeCaseData.output.trim() === activeCaseData.expected_output.trim()
-      : compilerDetails.isCompileSuccess;
+    if (activeCaseData) {
+      if (activeCaseData.statusDescription) {
+        const statusDesc = activeCaseData.statusDescription.toLowerCase();
+        if (
+          statusDesc.includes("wrong answer") ||
+          statusDesc.includes("time limit exceeded") ||
+          statusDesc.includes("runtime error") ||
+          statusDesc.includes("compilation error")
+        ) {
+          testCaseSuccess = false;
+        } else {
+          testCaseSuccess =
+            statusDesc.includes("successful") ||
+            statusDesc.includes("accepted");
+        }
+      } else {
+        testCaseSuccess =
+          !activeCaseData.stderr &&
+          !!activeCaseData.output &&
+          !!activeCaseData.expected_output &&
+          activeCaseData.output.trim() ===
+            activeCaseData.expected_output.trim();
+      }
+    } else {
+      testCaseSuccess = compilerDetails.isCompileSuccess;
+    }
   }
 
   return (
