@@ -57,10 +57,7 @@ export default function Dashboard() {
               <Statistics data={data} loading={loading} />
             </div>
             <div className="lg:hidden h-full">
-              <DetailsCard
-                current_round={data?.current_round}
-                loading={loading}
-              />
+              <DetailsCard />
             </div>
           </div>
           <div className="col-span-2 lg:col-span-1">
@@ -68,10 +65,7 @@ export default function Dashboard() {
               <Statistics data={data} loading={loading} />
             </div>
             <div className="lg:block hidden h-full">
-              <DetailsCard
-                current_round={data?.current_round}
-                loading={loading}
-              />
+              <DetailsCard />
             </div>
           </div>
         </div>
