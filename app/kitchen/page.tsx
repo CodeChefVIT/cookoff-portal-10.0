@@ -244,8 +244,8 @@ export default function Kitchen() {
       </div>
 
       {/* Desktop Layout (>= md) */}
-      <div className="hidden md:flex">
-        <ResizablePanelGroup direction="horizontal" className="flex-grow">
+      <div className="hidden md:flex flex-grow">
+        <ResizablePanelGroup direction="horizontal" className="flex-grow" style={{ overflow: 'visible' }}>
           <ResizablePanel
             ref={panelRef}
             defaultSize={50}
@@ -284,12 +284,13 @@ export default function Kitchen() {
           <ResizableHandle withHandle />
 
           {/* Right side scrollable section */}
-          <ResizablePanel defaultSize={70}>
-            <div className="h-full">
+          <ResizablePanel defaultSize={70} style={{ overflow: 'visible' }}>
+            <div className="h-full overflow-y-auto" style={{ overflow: 'visible' }}>
               <ResizablePanelGroup
                 direction="vertical"
                 className="translate-y-2 lg:translate-y-4"
                 defaultValue={80}
+                style={{ overflow: 'visible' }}
               >
                 {/* Editor Panel */}
                 <ResizablePanel

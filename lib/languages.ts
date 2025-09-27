@@ -27,14 +27,23 @@ export const LANGUAGES: Record<string, Language> = {
     template: `#include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
+#include <map>
+#include <set>
+#include <queue>
+#include <stack>
+#include <climits>
 using namespace std;
 
 int main() {
-    // Your code here
-    
-    return 0;
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	
+	// Your code here
+	
+	return 0;
 }`,
-    cursorPosition: { line: 7, ch: 4 },
+    cursorPosition: { line: 15, ch: 1 },
   },
   C: {
     id: 50,
@@ -44,13 +53,15 @@ int main() {
     template: `#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+#include <limits.h>
 
 int main() {
-    // Your code here
-    
-    return 0;
+	// Your code here
+	
+	return 0;
 }`,
-    cursorPosition: { line: 6, ch: 4 },
+    cursorPosition: { line: 8, ch: 1 },
   },
   "C#": {
     id: 51,
@@ -60,16 +71,17 @@ int main() {
     template: `using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 class Program
 {
-    static void Main()
-    {
-        // Your code here
-        
-    }
+  static void Main(string[] args)
+	{
+    // Your code here
+		
+	}
 }`,
-    cursorPosition: { line: 9, ch: 8 },
+    cursorPosition: { line: 10, ch: 2 },
   },
   Java: {
     id: 62,
@@ -78,41 +90,60 @@ class Program
     commentSymbol: "//",
     template: `import java.util.*;
 import java.io.*;
+import java.math.*;
 
 public class Solution {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        // Your code here
-        
-        sc.close();
-    }
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		
+		// Your code here
+		
+		sc.close();
+	}
 }`,
-    cursorPosition: { line: 7, ch: 8 },
+    cursorPosition: { line: 9, ch: 2 },
   },
   Python: {
     id: 71,
     name: "Python",
     extension: python(),
     commentSymbol: "#",
-    template: `def main():
-  # Your code here
-  pass
+    template: `import sys
+from collections import defaultdict, deque
+from math import *
+
+def main():
+	# Your code here
+	pass
+
 if __name__ == "__main__":
-  main()`,
-    cursorPosition: { line: 2, ch: 2 },
+	main()`,
+    cursorPosition: { line: 6, ch: 1 },
   },
   JavaScript: {
     id: 63,
     name: "JavaScript",
     extension: javascript(),
     commentSymbol: "//",
-    template: `function main() {
-    // Your code here
-    
+    template: `const readline = require('readline');
+
+const rl = readline.createInterface({
+	input: process.stdin,
+	output: process.stdout
+});
+
+function main() {
+	// Your code here
+	
 }
 
-main();`,
-    cursorPosition: { line: 2, ch: 4 },
+// For competitive programming input handling
+rl.on('line', (input) => {
+	// Process input here
+	main();
+	rl.close();
+});`,
+    cursorPosition: { line: 9, ch: 1 },
   },
   Go: {
     id: 60,
@@ -122,14 +153,20 @@ main();`,
     template: `package main
 
 import (
-    "fmt"
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
 )
 
 func main() {
-    // Your code here
-    
+	scanner := bufio.NewScanner(os.Stdin)
+	
+	// Your code here
+	
 }`,
-    cursorPosition: { line: 8, ch: 4 },
+    cursorPosition: { line: 13, ch: 1 },
   },
   Rust: {
     id: 73,
@@ -137,12 +174,15 @@ func main() {
     extension: rust(),
     commentSymbol: "//",
     template: `use std::io;
+use std::collections::HashMap;
 
 fn main() {
-    // Your code here
-    
+	let mut input = String::new();
+	
+	// Your code here
+	
 }`,
-    cursorPosition: { line: 4, ch: 4 },
+    cursorPosition: { line: 7, ch: 1 },
   },
   PHP: {
     id: 68,
@@ -152,13 +192,15 @@ fn main() {
     template: `<?php
 
 function main() {
-    // Your code here
-    
+	$input = trim(fgets(STDIN));
+	
+	// Your code here
+	
 }
 
 main();
 ?>`,
-    cursorPosition: { line: 4, ch: 4 },
+    cursorPosition: { line: 6, ch: 1 },
   },
 };
 
