@@ -10,7 +10,6 @@ export interface RoundStats {
   progress: number;
   completed: number;
   incomplete: number;
-  score: number;
   locked?: boolean;
 }
 
@@ -68,7 +67,7 @@ const ProgressCircle: React.FC<{ progress?: number; loading?: boolean }> = ({ pr
 };
 
 const RoundCard: React.FC<{ stats: RoundStats; loading?: boolean }> = ({ stats, loading }) => {
-  const { round, status, progress, completed, incomplete, score, locked } =
+  const { round, status, progress, completed, incomplete, locked } =
     stats;
   const isLocked = status === "Closed";
 
@@ -111,14 +110,6 @@ const RoundCard: React.FC<{ stats: RoundStats; loading?: boolean }> = ({ stats, 
         </div>
       </div>
 
-      {/* Score aligned under */}
-      <div className="mt-4 sm:mt-[45px]">
-        {loading ? (
-          <Skeleton className="h-5 w-28 rounded-md bg-neutral-700" /> 
-        ) : (
-          <p className="text-[18px] sm:text-[18.89px] font-brunoace text-white">Score: {isLocked ? 0 : score}</p> 
-        )}
-      </div>
 
       {/* Blur Overlay for locked rounds */}
       {isLocked && (
@@ -161,7 +152,6 @@ const Statistics = ({
         progress: 0,
         completed: 0,
         incomplete: 0,
-        score: 0,
       }))
     : rounds.filter((r) => r.round !== 0);
 
@@ -173,69 +163,74 @@ const Statistics = ({
 
       {/* Vertical list of cards */}
       <div className="ml-2 mb-2 h-full grid grid-rows-3 gap-6 mt-6">
-        {displayRounds.map((r) => (
-        <div
-          key={r.round}
-          className="flex-1 bg-[#111] text-[#B7AB98] rounded-xl p-[18px] shadow-[-9.63px_8.67px_0_#1BA94C] flex justify-between items-start w-full"
-        >
+        {displayRounds.map((r) => {
+          const total = r.completed + r.incomplete;
+          const calcProgress =
+            total > 0 ? Math.round((r.completed / total) * 100) : 0;
+
+          return (
+            <div
+              key={r.round}
+              className="flex-1 bg-[#111] text-[#B7AB98] rounded-xl p-[18px] shadow-[-9.63px_8.67px_0_#1BA94C] flex justify-between items-start w-full"
+            >
               {/* Left side: Progress + info */}
               <div className="flex items-center gap-4 h-full">
                 <ProgressCircle
-                  progress={r.status === "Closed" ? 0 : r.progress}
+                  progress={r.status === "Closed" ? 0 : calcProgress} 
                   loading={loading}
                 />
 
                 <div>
                   {loading ? (
-            <>
-              <Skeleton className="h-[18px] w-[100px] mb-2 rounded-md bg-neutral-700" />
-              <Skeleton className="h-[18px] w-[120px] rounded-md bg-neutral-700" />
-              <Skeleton className="h-[18px] w-[80px] mt-2 rounded-md bg-neutral-700" />
-            </>
-          ) :(<>
-                  <p className="font-bold text-[20px] text-white mb-1">
-                    ROUND {r.round}
-                  </p>
-                  <p className="flex items-center gap-2 text-[12px]">
-                    <Image
-                      src="/statistics/tick.svg"
-                      alt="Completed"
-                      width={10}
-                      height={10}
-                    />
-                    Completed: {r.status === "Closed" ? 0 : r.completed}
-                  </p>
-                  <p className="flex items-center gap-2 text-[12px]">
-                    <Image
-                      src="/statistics/cross.svg"
-                      alt="Incomplete"
-                      width={10}
-                      height={10}
-                    />
-                    Not Completed: {r.status === "Closed" ? 0 : r.incomplete}
-                  </p>
-                  <p className="mt-1 font-brunoace text-white text-[16px]">
-                    Score: {r.status === "Closed" ? 0 : r.score}
-                  </p>
-                  </>
-          )}
+                    <>
+                      <Skeleton className="h-[18px] w-[100px] mb-2 rounded-md bg-neutral-700" />
+                      <Skeleton className="h-[18px] w-[120px] rounded-md bg-neutral-700" />
+                      <Skeleton className="h-[18px] w-[80px] mt-2 rounded-md bg-neutral-700" />
+                    </>
+                  ) : (
+                    <>
+                      <p className="font-bold text-[20px] text-white mb-1">
+                        ROUND {r.round}
+                      </p>
+                      <p className="flex items-center gap-2 text-[12px]">
+                        <Image
+                          src="/statistics/tick.svg"
+                          alt="Completed"
+                          width={10}
+                          height={10}
+                        />
+                        Completed: {r.status === "Closed" ? 0 : r.completed}
+                      </p>
+                      <p className="flex items-center gap-2 text-[12px]">
+                        <Image
+                          src="/statistics/cross.svg"
+                          alt="Incomplete"
+                          width={10}
+                          height={10}
+                        />
+                        Not Completed: {r.status === "Closed" ? 0 : r.incomplete}
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
 
               {/* Top-right status */}
               {loading ? (
-                  <Skeleton className="h-[12px] w-[40px] rounded-md bg-neutral-700" />
-                ) : (
-                  <div className="flex flex-col items-end gap-1">
-                    <span className={`rounded-full w-3 h-3 ${statusColors[r.status]}`} />
-                    <p className="text-[10px] font-inter text-white select-none">
-                      {r.status}
-                    </p>
-                  </div>
-                )}
+                <Skeleton className="h-[12px] w-[40px] rounded-md bg-neutral-700" />
+              ) : (
+                <div className="flex flex-col items-end gap-1">
+                  <span
+                    className={`rounded-full w-3 h-3 ${statusColors[r.status]}`}
+                  />
+                  <p className="text-[10px] font-inter text-white select-none">
+                    {r.status}
+                  </p>
+                </div>
+              )}
             </div>
-
-          ))}
+          );
+        })}
       </div>
     </div>
   );
