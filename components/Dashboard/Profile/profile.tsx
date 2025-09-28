@@ -77,7 +77,7 @@ const ProfileCard = ({
   const totalNotCompleted = data.questions_not_completed.reduce(
     (acc, val) => acc + val,
     0
-  );
+  ) - 2 ;
   const totalQuestions = totalCompleted + totalNotCompleted;
   const progress =
     totalQuestions > 0 ? (totalCompleted / totalQuestions) * 100 : 0;
