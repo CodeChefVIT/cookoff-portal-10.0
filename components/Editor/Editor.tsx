@@ -431,7 +431,7 @@ export default function Editor({
 
       const key = `code_${selectedQuestionId}_${questionLanguage.name}`;
       localStorage.setItem(key, code);
-    }, 5000);
+    }, 500);
 
     const mongoInterval = setInterval(async () => {
       if (code.trim() === "" || code === questionLanguage.template) return;
