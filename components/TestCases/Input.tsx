@@ -24,21 +24,42 @@ const Input: React.FC<InputProps> = ({
     activeCaseData?.statusDescription || compilerDetails.message;
 
   let testCaseSuccess;
-  if (submissionStatus === 'submitted') {
-    testCaseSuccess = testCaseMessage.toLowerCase().includes('accepted');
+  if (submissionStatus === "submitted") {
+    testCaseSuccess = testCaseMessage.toLowerCase().includes("accepted");
   } else {
-    testCaseSuccess = activeCaseData
-      ? !activeCaseData.stderr &&
-        !!activeCaseData.output &&
-        activeCaseData.output.trim() === activeCaseData.expected_output.trim()
-      : compilerDetails.isCompileSuccess;
+    if (activeCaseData) {
+      if (activeCaseData.statusDescription) {
+        const statusDesc = activeCaseData.statusDescription.toLowerCase();
+        if (
+          statusDesc.includes("wrong answer") ||
+          statusDesc.includes("time limit exceeded") ||
+          statusDesc.includes("runtime error") ||
+          statusDesc.includes("compilation error")
+        ) {
+          testCaseSuccess = false;
+        } else {
+          testCaseSuccess =
+            statusDesc.includes("successful") ||
+            statusDesc.includes("accepted");
+        }
+      } else {
+        testCaseSuccess =
+          !activeCaseData.stderr &&
+          !!activeCaseData.output &&
+          !!activeCaseData.expected_output &&
+          activeCaseData.output.trim() ===
+            activeCaseData.expected_output.trim();
+      }
+    } else {
+      testCaseSuccess = compilerDetails.isCompileSuccess;
+    }
   }
 
   return (
     <div className="">
       {outputExists && (
         <CompilerMessage
-          message={testCaseMessage}
+          message={submissionStatus === "running" ? "" : testCaseMessage}
           isCompileSuccess={testCaseSuccess}
         />
       )}
@@ -47,14 +68,18 @@ const Input: React.FC<InputProps> = ({
           {activeCaseData.output ? (
             <div className="flex justify-between font-inter gap-4">
               <InputOutputCard
-                title={"Input"}
-                data={activeCaseData.input}
+                title={"Input: "}
+                data={
+                  submissionStatus === "running" ? "" : activeCaseData.input
+                }
                 className="w-full"
               />
               <InputOutputCard
-                title={"Your Output"}
+                title={"Your Output:"}
                 data={
-                  activeCaseData.output
+                  submissionStatus === "running"
+                    ? ""
+                    : activeCaseData.output
                     ? activeCaseData.output
                     : "no output given"
                 }
@@ -64,8 +89,10 @@ const Input: React.FC<InputProps> = ({
           ) : (
             <div className="flex justify-between font-inter">
               <InputOutputCard
-                title={"Input"}
-                data={activeCaseData.input}
+                title={"Input: "}
+                data={
+                  submissionStatus === "running" ? "" : activeCaseData.input
+                }
                 className={"w-full"}
               />
             </div>

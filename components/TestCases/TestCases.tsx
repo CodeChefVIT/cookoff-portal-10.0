@@ -6,15 +6,20 @@ import { TestCase } from "store/zustant";
 import { useTestCases } from "./useTestCases";
 import SelectTestCases from "./SelectTestCases";
 import Input from "./Input";
+import { Skeleton } from "../ui/skeleton";
 
-interface CompilerResult {
-  isCompileSuccess: boolean;
-  message: string;
-}
-
-interface TestCasesProps {
-  panelSize: number;
-}
+const TestCasesSkeleton = () => (
+  <div className="flex flex-col gap-4">
+    <div className="flex items-center gap-4">
+      <Skeleton className="h-8 w-32" />
+      <Skeleton className="h-8 w-32" />
+    </div>
+    <div className="flex flex-col gap-2">
+      <Skeleton className="h-32 w-full" />
+      <Skeleton className="h-32 w-full" />
+    </div>
+  </div>
+);
 
 function getTestCaseScoreColor(count: number, total: number) {
   const percentage = (count / total) * 100;
@@ -23,7 +28,7 @@ function getTestCaseScoreColor(count: number, total: number) {
   return "text-accent";
 }
 
-const TestCases = ({ panelSize }: TestCasesProps) => {
+const TestCases = () => {
   const [activeCaseIndex, setActiveCaseIndex] = useState(0);
   const {
     fullScreenTestCases,
@@ -33,7 +38,6 @@ const TestCases = ({ panelSize }: TestCasesProps) => {
     testCases,
     selectedQuestionId,
     submissionStatus,
-    setSubmissionStatus,
   } = useKitchenStore();
 
   const displayedTestCases = useMemo(() => {
@@ -123,9 +127,9 @@ const TestCases = ({ panelSize }: TestCasesProps) => {
       }flex flex-col gap-4 bg-testcasesBG p-2 font-roboto`}
     >
       <div>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mb-2">
           <div
-            className={`rounded-xl bg-testcasesBG text-3xl font-bold ${
+            className={`rounded-xl bg-testcasesBG text-3xl py-2 items-center font-bold ${
               outputExists && submissionStatus === "submitted"
                 ? getTestCaseScoreColor(passedCount, displayTotal)
                 : "text-gray-400"
@@ -139,33 +143,39 @@ const TestCases = ({ panelSize }: TestCasesProps) => {
           </div>{" "}
           {fullScreenTestCases ? (
             <MdFullscreenExit
-              className="scale-200"
+              className="scale-200 mr-2"
               onClick={() => setFullScreenTestCases(false)}
             />
           ) : (
             <MdFullscreen
-              className="scale-200 "
+              className="scale-200 mr-2"
               onClick={() => setFullScreenTestCases(true)}
             />
           )}
         </div>
-        <SelectTestCases
-          visibleCases={visibleCases}
-          hiddenCases={hiddenCases}
-          hiddenPassedCount={hiddenPassedCount}
-          setActiveCaseIndex={setActiveCaseIndex}
-          getTestCaseScoreColor={getTestCaseScoreColor}
-          outputExists={outputExists}
-          activeCaseIndex={activeCaseIndex}
-          showHidden={submissionStatus === "submitted"}
-        />
+        {submissionStatus === "running" ? (
+          <TestCasesSkeleton />
+        ) : (
+          <SelectTestCases
+            visibleCases={visibleCases}
+            hiddenCases={hiddenCases}
+            hiddenPassedCount={hiddenPassedCount}
+            setActiveCaseIndex={setActiveCaseIndex}
+            getTestCaseScoreColor={getTestCaseScoreColor}
+            outputExists={outputExists}
+            activeCaseIndex={activeCaseIndex}
+            showHidden={submissionStatus === "submitted"}
+          />
+        )}
       </div>
 
-      <Input
-        compilerDetails={finalCompilerDetails}
-        activeCaseData={activeCaseData}
-        outputExists={outputExists}
-      />
+      {submissionStatus !== 'running' && activeCaseData && (
+        <Input
+          compilerDetails={finalCompilerDetails}
+          activeCaseData={activeCaseData}
+          outputExists={outputExists}
+        />
+      )}
     </div>
   );
 };

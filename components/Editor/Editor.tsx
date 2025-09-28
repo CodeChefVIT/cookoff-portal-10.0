@@ -3,12 +3,18 @@
 import React, { useRef, useState, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { oneDark } from "@codemirror/theme-one-dark";
-import { indentUnit } from "@codemirror/language";
+import {
+  indentUnit,
+  syntaxHighlighting,
+  syntaxParserRunning,
+} from "@codemirror/language";
 import type { EditorView } from "@codemirror/view";
 import type { ViewUpdate } from "@codemirror/view";
+import { vim } from "@replit/codemirror-vim";
 import LanguageSelector from "./LanguageSelector/LanguageSelector";
 import RoundTimer from "./RoundTimer/RoundTimer";
 import Button from "../ui/Button";
+import { Toggle } from "../ui/toggle";
 import useKitchenStore from "store/zustant";
 import { Language } from "@/lib/languages";
 import axios from "axios";
@@ -20,6 +26,8 @@ import { MdFullscreen } from "react-icons/md";
 import { MdFullscreenExit } from "react-icons/md";
 import { submitCode } from "@/api/kitchen";
 import toast from "react-hot-toast";
+import { everforestHighlightStyle, everforestTheme } from "./Theme";
+import { CloudUpload, Loader2, Play } from "lucide-react";
 type EditorProps = {
   languages: Language[];
   round?: string;
@@ -55,6 +63,12 @@ export default function Editor({
   const [cursor, setCursor] = useState({ line: 1, ch: 1 });
   const [isRunning, setIsRunning] = useState(false);
   const [editorReady, setEditorReady] = useState(false);
+  const [vimMode, setVimMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("vimMode") === "true";
+    }
+    return false;
+  });
   const editorRef = useRef<EditorView | null>(null);
 
   const handleLanguageChange = (language: Language) => {
@@ -132,6 +146,8 @@ export default function Editor({
       return;
     }
 
+    setTestResults([]);
+    setCompilerDetails(null);
     setIsRunning(true);
     const toastId = toast.loading("Running code...");
 
@@ -140,11 +156,11 @@ export default function Editor({
       const response = await getTestCasesAfterRun(
         code,
         questionLanguage.id,
-        selectedQuestionId
+        selectedQuestionId,
       );
       console.log(response);
 
-      const transformedResults = response.result.map((result, index) => {
+      const transformedResults = response.result.map((result) => {
         let statusDesc = result.status.description;
         if (result.compile_output) {
           statusDesc += `\n${result.compile_output}`;
@@ -166,7 +182,7 @@ export default function Editor({
       });
 
       const questionTestCases = originalTestCases.filter(
-        (tc) => tc.QuestionID === selectedQuestionId
+        (tc) => tc.QuestionID === selectedQuestionId,
       );
 
       const finalResults = transformedResults.map((result, index) => {
@@ -183,17 +199,17 @@ export default function Editor({
       setTestResults(finalResults);
 
       const hasErrors = response.result.some(
-        (r) => r.stderr || r.status.id !== 3
+        (r) => r.stderr || r.status.id !== 3,
       );
       const successCount = response.result.filter(
-        (r) => r.status.id === 3 && !r.stderr
+        (r) => r.status.id === 3 && !r.stderr,
       ).length;
       const totalCount = response.result.length;
 
       if (hasErrors) {
         toast.error(
           `Code execution completed: ${successCount}/${totalCount} test cases passed`,
-          { id: toastId }
+          { id: toastId },
         );
       } else {
         toast.success(`All ${totalCount} test cases passed successfully`, {
@@ -215,7 +231,7 @@ export default function Editor({
         message: "Failed to run code. Please try again.",
       });
     } finally {
-      setSubmissionStatus("submitted");
+      setSubmissionStatus("idle");
       setIsRunning(false);
     }
   };
@@ -226,6 +242,8 @@ export default function Editor({
       return;
     }
 
+    setTestResults([]);
+    setCompilerDetails(null);
     const submissionToastId = toast.loading("Submitting code...");
 
     try {
@@ -233,7 +251,7 @@ export default function Editor({
       const response = await submitCode(
         code,
         questionLanguage.id,
-        selectedQuestionId
+        selectedQuestionId,
       );
 
       toast.success(`Code submitted successfully! Getting results...`, {
@@ -245,11 +263,11 @@ export default function Editor({
 
       try {
         const submissionResult = await getSubmissionResult(
-          response.submission_id
+          response.submission_id,
         );
         console.log(submissionResult);
         const questionTestCases = originalTestCases.filter(
-          (tc) => tc.QuestionID === selectedQuestionId
+          (tc) => tc.QuestionID === selectedQuestionId,
         );
 
         // Transform submission results to match the existing TestCase format
@@ -264,7 +282,8 @@ export default function Editor({
             }
 
             const isAccepted =
-              testcase.status.trim().toLowerCase() === "accepted";
+              testcase.status.trim().toLowerCase() === "success" ||
+              testcase.description.trim().toLowerCase() === "accepted";
 
             console.log("current run result :", currentRunResult);
             return {
@@ -283,7 +302,7 @@ export default function Editor({
                 : testcase.stderr || testcase.description,
               statusDescription: statusDesc,
             };
-          }
+          },
         );
 
         setTestResults(transformedResults);
@@ -311,7 +330,7 @@ export default function Editor({
             }
             return acc;
           },
-          0
+          0,
         );
 
         // Set overall compiler details with submission summary
@@ -342,7 +361,7 @@ export default function Editor({
       if (!selectedQuestionId || selectedQuestionId === "1") return;
 
       const cachedState = codeByQuestion.find(
-        (state) => state.questionId === selectedQuestionId
+        (state) => state.questionId === selectedQuestionId,
       );
       if (cachedState) {
         setCode(cachedState.code);
@@ -363,7 +382,7 @@ export default function Editor({
         if (!email) throw new Error("No email found in localStorage");
 
         const res = await axios.get(
-          `/api/save-code?questionId=${selectedQuestionId}&email=${email}`
+          `/api/save-code?questionId=${selectedQuestionId}&email=${email}`,
         );
 
         if (res.status === 200) {
@@ -472,7 +491,7 @@ export default function Editor({
   useEffect(() => {
     if (selectedQuestionId) {
       const cachedCode = codeByQuestion.find(
-        (state) => state.questionId === selectedQuestionId
+        (state) => state.questionId === selectedQuestionId,
       );
       if (!cachedCode) {
         setCode(questionLanguage.template);
@@ -480,10 +499,15 @@ export default function Editor({
     }
   }, [selectedQuestionId, questionLanguage.template, codeByQuestion]);
 
+  // Save vim mode preference to localStorage
+  useEffect(() => {
+    localStorage.setItem("vimMode", vimMode.toString());
+  }, [vimMode]);
+
   const saveCode = async (
     selectedQuestionId: string,
     code: string,
-    questionLanguage: { name: string }
+    questionLanguage: { name: string },
   ) => {
     if (!selectedQuestionId || !code.trim()) return;
 
@@ -520,20 +544,14 @@ export default function Editor({
     <div
       className={`${
         fullScreen
-          ? "h-[100vh] w-screen -top-0 left-0 fixed z-50 "
+          ? "h-[100vh] w-screen -top-0 left-0 fixed p-4 z-50 "
           : "h-full w-[50vw]"
-      }mx-auto flex flex-col shadow-lg overflow-x-hidden`}
+      }mx-auto flex flex-col shadow-lg overflow-x-hidden`} //interesting string concatenation, lets leave it for people to ponder
     >
       <div className="flex items-center justify-between mb-4 z-20">
         <div className="flex gap-4 items-center ">
           <RoundTimer />
         </div>
-        <button
-          className=" text-white px-4 py-2 rounded"
-          onClick={() => saveCode(selectedQuestionId, code, questionLanguage)}
-        >
-          Save Code
-        </button>
         <div className="flex flex-row items-center gap-4">
           <LanguageSelector
             languages={languages}
@@ -542,12 +560,12 @@ export default function Editor({
           />
           {fullScreen ? (
             <MdFullscreenExit
-              className="scale-200 h-6 w-6 hover:cursor-pointer"
+              className="scale-200 h-6 w-6 hover:cursor-pointer mr-2"
               onClick={() => setfullScreen((prev) => !prev)}
             />
           ) : (
             <MdFullscreen
-              className="scale-200 h-6 w-6  hover:cursor-pointer"
+              className="scale-200 h-6 w-6  hover:cursor-pointer mr-2"
               onClick={() => setfullScreen((prev) => !prev)}
             />
           )}
@@ -555,7 +573,7 @@ export default function Editor({
       </div>
 
       <div
-        className={`flex-grow overflow-hidden ${
+        className={`flex-grow overflow-auto ${
           fullScreen ? "h-[100vh]" : "min-h-[200px]"
         }`}
       >
@@ -564,10 +582,12 @@ export default function Editor({
           value={code || questionLanguage.template}
           height="100%"
           width="100%"
-          theme={oneDark}
+          theme={everforestTheme}
           extensions={[
+            ...(vimMode ? [vim()] : []),
             questionLanguage.extension,
             indentUnit.of("    "), // 4 spaces for indentation
+            syntaxHighlighting(everforestHighlightStyle),
           ]}
           onChange={handleChange}
           basicSetup={{
@@ -580,24 +600,76 @@ export default function Editor({
           }}
         />
       </div>
-
       {/* Footer sections */}
-      <div className="flex items-center justify-end px-6 py-2 bg-[#181919] text-gray-400 text-sm border-b border-gray-700">
-        Line: {cursor.line} &nbsp;|&nbsp; Col: {cursor.ch}
+      <div className="flex items-center justify-between px-6 py-2 bg-[#181919] text-gray-400 text-sm border-b border-gray-700">
+        <div className="flex items-center gap-4">
+          {vimMode && (
+            <span className="text-green-400 font-mono">VIM MODE</span>
+          )}
+        </div>
+        <div>
+          Line: {cursor.line} &nbsp;|&nbsp; Col: {cursor.ch}
+        </div>
       </div>
-      <div className="flex items-center justify-between px-6 py-3 bg-[#181919] z-100">
-        <div className="flex gap-4">
-          <Button
-            variant="run"
-            size="default"
-            onClick={runCode}
-            disabled={isRunning}
-          >
-            {isRunning ? "Running..." : "Run Code"}
-          </Button>
-          <Button variant="green" size="default" onClick={submitCodeHandler}>
-            Submit Code
-          </Button>
+      <div className="flex items-center justify-between p-4 bg-[#181919] z-50">
+        <div className="flex gap-4 justify-between w-full items-center">
+          <div className="flex gap-4">
+            <Button variant="run" onClick={runCode} disabled={isRunning}>
+              {isRunning ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Running...
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4" />
+                  Run Code
+                </>
+              )}
+            </Button>
+            <Button variant="green" onClick={submitCodeHandler}>
+              Submit Code
+            </Button>
+          </div>
+          <div className="flex gap-4">
+            <Toggle
+              pressed={vimMode}
+              onPressedChange={(pressed) => {
+                setVimMode(pressed);
+                // Focus editor after mode change
+                setTimeout(() => {
+                  if (editorRef.current && editorRef.current.dom) {
+                    editorRef.current.dom.focus();
+                  }
+                }, 100);
+              }}
+              variant="outline"
+              className={`px-3 py-1 text-sm transition-colors ${
+                vimMode
+                  ? "bg-green-600 text-white hover:bg-green-700 border-green-600"
+                  : "text-gray-300 hover:bg-gray-700"
+              }`}
+              title={vimMode ? "Disable Vim Mode" : "Enable Vim Mode"}
+            >
+              {vimMode ? "VIM ON" : "VIM OFF"}
+            </Toggle>
+            <Button
+              variant="secondary"
+              onClick={async () =>
+                toast.promise(
+                  saveCode(selectedQuestionId, code, questionLanguage),
+                  {
+                    loading: "Saving code to cloud...",
+                    success: "Code saved successfully!",
+                    error: "Failed to save code.",
+                  },
+                )
+              }
+            >
+              <CloudUpload className="w-4 h-4" />
+              Cloud save
+            </Button>
+          </div>
         </div>
       </div>
     </div>

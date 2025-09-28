@@ -18,6 +18,7 @@ import { ImperativePanelHandle } from "react-resizable-panels";
 import timer from "@/services/getTimer";
 import toast from "react-hot-toast";
 import Loading from "@/components/Loading";
+import { ApiError } from "next/dist/server/api-utils";
 export default function Kitchen() {
   const {
     selectedQuestionId,
@@ -40,15 +41,18 @@ export default function Kitchen() {
         await timer();
         setLoading(false);
       } catch (error) {
+        if(error instanceof ApiError && error.statusCode === 409) {
         toast.error(
           error && typeof error === "object" && "message" in error
             ? (error as { message: string }).message
             : "Round not started yet"
         );
-        // Delay redirect by 2 seconds to show the toast
         setTimeout(() => {
           window.location.href = "/dashboard";
         }, 1000);
+      }
+        toast.error("Something went wrong.");
+        // Delay redirect by 2 seconds to show the toast
       }
     }
     void fetchData();
@@ -67,7 +71,6 @@ export default function Kitchen() {
     fetchData();
   }, [setQuestions, setTestCases]);
 
-  const [testCasesPanelSize, setTestCasesPanelSize] = useState(20);
   const [sidebarWidth, setSidebarWidth] = useState(50);
   const [mobileActiveTab, setMobileActiveTab] = useState<
     "question" | "editor" | "testcases"
@@ -108,7 +111,7 @@ export default function Kitchen() {
   }
 
   if (fullScreenTestCases) {
-    return <TestCases panelSize={100} />;
+    return <TestCases />;
   }
   if (loading) {
     return <Loading />;
@@ -190,7 +193,7 @@ export default function Kitchen() {
 
             {mobileActiveTab === "testcases" && (
               <div className="h-full p-3 bg-[#131414]">
-                <TestCases panelSize={100} />
+                <TestCases />
               </div>
             )}
           </div>
@@ -271,10 +274,9 @@ export default function Kitchen() {
                 <ResizablePanel
                   defaultSize={20}
                   className="p-4 pb-4"
-                  onResize={(size) => setTestCasesPanelSize(size)}
                 >
-                  <div className="bg-[#131414] h-full rounded lg:rounded-lg overflow-auto">
-                    <TestCases panelSize={testCasesPanelSize} />
+                  <div className="bg-[#131414] h-full p-2 overflow-auto">
+                    <TestCases />
                   </div>
                 </ResizablePanel>
               </ResizablePanelGroup>

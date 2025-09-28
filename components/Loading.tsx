@@ -1,5 +1,10 @@
-import React from 'react';
-import Image from 'next/image';
+import React from "react";
+import Image from "next/image";
+import { UtensilsCrossed } from "lucide-react";
+
+const App = () => {
+  return <UtensilsCrossed />;
+};
 
 export default function Loading() {
   return (
@@ -37,7 +42,7 @@ export default function Loading() {
         {/* Loading Text */}
         <div className="text-center space-y-4">
           <h1 className="text-3xl md:text-4xl font-bold text-white font-['Bruno_Ace']">
-            Cook<span style={{ color: '#32ca67' }}>Off</span>
+            Cook<span style={{ color: "#32ca67" }}>Off</span>
           </h1>
           <p className="text-white/80 text-lg animate-pulse">
             Preparing your kitchen...
@@ -46,37 +51,18 @@ export default function Loading() {
 
         {/* Loading Bar */}
         <div className="w-64 h-2 bg-white/20 rounded-full overflow-hidden">
-          <div className="h-full rounded-full animate-loading-bar" style={{ background: `linear-gradient(to right, #32ca67, #28a555)` }}></div>
+          <div
+            className="h-full rounded-full animate-loading-bar"
+            style={{
+              background: `linear-gradient(to right, #32ca67, #28a555)`,
+            }}
+          ></div>
         </div>
 
         {/* Cooking Utensils Animation */}
         <div className="flex space-x-6 mt-8">
           <div className="w-8 h-8 opacity-60 animate-bounce delay-100">
-            <Image
-              src="/public/file.svg"
-              alt="Utensil"
-              width={32}
-              height={32}
-              className="filter brightness-0 invert"
-            />
-          </div>
-          <div className="w-8 h-8 opacity-60 animate-bounce delay-300">
-            <Image
-              src="/public/paper.png"
-              alt="Utensil"
-              width={32}
-              height={32}
-              className="filter brightness-0 invert"
-            />
-          </div>
-          <div className="w-8 h-8 opacity-60 animate-bounce delay-500">
-            <Image
-              src="/public/file.svg"
-              alt="Utensil"
-              width={32}
-              height={32}
-              className="filter brightness-0 invert"
-            />
+            <UtensilsCrossed className="w-full h-full text-white" />
           </div>
         </div>
       </div>

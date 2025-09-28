@@ -179,6 +179,7 @@ const useKitchenStore = create<KitchenState>()(
           selectedLanguage: state.selectedLanguage,
           codeByQuestion: state.codeByQuestion,
           languageByQuestion: state.languageByQuestion,
+          round: state.round,
         }),
         storage: {
           getItem: (name) => {
@@ -195,6 +196,7 @@ const useKitchenStore = create<KitchenState>()(
                   questionId: q.questionId,
                   language: getLanguageByName(q.language.name) || LANGUAGES.Python,
                 })),
+                round: state.round || 0,
               },
             };
           },
@@ -208,6 +210,7 @@ const useKitchenStore = create<KitchenState>()(
                   questionId: q.questionId,
                   language: { name: q.language.name },
                 })) || [],
+                round: state.round,
               },
               version,
             });

@@ -74,12 +74,12 @@ export default function RoundTimer() {
   );
 
   return (
-    <div className="relative flex items-center h-[45px] border border-[#B7AB98] rounded-lg gap-2 font-bruno-ace w-fit select-none">
-      <div className="flex-shrink-0 h-full bg-[#1BA94C] flex items-center justify-center rounded-l-lg px-3">
+    <div className="relative flex items-center h-[45px] rounded-lg font-bruno-ace w-fit select-none">
+      <div className="flex-shrink-0 h-full bg-[#1BA94C] border-[#1BA94C] flex items-center justify-center rounded-l-lg px-3">
         <span className="text-[22px] text-black capitalize">{`Round ${round}`}</span>
       </div>
 
-      <div className="flex-1 h-full flex items-center justify-center w-fit rounded-r-lg px-3 min-w-[130px]">
+      <div className="flex-1 h-full flex items-center justify-center rounded-r-lg px-4 border-r border-y border-[#B7AB98]">
         <span className="text-[20px] text-[#1BA94C] tracking-widest text-center">
           {formatted}
         </span>
