@@ -32,18 +32,14 @@ export const LANGUAGES: Record<string, Language> = {
 #include <set>
 #include <queue>
 #include <stack>
-#include <climits>
 using namespace std;
 
 int main() {
-  ios_base::sync_with_stdio(false);
-  cin.tie(NULL);
-
-  // Your code here
+  // TODO)) Your code here
 
   return 0;
 }`,
-    cursorPosition: { line: 15, ch: 1 },
+    cursorPosition: { line: 12, ch: 1 },
   },
   C: {
     id: 50,
@@ -57,7 +53,7 @@ int main() {
 #include <limits.h>
 
 int main() {
-  // Your code here
+  // TODO)) Your code here
 
   return 0;
 }`,
@@ -70,18 +66,16 @@ int main() {
     commentSymbol: "//",
     template: `using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 class Program
 {
   static void Main(string[] args)
   {
-    // Your code here
+    // TODO)) Your code here
 
   }
 }`,
-    cursorPosition: { line: 10, ch: 2 },
+    cursorPosition: { line: 8, ch: 2 },
   },
   Java: {
     id: 62,
@@ -96,7 +90,7 @@ public class Main {
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
-    // Your code here
+    // TODO)) Your code here
 
     sc.close();
   }
@@ -113,7 +107,7 @@ from collections import defaultdict, deque
 from math import *
 
 def main():
-  # Your code here
+  # TODO)) Your code here
   pass
 
 if __name__ == "__main__":
@@ -133,7 +127,7 @@ const rl = readline.createInterface({
 });
 
 function main() {
-  // Your code here
+  // TODO)) Your code here
 
 }
 
@@ -156,17 +150,16 @@ import (
   "bufio"
   "fmt"
   "os"
-  "strconv"
   "strings"
 )
 
 func main() {
   scanner := bufio.NewScanner(os.Stdin)
 
-  // Your code here
+  // TODO)) Your code here
 
 }`,
-    cursorPosition: { line: 13, ch: 1 },
+    cursorPosition: { line: 12, ch: 1 },
   },
   Rust: {
     id: 73,
@@ -179,7 +172,7 @@ use std::collections::HashMap;
 fn main() {
   let mut input = String::new();
 
-  // Your code here
+  // TODO)) Your code here
 
 }`,
     cursorPosition: { line: 7, ch: 1 },
@@ -194,7 +187,7 @@ fn main() {
 function main() {
   $input = trim(fgets(STDIN));
 
-  // Your code here
+  // TODO)) Your code here
 
 }
 
