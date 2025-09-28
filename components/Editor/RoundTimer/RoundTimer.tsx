@@ -53,7 +53,9 @@ export default function RoundTimer() {
     // Start client-side countdown
     tickIntervalRef.current = setInterval(() => {
       setRemaining((prev) => {
+        if (prev === null) return prev;
         if (prev <= 0) {
+          window.location.href = "/dashboard";
           return 0;
         }
         return prev - 1;
