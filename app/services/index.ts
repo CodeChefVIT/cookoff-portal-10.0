@@ -43,11 +43,6 @@ api.interceptors.response.use(
     const originalRequest = error.config as CustomAxiosRequestConfig;
 
     if (!error.response) {
-      if (!sessionExpiredToastShown) {
-        toast.error("Network error. Redirecting...");
-        sessionExpiredToastShown = true;
-      }
-      setTimeout(() => (window.location.href = "/"), 2000);
       return Promise.reject(error);
     }
 
