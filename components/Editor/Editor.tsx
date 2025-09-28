@@ -282,7 +282,8 @@ export default function Editor({
             }
 
             const isAccepted =
-              testcase.status.trim().toLowerCase() === "accepted";
+              testcase.status.trim().toLowerCase() === "success" ||
+              testcase.description.trim().toLowerCase() === "accepted";
 
             console.log("current run result :", currentRunResult);
             return {
