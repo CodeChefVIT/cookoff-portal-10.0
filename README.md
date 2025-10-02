@@ -57,15 +57,15 @@ This project is built with a modern, robust, and scalable tech stack:
 
 ### Login
 
-<img src="/login.png" alt="Login" width="100%">
+<img src="/public/login.png" alt="Login" width="100%">
 
 ### Dashboard
 
-<img src="/dashboard.png" alt="Dashboard" width="100%">
+<img src="/public/dashboard.png" alt="Dashboard" width="100%">
 
 ### Kitchen
 
-<img src="/kitchen.png" alt="Kitchen" width="100%">
+<img src="/public/kitchen.png" alt="Kitchen" width="100%">
 
 ---
 
