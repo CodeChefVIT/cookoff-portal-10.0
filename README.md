@@ -65,7 +65,7 @@ This project is built with a modern, robust, and scalable tech stack:
 
 ### Kitchen
 
-<img src="/public/kitchen.png" alt="Kitchen" width="100%">
+<img src="/public/kitchen.jpg" alt="Kitchen" width="100%">
 
 ---
 
