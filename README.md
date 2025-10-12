@@ -39,8 +39,8 @@ This project is built with a modern, robust, and scalable tech stack:
 - **Form Handling**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
 - **Code Editor**: [CodeMirror](https://codemirror.net/)
 - **HTTP Client**: [Axios](https://axios-http.com/)
-- **Authentication**: [Firebase Authentication](https://firebase.google.com/docs/auth)
-- **Notifications**: [React Hot Toast](https://react-hot-toast.com/)
+- Notifications**: [Firestore](https://firebase.google.com/docs/firestore)
+- **Toast**: [React Hot Toast](https://react-hot-toast.com/)
 
 ## ✨ Features
 
@@ -83,7 +83,7 @@ The application is designed as a highly interactive and real-time single-page ap
 
 ### Zustand State Management (`useKitchenStore`)
 
-The core of the application's state is managed by a single Zustand store, `useKitchenStore`. This store is the single source of truth for the "Kitchen" (the main coding environment).
+The coding part of the application's state is managed by a single Zustand store, `useKitchenStore`. This store is the single source of truth for the "Kitchen" (the main coding environment).
 
 - **State Slices**: The store is organized into logical slices:
 
