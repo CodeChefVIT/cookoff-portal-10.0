@@ -11,7 +11,7 @@ export default function InputOutputCard({ title, data, className }: Props) {
     <div className={`flex flex-col gap-2 ${className ? className : ""}`}>
       <h1 className="text-lg font-semibold">{title}</h1>
       <div className="bg-secondary min-h-[5vh] min-w-[100%] rounded-md p-4 text-sm">
-        <h1>{data ? data : " "}</h1>
+        <h1>{data.split('\n').map((item, key)=>(<div key={key}>{item}</div>))}</h1>
       </div>
     </div>
   );
